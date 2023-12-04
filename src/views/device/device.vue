@@ -5,11 +5,11 @@
 
 <script>
 export default {
-  data:{
-    return:{
+  data(){
+    return{
       list:['设备概况','设备详情','我的设备']
     }
-  }
+  },
 }
 </script>
 
