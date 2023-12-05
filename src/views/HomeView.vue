@@ -9,6 +9,14 @@ export default {
   name: 'HomeView',
   components: {
     GridCard
+  },
+  data(){
+    return{
+      list:[],
+    }
+  },
+  mounted(){
+    this.$emit('send',this.list)
   }
 }
 </script>

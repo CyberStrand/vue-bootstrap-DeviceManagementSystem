@@ -2,11 +2,11 @@
   <Navbar></Navbar>
   <div class="container m-0">
     <div class="row">
-      <div class="col-2 ps-0 pe-1 bg-dark">
+      <div class="col-3 ps-0 pe-1">
         <Sidebar :stringList="this.stringList"></Sidebar>
       </div>
-      <div class="col-10 pe-0">
-        <router-view></router-view>
+      <div class="col-9 pe-0 pt-3">
+        <router-view @send="getlist"></router-view>
       </div>
     </div>
   </div>
@@ -22,7 +22,12 @@ export default {
   },
   data(){
     return{
-      stringList:['设备概况','设备详情','我的设备'],
+      stringList:Array,
+    }
+  },
+  methods:{
+    getlist(list){
+      this.stringList=list
     }
   }
 }

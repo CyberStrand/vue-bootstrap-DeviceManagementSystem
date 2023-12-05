@@ -10,6 +10,9 @@ export default {
       list:['设备概况','设备详情','我的设备']
     }
   },
+  mounted(){
+    this.$emit('send',this.list)
+  }
 }
 </script>
 

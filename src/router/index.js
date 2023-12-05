@@ -28,17 +28,17 @@ const routes = [
   },
   {
     path: '/device1',
-    name: 'device1',
+    name: '设备概况',
     component: deviceView1
   },
   {
     path: '/device2',
-    name: 'device2',
+    name: '设备详情',
     component: deviceView2
   },
   {
     path: '/device3',
-    name: 'device3',
+    name: '我的设备',
     component: deviceView3
   },
   {
@@ -48,17 +48,17 @@ const routes = [
   },
   {
     path: '/staff1',
-    name: 'staff1',
+    name: '人员概况',
     component: staffView1
   },
   {
     path: '/staff2',
-    name: 'staff2',
+    name: '人员详情',
     component: staffView2
   },
   {
     path: '/staff3',
-    name: 'staff3',
+    name: '我的人员',
     component: staffView3
   },
   {
@@ -68,17 +68,17 @@ const routes = [
   },
   {
     path: '/order1',
-    name: 'order1',
+    name: '订单概况',
     component: orderView1
   },
   {
     path: '/order2',
-    name: 'order2',
+    name: '订单详情',
     component: orderView2
   },
   {
-    path: '/order2',
-    name: 'order3',
+    path: '/order3',
+    name: '我的订单',
     component: orderView3
   },
   {
