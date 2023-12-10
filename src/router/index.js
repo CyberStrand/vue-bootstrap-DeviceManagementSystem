@@ -12,6 +12,8 @@ import order from '../views/order/order.vue'
 import orderView1 from'../views/order/orderView1.vue'
 import orderView2 from'../views/order/orderView2.vue'
 import orderView3 from'../views/order/orderView3.vue'
+import orderView4 from'../views/order/orderView4.vue'
+import orderView5 from '@/views/order/orderView5.vue'
 import person from '../views/person.vue'
 
 
@@ -80,6 +82,16 @@ const routes = [
     path: '/order3',
     name: '我的订单',
     component: orderView3
+  },
+  {
+    path: '/order4',
+    name: '维修人员：可接订单',
+    component: orderView4
+  },
+  {
+    path: '/order5',
+    name: '维修人员：我的订单',
+    component: orderView5
   },
   {
     path: '/person',
