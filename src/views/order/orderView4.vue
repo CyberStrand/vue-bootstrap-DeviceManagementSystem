@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table>
+        <table v-if="!selectedOrder">
             <thead>
                 <tr>
                     <th>订单ID</th>
@@ -10,6 +10,7 @@
                     <th>订单状态</th>
                     <th>紧急程度</th>
                     <th>设备ID</th>
+                    <th>订单位置</th>
                     <th>发起时间</th>
                     <th>操作</th>
                 </tr>
@@ -23,13 +24,30 @@
                     <td>{{ order.orderStatus }}</td>
                     <td>{{ order.urgencyLevel }}</td>
                     <td>{{ order.deviceId }}</td>
+                    <td>{{ order.locationId }}</td>
                     <td>{{ formatDate(order.createdAt) }}</td>
                     <td>
-                        <button @click="acceptOrder(order.orderId)">接单</button>
+                        <button @click="showOrderDetails(order)">接单</button>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <div v-if="selectedOrder">
+            <h2>Order Details</h2>
+            <p><strong>订单ID: </strong> {{ selectedOrder.orderId }}</p>
+            <p><strong>用户ID: </strong> {{ selectedOrder.userId }}</p>
+            <p><strong>维修人员ID: </strong> {{ selectedOrder.maintenancePersonnelId }}</p>
+            <p><strong>公司ID: </strong> {{ selectedOrder.companyId }}</p>
+            <p><strong>订单状态: </strong> {{ selectedOrder.orderStatus }}</p>
+            <p><strong>紧急程度: </strong> {{ selectedOrder.urgencyLevel }}</p>
+            <p><strong>设备ID: </strong> {{ selectedOrder.deviceId }}</p>
+            <p><strong>发起时间: </strong> {{ selectedOrder.orderId }}</p>
+            <p><strong>操作: </strong> {{ formatDate(selectedOrder.createdAt) }}</p>
+            <div>
+                <button @click="acceptOrder(selectedOrder.orderId)">确认接单</button>
+                <button @click="cancelAcceptance()">取消接单</button>
+            </div>
+        </div>
     </div>
 </template>
   
@@ -37,7 +55,9 @@
 export default {
     data() {
         return {
-            orders: [] // Initialize empty array to hold orders data
+            orders: [], // Initialize empty array to hold orders data
+            selectedOrder: null,
+            locations: {}
         };
     },
     mounted() {
@@ -99,6 +119,23 @@ export default {
                     console.error('Error accepting order:', error);
                 });
         },
+        showOrderDetails(order) {
+            this.selectedOrder = order; // Set selected order for details view
+        },
+        confirmAcceptance(orderId) {
+            // Make an API request to confirm order acceptance
+            // Similar to your acceptOrder method but with necessary changes
+            // ...
+
+            // Example:
+            // Simulate action and clear selectedOrder afterwards
+            console.log('Confirmed acceptance of order:', orderId);
+            this.selectedOrder = null; // Reset selected order to hide details
+        },
+
+        cancelAcceptance() {
+            this.selectedOrder = null; // Clear selected order to hide details
+        }
 
     }
 };
