@@ -1,4 +1,8 @@
 <template>
+<div v-if="isLoginPage">
+  <router-view></router-view>
+</div>
+<div v-else>
   <Navbar></Navbar>
   <div class="container m-0">
     <div class="row">
@@ -10,11 +14,13 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
 import Navbar from "@/components/Navbar.vue"
 import Sidebar from "@/components/Sidebar.vue"
+import API from "@/plugins/axiosInstance.js"
 
 export default {
   components:{
@@ -23,12 +29,37 @@ export default {
   data(){
     return{
       stringList:Array,
+      isLoginPage: true,
     }
+  },
+  watch: {
+    '$route': function(to, from) {
+      this.isLoginPage = to.path === '/login';
+    }
+  },
+  created() {
+    this.isLoginPage = this.$route.path === '/login';
   },
   methods:{
     getlist(list){
       this.stringList=list
     }
+  },
+  mounted(){
+    API.post("/login", 
+        JSON.stringify({
+            "username": "BingkuiTong",
+            "password":123
+        }), 
+        {
+            headers:{
+                'Content-Type': 'application/json',
+            }
+        }
+    ).then((response)=>{
+      localStorage.setItem("token",response.data.data);
+      console.log(response.data.data)
+    })
   }
 }
 </script>

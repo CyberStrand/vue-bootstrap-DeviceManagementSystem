@@ -15,11 +15,16 @@ import orderView3 from'../views/order/orderView3.vue'
 import orderView4 from'../views/order/orderView4.vue'
 import orderView5 from '@/views/order/orderView5.vue'
 import person from '../views/person.vue'
+import login from '../views/login.vue'
 
 
 const routes = [
   {
     path: '/',
+    redirect: "/login"
+  },
+  {
+    path: '/home',
     name: 'home',
     component: HomeView
   },
@@ -98,11 +103,15 @@ const routes = [
     name: 'person',
     component: person
   },
+  {
+    path:'/login',
+    name:'login',
+    component: login
+  }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
-
 export default router
