@@ -13,6 +13,11 @@
             首页
           </router-link>
         </li>
+        <li class="nav-item">
+          <router-link :to="{name:'普通用户'}" class="nav-link">
+            普通用户
+          </router-link>
+        </li>
 
         <li class="nav-item">
           <router-link :to="{name:'device'}" class="nav-link">

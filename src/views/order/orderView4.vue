@@ -70,7 +70,7 @@ export default {
                 method: 'Post', // Assuming you are making a POST request
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wYW55SWQiOi0xLCJ1c2VyVHlwZSI6Im1haW50ZW5hbmNlX3BlcnNvbm5lbCIsImV4cCI6MTcwMjI4Njg4MywidXNlcklkIjoyMn0.TzjsB3ymFh_I-nKCwVn746DOmBmVZ_RdA_45mN7-aT0' // Replace with your actual JWT token
+                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wYW55SWQiOi0xLCJ1c2VyVHlwZSI6Im9yZGluYXJ5IiwiZXhwIjoxNzAyMzc1ODQ2LCJ1c2VySWQiOjIzfQ.yUVX0chXfB4Viwq_ZJ7oaM2rCU1lMmrvlZ6TTbkX6BA' // Replace with your actual JWT token
                 },
                 body: JSON.stringify({
                 })
