@@ -42,11 +42,11 @@ export default {
     methods: {
         fetchOrders() {
             // Make an API request to fetch orders data from backend using fetch
-            fetch('http://localhost:8081/maintanenceOrders', {
+            fetch('http://localhost:8000/maintanenceOrders', {
                 method: 'Post', // Assuming you are making a POST request
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wYW55SWQiOi0xLCJ1c2VyVHlwZSI6Im1haW50ZW5hbmNlX3BlcnNvbm5lbCIsImV4cCI6MTcwMjI4NjYyNSwidXNlcklkIjoyMn0.fSpTMKKi0w8FRO5pQchWhM5MRjUOBPAFyqCWB9bSggw' // Replace with your actual JWT token
+                    'Authorization': 'Bearer '+localStorage.getItem("token") // Replace with your actual JWT token
                 },
                 body: JSON.stringify({
                 })

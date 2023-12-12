@@ -65,8 +65,11 @@
             <span>名称</span>  
             <span>{{ name }}</span>
           </li>
-          <li class="list-group-item">
-            <button type="button" class="btn btn-outline-success">Logout</button>
+          <li class="list-group-item" v-if="offline">
+            <router-link to="/login" class="btn btn-outline-success">Log in</router-link>
+          </li>
+          <li class="list-group-item" v-if="offline">
+            <router-link to="/login" class="btn btn-outline-success">Sign up</router-link>
           </li>
         </ul>
       </div>
@@ -78,7 +81,8 @@ export default {
   data(){
     return {
       email: '245231528@qq.com',
-      name:'未来最棒'
+      name:'未来最棒',
+      offline: true,
     }
   }
 }

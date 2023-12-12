@@ -3,7 +3,7 @@
   <div class="row row-cols-1 row-cols-md-2 g-4">
     <div class="col">
       <div class="card">
-        <router-link to="/">
+        <router-link to="/login">
           <img src="../assets/slide1.jpg" class="card-img-top">
         </router-link>
         <div class="card-body">

@@ -1,38 +1,34 @@
 <template>
-    <div v-if="devices.length">
-    <div v-for="device in devices" :key="device.id">
-        {{ device.title }}
-        {{ device.status }}
-        <button @click="deleteDevice(device)">Delete</button>
-        <br>
+    <div v-if="this.orders">
+    {{ orders }}<br>
     </div>
-  </div>
+    <div v-else>
+    loading...
+    </div>
 </template>
 
 <script>
-//import axios from 'axios'
+import API from '@/plugins/axiosInstance'
 
 export default {
     data(){
         return{
-            devices:[]
+            orders:[],
         }
     },
     mounted(){
-        fetch('http://localhost:3000/devices')
-            .then(res => res.json())
-            .then(data => this.devices = data)
-            .catch(err => console.log(err.message))
+        API.post("/company/orders",
+            JSON.stringify({"pageNum":1,"pageSize":10}),
+        {
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer "+localStorage.getItem("token")
+            }
+        }).then((response)=>{
+            console.log(response.data.data)
+            this.orders=response.data.data.list
+        })
     },
-    // methods:{
-    //     deleteDevice(device){
-    //         this.devices = this.devices.filter((item)=>{
-    //             return device !== item
-    //         })
-    //         axios.delete('http://localhost:3000/devices/${device.id}')
-    //     },
-    // }
-
 }
 </script>
 

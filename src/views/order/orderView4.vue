@@ -66,11 +66,12 @@ export default {
     methods: {
         fetchOrders() {
             // Make an API request to fetch orders data from backend using fetch
-            fetch('http://localhost:8081/pendingOrders', {
+            fetch('http://localhost:8000/pendingOrders', {
                 method: 'Post', // Assuming you are making a POST request
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wYW55SWQiOi0xLCJ1c2VyVHlwZSI6Im9yZGluYXJ5IiwiZXhwIjoxNzAyMzc1ODQ2LCJ1c2VySWQiOjIzfQ.yUVX0chXfB4Viwq_ZJ7oaM2rCU1lMmrvlZ6TTbkX6BA' // Replace with your actual JWT token
+                    'Authorization': "Bearer "+localStorage.getItem("token") // Replace with your actual JWT token
+
                 },
                 body: JSON.stringify({
                 })
@@ -95,11 +96,11 @@ export default {
         },
         acceptOrder(orderId) {
             // Make an API request to accept order with orderId
-            fetch('http://localhost:8081/acceptOrder', {
+            fetch('http://localhost:8000/acceptOrder', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wYW55SWQiOi0xLCJ1c2VyVHlwZSI6Im1haW50ZW5hbmNlX3BlcnNvbm5lbCIsImV4cCI6MTcwMjI4Njg4MywidXNlcklkIjoyMn0.TzjsB3ymFh_I-nKCwVn746DOmBmVZ_RdA_45mN7-aT0' // Replace with your actual JWT token
+                    'Authorization': 'Bearer '+localStorage.getItem("token") // Replace with your actual JWT token
                 },
                 body: JSON.stringify({
                     order_id: orderId // Send orderId to the backend
