@@ -3,14 +3,14 @@
         <table>
             <thead>
                 <tr>
-                    <th>Order ID</th>
-                    <th>User ID</th>
-                    <th>Maintenance Personnel ID</th>
-                    <th>Company ID</th>
-                    <th>Order Status</th>
-                    <th>Urgency Level</th>
-                    <th>Device ID</th>
-                    <th>Created At</th>
+                    <th>订单ID</th>
+                    <th>用户ID</th>
+                    <th>维修人员ID</th>
+                    <th>公司ID</th>
+                    <th>订单状态</th>
+                    <th>紧急程度</th>
+                    <th>设备ID</th>
+                    <th>发起时间</th>
                 </tr>
             </thead>
             <tbody>
