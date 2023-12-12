@@ -146,7 +146,7 @@ export default {
       fetchDevice();
     };//修改页码
     const fetchDevice = () => {
-      fetch('http://localhost:8081/ordinaryUser/order', {
+      fetch('http://localhost:8080/ordinaryUser/order', {
         method: 'POST',
         headers: apiHeaders,
         body: JSON.stringify({
@@ -164,7 +164,7 @@ export default {
           });
     };//获取设备信息（查）
     const query = () => {
-      fetch(`http://localhost:8081/ordinaryUser/orderSelect`, {
+      fetch(`http://localhost:8080/ordinaryUser/orderSelect`, {
         method: 'POST',
         headers: apiHeaders,
         body: JSON.stringify({
@@ -183,7 +183,7 @@ export default {
           });
     };//根据设备状态查询设备信息（查）
     const handleDelete = (orderId) => {
-      fetch(`http://localhost:8081/ordinaryUser/order?orderId=${orderId}`, {
+      fetch(`http://localhost:8080/ordinaryUser/order?orderId=${orderId}`, {
         method: 'DELETE',
         headers: apiHeaders,
       })
@@ -211,7 +211,7 @@ export default {
     };//关闭添加设备对话框
     const saveData = () => {
       console.log(formData)
-      fetch("http://localhost:8081/ordinaryUser/orderAdd", {
+      fetch("http://localhost:8080/ordinaryUser/orderAdd", {
         method: 'POST',
         headers: apiHeaders,
         body: JSON.stringify(formData.value)
@@ -230,7 +230,7 @@ export default {
       formData.value.orderId=orderId.value
       console.log(formData.value)
       console.log(toRaw(formData.value))
-      fetch("http://localhost:8081/ordinaryUser/order", {
+      fetch("http://localhost:8080/ordinaryUser/order", {
         method: 'PUT',
         headers: apiHeaders,
         body: JSON.stringify(formData.value)

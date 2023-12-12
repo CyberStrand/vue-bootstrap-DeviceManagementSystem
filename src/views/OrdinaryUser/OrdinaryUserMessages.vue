@@ -122,7 +122,7 @@ export default {
       fetchMessage();
     };//修改页码
     const fetchMessage = () => {
-      fetch('http://localhost:8081/ordinaryUser/message', {
+      fetch('http://localhost:8080/ordinaryUser/message', {
         method: 'POST',
         headers: apiHeaders,
         body: JSON.stringify({
@@ -142,7 +142,7 @@ export default {
           });
     };//获取所有消息消息（查）
     const query = () => {
-      fetch(`http://localhost:8081/ordinaryUser/messageSelect`, {
+      fetch(`http://localhost:8080/ordinaryUser/messageSelect`, {
         method: 'POST',
         headers: apiHeaders,
         body: JSON.stringify({
@@ -162,7 +162,7 @@ export default {
     };//根据消息状态(已读/未读)查询消息（查）
     const handleDelete = (messageId) => {
       console.log(messageId);
-      fetch(`http://localhost:8081/ordinaryUser/message?messageId=${messageId}`, {
+      fetch(`http://localhost:8080/ordinaryUser/message?messageId=${messageId}`, {
         method: 'DELETE',
         headers: apiHeaders,
       })
@@ -188,7 +188,7 @@ export default {
         readStatus:formData.value.readStatus,
       }
       console.log(requestBody)
-      fetch("http://localhost:8081/ordinaryUser/message", {
+      fetch("http://localhost:8080/ordinaryUser/message", {
         method: 'PUT',
         headers: apiHeaders,
         body: JSON.stringify(requestBody)

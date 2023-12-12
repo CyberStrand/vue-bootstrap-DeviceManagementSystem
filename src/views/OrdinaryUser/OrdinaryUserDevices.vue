@@ -172,7 +172,7 @@ export default {
       fetchDevice();
     };//修改页码
     const fetchDevice = () => {
-      fetch('http://localhost:8081/ordinaryUser/devices', {
+      fetch('http://localhost:8080/ordinaryUser/devices', {
         method: 'POST',
         headers: apiHeaders,
         body: JSON.stringify({
@@ -190,7 +190,7 @@ export default {
           });
     };//获取设备信息（查）
     const query = () => {
-      fetch(`http://localhost:8081/ordinaryUser/devicesSelect`, {
+      fetch(`http://localhost:8080/ordinaryUser/devicesSelect`, {
         method: 'POST',
         headers: apiHeaders,
         body: JSON.stringify({
@@ -209,7 +209,7 @@ export default {
           });
     };//根据设备状态查询设备信息（查）
     const handleDelete = (serialNumber) => {
-      fetch(`http://localhost:8081/ordinaryUser/devices?serialNumber=${serialNumber}`, {
+      fetch(`http://localhost:8080/ordinaryUser/devices?serialNumber=${serialNumber}`, {
         method: 'DELETE',
         headers: apiHeaders,
       })
@@ -238,7 +238,7 @@ export default {
     const saveData = () => {
       console.log(formData.value)
       console.log(toRaw(formData.value))
-      fetch("http://localhost:8081/ordinaryUser/devicesAdd",{
+      fetch("http://localhost:8080/ordinaryUser/devicesAdd",{
         method:'POST',
         headers:apiHeaders,
         body: JSON.stringify(formData.value)
@@ -257,7 +257,7 @@ export default {
       formData.value.serialNumber = serial_number.value;
       console.log(formData.value)
       console.log(toRaw(formData.value))
-      fetch("http://localhost:8081/ordinaryUser/devices",{
+      fetch("http://localhost:8080/ordinaryUser/devices",{
         method:'PUT',
         headers:apiHeaders,
         body: JSON.stringify(formData.value)
