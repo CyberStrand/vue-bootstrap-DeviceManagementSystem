@@ -93,7 +93,7 @@ export default {
         method: 'POST', // Assuming you are making a POST request
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wYW55SWQiOi0xLCJ1c2VyVHlwZSI6Im9yZGluYXJ5IiwiZXhwIjoxNzAyMzc1ODQ2LCJ1c2VySWQiOjIzfQ.yUVX0chXfB4Viwq_ZJ7oaM2rCU1lMmrvlZ6TTbkX6BA' // Replace with your actual JWT token
+          'Authorization': "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify({
 
