@@ -100,7 +100,7 @@ const routes = [
   },
   {
     path: '/order1',
-    name: '订单概况',
+    name: '公司管理员:订单管理',
     component: orderView1
   },
   {
