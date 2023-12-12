@@ -3,20 +3,18 @@
     <el-container>
       <el-main>
         <!--选择栏-->
-        <div style="padding: 10px 0">
-          序列号：<el-input style="width:100px" placeholder="请输入序列号" :style="inputStyle" v-model="serialNumber"></el-input>
-          设备名称：<el-input style="width:100px" placeholder="请输入设备名称" :style="inputStyle" v-model="deviceName"></el-input>
-          设备地址：<el-input style="width:100px" placeholder="请输入设备地址" :style="inputStyle" v-model="locationId"></el-input>
-          运行状态：
-          <el-select placeholder="请选择设备状态" :style="inputStyle"  style="width:150px" v-model="status">
+        <div class="search-bar">
+          <el-input class="search-input" v-model="serialNumber" placeholder="序列号"></el-input>
+          <el-input class="search-input" v-model="deviceName" placeholder="设备名称"></el-input>
+          <el-input class="search-input" v-model="locationId" placeholder="设备地址"></el-input>
+          <el-select class="search-input" v-model="status" placeholder="设备状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
           <el-button type="primary" @click="query">查询</el-button>
         </div>
 
         <!--增加与批量删除-->
-        <div style="padding: 10px 0">
-          <!-- 新增按钮点击后弹出对话框 -->
+        <div class="action-buttons">
           <el-button type="primary" @click="openDialog">新增</el-button>
           <el-button type="danger">批量删除</el-button>
         </div>
@@ -28,7 +26,11 @@
           <el-table-column fixed prop="serialNumber" label="序列号" width="80"/>
           <el-table-column prop="deviceName" label="设备名称" width="100"/>
           <el-table-column prop="productionCompanyId" label="生产公司" width="100"/>
-          <el-table-column prop="status" label="设备状态" width="100"/>
+          <el-table-column prop="status" label="设备状态" width="100">
+          <template v-slot="scope">
+            <span :style="{ color: getStatusColor(scope.row.status) }">{{ getStatusLabel(scope.row.status) }}</span>
+          </template>
+          </el-table-column>
           <el-table-column prop="deviceModel" label="设备类型" width="100"/>
           <el-table-column prop="purchaseDate" label="购买时间" width="100">
             <template v-slot="scope">
@@ -46,8 +48,7 @@
         </el-table>
 
         <!--分页栏-->
-        <div class="demo-pagination-block">
-          <div class="demonstration"></div>
+        <div class="pagination-bar">
           <el-pagination
               v-model="pageNum"
               :page-size="pageSize"
@@ -65,7 +66,6 @@
             v-model="dialogVisible"
             width="30%"
             :before-close="handleClose"
-            @close="resetFormData"
         >
           <el-form :model="formData" ref="formDataRef" label-width="80px">
             <el-form-item label="序列号" prop="serialNumber">
@@ -96,7 +96,6 @@
             v-model="EditDialogVisible"
             width="30%"
             :before-close="handleClose"
-            @close="resetFormData"
         >
           <el-form :model="formData" ref="formDataRef" label-width="80px">
             <el-form-item label="设备名称" prop="deviceName">
@@ -141,7 +140,7 @@ export default {
     const pageNum = ref(1);
     const pageSize = ref(5);
     const status = ref('');
-    const ownerId = ref(12);
+    const ownerId = ref(24);
     const serial_number = ref('');
     const options = ref([
       { value: '0', label: '正常运行中' },
@@ -273,6 +272,20 @@ export default {
             console.error('Error during data submission:', error);
           });
     }
+    const getStatusLabel = (status) => {
+      const statusMap = {
+        '0': '正常运行中',
+        '1': '维修中',
+        '2': '发生错误',
+      };
+      return statusMap[status] || '';
+    };
+
+    const getStatusColor = (status) => {
+      if(status===2)return '#ff7b7b'
+      else if(status===0)return '#5b952a'
+    };
+
     onMounted(() => {
       fetchDevice();
     });
@@ -288,6 +301,8 @@ export default {
       options,
       inputStyle,
       formData,
+      getStatusColor,
+      getStatusLabel,
       updateDevice,
       handleEdit,
       openDialog,
@@ -305,5 +320,37 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.search-bar {
+  padding: 10px 0;
+  align-items: center;
+}
+
+.search-input {
+  width: 100px;
+  margin-right: 10px;
+}
+
+.action-buttons {
+  padding: 10px 0;
+}
+
+.pagination-bar {
+  padding: 10px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.el-table th, .el-table td {
+  text-align: center;
+}
+
+.el-dialog {
+  overflow-y: auto;
+}
+
+/* Custom styles for status */
+.error-status {
+  color: #ff7b7b; /* Light red */
+}
 </style>
