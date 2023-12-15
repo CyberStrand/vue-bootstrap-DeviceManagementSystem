@@ -34,11 +34,11 @@ export default {
   },
   watch: {
     '$route': function(to, from) {
-      this.isLoginPage = to.path === '/login';
+      this.isLoginPage = to.path === '/login'||to.path === '/signup';
     }
   },
   created() {
-    this.isLoginPage = this.$route.path === '/login';
+    this.isLoginPage = this.$route.path === '/login'||this.$route.path === '/signup';
   },
   methods:{
     getlist(list){
