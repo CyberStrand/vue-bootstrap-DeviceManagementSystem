@@ -33,8 +33,8 @@ import API from '@/plugins/axiosInstance.js';
 export default {
     data(){
         return {
-        username: '',
-        password: '',
+        username: 'ziqi',
+        password: '145411',
         remember: false
         }
     },
@@ -43,8 +43,8 @@ export default {
         // 发送请求到后端来获取 token
         API.post("/login", 
             JSON.stringify({
-                "username": "",
-                "password":123
+                "username": this.username,
+                "password":this.password
             }), 
             {
                 headers:{

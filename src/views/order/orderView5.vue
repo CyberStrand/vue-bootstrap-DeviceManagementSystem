@@ -42,7 +42,7 @@ export default {
     methods: {
         fetchOrders() {
             // Make an API request to fetch orders data from backend using fetch
-            fetch('http://localhost:8000/maintanenceOrders', {
+            fetch('http://localhost:8080/maintanenceOrders', {
                 method: 'Post', // Assuming you are making a POST request
                 headers: {
                     'Content-Type': 'application/json',
