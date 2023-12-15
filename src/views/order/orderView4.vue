@@ -66,7 +66,7 @@ export default {
     methods: {
         fetchOrders() {
             // Make an API request to fetch orders data from backend using fetch
-            fetch('http://localhost:8000/pendingOrders', {
+            fetch('http://localhost:8080/pendingOrders', {
                 method: 'Post', // Assuming you are making a POST request
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export default {
         },
         acceptOrder(orderId) {
             // Make an API request to accept order with orderId
-            fetch('http://localhost:8000/acceptOrder', {
+            fetch('http://localhost:8080/acceptOrder', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -89,7 +89,7 @@ export default {
     },
 
     fetchOrders() {
-      fetch('http://localhost:8081/ordinaryUser/devices', {
+      fetch('http://localhost:8080/ordinaryUser/devices', {
         method: 'POST', // Assuming you are making a POST request
         headers: {
           'Content-Type': 'application/json',

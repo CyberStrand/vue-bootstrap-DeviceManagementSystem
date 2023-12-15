@@ -42,8 +42,8 @@ export default {
         // 发送请求到后端来获取 token
         API.post("/login", 
             JSON.stringify({
-                "username": "",
-                "password":123
+                "username": "BingkuiTong",
+                "password": 123
             }), 
             {
                 headers:{
