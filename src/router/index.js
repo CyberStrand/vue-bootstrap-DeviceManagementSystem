@@ -144,11 +144,13 @@ const routes = [
     path: '/login',
     name: 'login',
     component: login
+
   },
   {
     path: '/signup',
     name: 'signup',
     component: signup
+
   }
 ]
 
