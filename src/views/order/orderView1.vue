@@ -43,11 +43,11 @@
             </div>
         </form>
     </AddModal>
-
+    <br>
     <!-- 分页控件 -->
-    <button @click="currentPage--" :disabled="currentPage <= 1">上一页</button>
+    <button @click="currentPage--" class="btn btn-primary my-3" :disabled="currentPage <= 1">上一页</button>
     <span>页码: {{ currentPage }}</span>
-    <button @click="currentPage++" :disabled="currentPage >= pageCount">下一页</button>
+    <button @click="currentPage++" class="btn btn-primary my-3" :disabled="orders.length<pageSize">下一页</button>
 </template>
 
 <script>
@@ -78,7 +78,24 @@ export default {
         }
     },
     created(){
-        API.get("/company/orders", {
+        this.getOrders()
+    },
+    watch: {
+        Change(){
+            this.getOrders()
+        },
+        currentPage() {
+            this.getOrders()
+        },
+    },
+    methods: {
+        formatDate(date) {
+                // You can format the date as needed here
+                return new Date(date).toLocaleDateString();
+        },
+
+        async getOrders() {
+        await API.get("/company/orders", {
             params: {
                 pageNum: this.currentPage,
                 pageSize: this.pageSize
@@ -87,33 +104,15 @@ export default {
                 'Authorization': "Bearer " + localStorage.getItem("token")
             }
         }).then((response) => {
-            console.log(response.data.data)
-            this.orders = response.data.data.list
+            console.log(response.data.data);
+            this.orders = response.data.data.list;
+        }).catch((error) => {
+            console.log(error);
         })
-
-        // 设置侦听器，当orders改变的时候自动刷新
-        this.$watch('Change', () => {
-            API.get("/company/orders", {
-                params: {
-                    pageNum: this.currentPage,
-                    pageSize: this.pageSize
-                },
-                headers: {
-                    'Authorization': "Bearer " + localStorage.getItem("token")
-                }
-            }).then((response) => {
-                console.log(response.data.data)
-                this.orders = response.data.data.list
-            })
-        })
-    },
-    methods: {
-        formatDate(date) {
-                // You can format the date as needed here
-                return new Date(date).toLocaleDateString();
         },
-        Distribute(){
-            API.post("/company/orders/distribute",
+
+        async Distribute(){
+            await API.post("/company/orders/distribute",
             JSON.stringify({"userId":this.userID,"orderId":this.orderID}),
             {
                 headers:{
