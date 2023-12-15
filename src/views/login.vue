@@ -19,7 +19,8 @@
                 Remember me
             </label>
             </div>
-            <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+            <button class="btn btn-primary w-100 py-2 my-2" type="submit">Sign in</button>
+            <router-link class="btn btn-secondary w-100 py-2" :to="{name:'signup'}">Register</router-link>
             <p class="mt-5 mb-3 text-body-secondary">© 2017–2023</p>
         </form>
     </main>
@@ -40,9 +41,10 @@ export default {
     methods:{
         async submitForm() {
         // 发送请求到后端来获取 token
-        API.post("/login",
+
+        API.post("/login", 
             JSON.stringify({
-                "username": "BingkuiTong",
+                "username": "",
                 "password":123
             }), 
             {

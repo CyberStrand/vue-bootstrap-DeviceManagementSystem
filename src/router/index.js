@@ -20,7 +20,7 @@ import OrdinaryUser from "@/views/OrdinaryUser/OrdinaryUser.vue";
 import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
 import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
 import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
-
+import signup from "@/views/signup.vue";
 
 
 const routes = [
@@ -100,7 +100,7 @@ const routes = [
   },
   {
     path: '/order1',
-    name: '订单概况',
+    name: '公司管理员:订单管理',
     component: orderView1
   },
   {
@@ -132,6 +132,13 @@ const routes = [
     path:'/login',
     name:'login',
     component: login
+
+  },
+  {
+    path:'/signup',
+    name:'signup',
+    component: signup
+
   }
 ]
 
