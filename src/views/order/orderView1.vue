@@ -61,31 +61,33 @@ export default {
         }
     },
     created(){
-        API.post("/company/orders",
-            JSON.stringify({"pageNum":1,"pageSize":10}),
-        {
-            headers:{
-                'Content-Type': 'application/json',
-                'Authorization': "Bearer "+localStorage.getItem("token")
+        API.get("/company/orders", {
+            params: {
+                pageNum: 1,
+                pageSize: 10
+            },
+            headers: {
+                'Authorization': "Bearer " + localStorage.getItem("token")
             }
-        }).then((response)=>{
+        }).then((response) => {
             console.log(response.data.data)
-            this.orders=response.data.data.list
+            this.orders = response.data.data.list
         })
 
-        //设置侦听器，当orders改变的时候自动刷新
-        this.$watch('Change',()=> {
-                API.post("/company/orders",
-                    JSON.stringify({"pageNum":1,"pageSize":10}),
-                {
-                    headers:{
-                        'Content-Type': 'application/json',
-                        'Authorization': "Bearer "+localStorage.getItem("token")
-                    }
-                }).then((response)=>{
-                    console.log(response.data.data)
-                    this.orders=response.data.data.list
-                })
+        // 设置侦听器，当orders改变的时候自动刷新
+        this.$watch('Change', () => {
+            API.get("/company/orders", {
+                params: {
+                    pageNum: 1,
+                    pageSize: 10
+                },
+                headers: {
+                    'Authorization': "Bearer " + localStorage.getItem("token")
+                }
+            }).then((response) => {
+                console.log(response.data.data)
+                this.orders = response.data.data.list
+            })
         })
     },
     methods: {
