@@ -19,6 +19,7 @@ import login from '../views/login.vue'
 import Admin from "../views/Admin/Admin.vue"
 import AdminCompany from "../views/Admin/AdminCompany.vue"
 import AdminDevice from "../views/Admin/AdminDevice.vue"
+import AdminPersonnel from "../views/Admin/AdminPersonnel.vue"
 import OrdinaryUser from "@/views/OrdinaryUser/OrdinaryUser.vue";
 import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
 import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
@@ -45,6 +46,11 @@ const routes = [
     path: "/admin/device",
     name: '平台管理员：设备管理',
     component: AdminDevice
+  },
+  {
+    path: "/admin/personnel",
+    name: '平台管理员：人员管理',
+    component: AdminPersonnel
   },
   {
     path: '/home',
