@@ -336,7 +336,7 @@ export default {
 .pagination-bar {
   padding: 10px 0;
   display: flex;
-git comgi  justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .el-table th, .el-table td {
