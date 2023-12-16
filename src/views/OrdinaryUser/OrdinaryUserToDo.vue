@@ -9,7 +9,9 @@
           <el-button style="float:left" type="warning" @click="openDialog"><el-icon><CirclePlus /></el-icon>&nbsp;新增</el-button>
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印</el-button>
           <el-button style="float:left" type="info" @click="printBox"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <el-button style="float:left" type="info" @click="printBox"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
+          <el-button style="float:left" type="info" @click="printBox"><el-icon><SortUp /></el-icon>&nbsp;排序</el-button>
+          <el-button style="float:left" type="info" @click="printBox"><el-icon><SortDown /></el-icon>&nbsp;排序</el-button>
           <el-button style="float:right" type="primary" @click="query"><el-icon><Search /></el-icon>&nbsp;查询</el-button>
           <el-select style="float:right" class="search-input" v-model="todoStatus" placeholder="状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -133,7 +135,10 @@ export default {
     };//修改页码
     const fetchDevice = () => {
       console.log("开始获取数据")
-      console.log(apiHeaders)
+      console.log(pageNum.value)
+      console.log("开始获取数据")
+      console.log(pageSize.value)
+      console.log("开始获取数据")
       fetch('http://localhost:8080/ordinaryUser/todos', {
         method: 'POST',
         headers: apiHeaders,
