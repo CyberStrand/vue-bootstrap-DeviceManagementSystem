@@ -48,8 +48,8 @@ export default {
   mounted(){
     API.post("/login", 
         JSON.stringify({
-            "username": "BingkuiTong",
-            "password":123
+            "username": "yangyutong",
+            "password":12345678
         }), 
         {
             headers:{

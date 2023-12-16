@@ -170,6 +170,8 @@ export default {
       fetchDevice();
     };//修改页码
     const fetchDevice = () => {
+      console.log("开始获取数据")
+      console.log(apiHeaders)
       fetch('http://localhost:8080/ordinaryUser/devices', {
         method: 'POST',
         headers: apiHeaders,

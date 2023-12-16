@@ -16,11 +16,13 @@ import orderView4 from'../views/order/orderView4.vue'
 import orderView5 from '@/views/order/orderView5.vue'
 import person from '../views/person.vue'
 import login from '../views/login.vue'
-import OrdinaryUser from "@/views/OrdinaryUser/OrdinaryUser.vue";
-import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
-import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
-import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
+import OrdinaryUser from "../views/OrdinaryUser/OrdinaryUser.vue";
+import OrdinaryUserDevices from "../views/OrdinaryUser/OrdinaryUserDevices.vue";
+import OrdinaryUserMessages from "../views/OrdinaryUser/OrdinaryUserMessages.vue";
+import OrdinaryUserOrder from "../views/OrdinaryUser/OrdinaryUserOrders.vue";
+import OrdinaryUserToDo from "../views/OrdinaryUser/OrdinaryUserToDo.vue";
 import signup from "@/views/signup.vue";
+
 
 
 const routes = [
@@ -52,6 +54,11 @@ const routes = [
     path:'/OrdinaryUserOrder',
     name:'普通用户:我的订单',
     component: OrdinaryUserOrder,
+  },
+  {
+    path:'/OrdinaryUserToDo',
+    name:'普通用户:ToDo',
+    component:OrdinaryUserToDo ,
   },
   {
     path: '/device',

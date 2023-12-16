@@ -69,8 +69,7 @@
           <el-form-item>
             <el-button type="primary" @click="updateMessage">修改</el-button>
           </el-form-item>
-        </el-form>
-        </el-dialog>
+        </el-form>        </el-dialog>
 
       </el-main>
     </el-container>
@@ -81,8 +80,7 @@
 import {ref, onMounted, toRaw} from 'vue';
 const apiHeaders = {
   'Content-Type': 'application/json',
-  'Accept': 'application/json',
-  'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb21wYW55SWQiOi0xLCJ1c2VyVHlwZSI6Im9yZGluYXJ5IiwiZXhwIjoxNzAyMzkzMjQ0LCJ1c2VySWQiOjI0fQ.PF_vGNZJ4FyWYyseFUTAYFeJ5jy7b1bkSTUvsM0hm4g'
+  'Authorization': "Bearer "+localStorage.getItem("token") // Replace with your actual JWT token
 };
 export default {
   name: 'OrdinaryUserDevices',
