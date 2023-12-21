@@ -139,13 +139,9 @@ export default {
       console.log("开始获取数据")
       console.log(pageSize.value)
       console.log("开始获取数据")
-      fetch('http://localhost:8080/ordinaryUser/todos', {
+      fetch(`http://localhost:8080/ordinaryUser/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
-        body: JSON.stringify({
-          "pageNum": pageNum.value,
-          "pageSize": pageSize.value,
-        })
       })
           .then(res => res.json())
           .then(res => {

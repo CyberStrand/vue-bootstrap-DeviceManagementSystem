@@ -1,26 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import device from '../views/device/device.vue'
-import deviceView1 from'../views/device/deviceView1.vue'
-import deviceView2 from'../views/device/deviceView2.vue'
-import deviceView3 from'../views/device/deviceView3.vue'
+import deviceView1 from '../views/device/deviceView1.vue'
+import deviceView2 from '../views/device/deviceView2.vue'
+import deviceView3 from '../views/device/deviceView3.vue'
 import staff from '../views/staff/staff.vue'
-import staffView1 from'../views/staff/staffView1.vue'
-import staffView2 from'../views/staff/staffView2.vue'
-import staffView3 from'../views/staff/staffView3.vue'
+import staffView1 from '../views/staff/staffView1.vue'
+import staffView2 from '../views/staff/staffView2.vue'
+import staffView3 from '../views/staff/staffView3.vue'
 import order from '../views/order/order.vue'
-import orderView1 from'../views/order/orderView1.vue'
-import orderView2 from'../views/order/orderView2.vue'
-import orderView3 from'../views/order/orderView3.vue'
-import orderView4 from'../views/order/orderView4.vue'
+import orderView1 from '../views/order/orderView1.vue'
+import orderView2 from '../views/order/orderView2.vue'
+import orderView3 from '../views/order/orderView3.vue'
+import orderView4 from '../views/order/orderView4.vue'
 import orderView5 from '@/views/order/orderView5.vue'
 import person from '../views/person.vue'
 import login from '../views/login.vue'
-import OrdinaryUser from "../views/OrdinaryUser/OrdinaryUser.vue";
-import OrdinaryUserDevices from "../views/OrdinaryUser/OrdinaryUserDevices.vue";
-import OrdinaryUserMessages from "../views/OrdinaryUser/OrdinaryUserMessages.vue";
-import OrdinaryUserOrder from "../views/OrdinaryUser/OrdinaryUserOrders.vue";
 import OrdinaryUserToDo from "../views/OrdinaryUser/OrdinaryUserToDo.vue";
+import Admin from "../views/Admin/Admin.vue"
+import AdminCompany from "../views/Admin/AdminCompany.vue"
+import AdminDevice from "../views/Admin/AdminDevice.vue"
+import AdminPersonnel from "../views/Admin/AdminPersonnel.vue"
+import AdminOrder from "../views/Admin/AdminOrder.vue"
+import OrdinaryUser from "@/views/OrdinaryUser/OrdinaryUser.vue";
+import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
+import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
+import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
 import signup from "@/views/signup.vue";
 
 
@@ -31,28 +36,53 @@ const routes = [
     redirect: "/login"
   },
   {
+    path: '/admin',
+    name: 'admin',
+    component: Admin
+  },
+  {
+    path: "/admin/company",
+    name: '平台管理员：公司管理',
+    component: AdminCompany
+  },
+  {
+    path: "/admin/device",
+    name: '平台管理员：设备管理',
+    component: AdminDevice
+  },
+  {
+    path: "/admin/personnel",
+    name: '平台管理员：人员管理',
+    component: AdminPersonnel
+  },
+  {
+    path: "/admin/order",
+    name: '平台管理员：订单管理',
+    component: AdminOrder
+  },
+  {
     path: '/home',
     name: 'home',
     component: HomeView
   },
   {
-    path:'/OrdinaryUser',
-    name:'普通用户',
+    path: '/OrdinaryUser',
+    name: '普通用户',
     component: OrdinaryUser
   },
   {
-    path:'/OrdinaryUserDevices',
-    name:'普通用户:我的设备',
+    path: '/OrdinaryUserDevices',
+    name: '普通用户:我的设备',
     component: OrdinaryUserDevices
   },
   {
-    path:'/OrdinaryUserMessages',
-    name:'普通用户:我的消息',
+    path: '/OrdinaryUserMessages',
+    name: '普通用户:我的消息',
     component: OrdinaryUserMessages,
   },
   {
-    path:'/OrdinaryUserOrder',
-    name:'普通用户:我的订单',
+    path: '/OrdinaryUserOrder',
+    name: '普通用户:我的订单',
     component: OrdinaryUserOrder,
   },
   {
@@ -136,14 +166,14 @@ const routes = [
     component: person
   },
   {
-    path:'/login',
-    name:'login',
+    path: '/login',
+    name: 'login',
     component: login
 
   },
   {
-    path:'/signup',
-    name:'signup',
+    path: '/signup',
+    name: 'signup',
     component: signup
 
   }
