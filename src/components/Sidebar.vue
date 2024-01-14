@@ -3,7 +3,7 @@
     <ul class="nav nav-pills flex-column mb-auto fw-bold">
       <br>
       <li v-for="(string,index) in stringList" :key="index" class="nav-item m-1">
-          <router-link class="nav-link text-white" :to="{name: string}">
+          <router-link class="nav-link text-white" :to="{name:string}">
             <a>{{ string }}</a>
             <hr>
           </router-link>
