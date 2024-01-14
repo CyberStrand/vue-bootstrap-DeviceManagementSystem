@@ -69,6 +69,7 @@
 import API from '@/plugins/axiosInstance'
 import AddModal from '@/components/AddModal.vue'
 
+
 export default {
     data(){
         return{

@@ -41,6 +41,7 @@ export default {
     methods:{
         async submitForm() {
         // 发送请求到后端来获取 token
+
         API.post("/login", 
             JSON.stringify({
                 "username": this.username,
@@ -52,11 +53,13 @@ export default {
                 }
             }
         ).then((response)=>{
+          console.log("登录成功")
         localStorage.setItem("token",response.data.data);
         console.log(response.data.data)
         })
         // 检查是否获取到了有效的 token
         if (localStorage.getItem('token')) {
+          console.log(localStorage.getItem('token'))
             // 如果获取到了有效的 token，导航到 "home" 页面
             this.$router.push({ name: 'home' })
             }
