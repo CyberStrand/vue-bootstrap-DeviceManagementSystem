@@ -44,8 +44,8 @@ export default {
 
         API.post("/login", 
             JSON.stringify({
-                "username": "yangyutong",
-                "password": "12345678"
+                "username": "BingkuiTong",
+                "password": "123"
             }), 
             {
                 headers:{
