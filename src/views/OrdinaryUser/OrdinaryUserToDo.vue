@@ -101,7 +101,8 @@
                    :before-close="handleClose">
         &nbsp; <div id="chart" style="height: 300px;"></div>
         </el-dialog>
-
+        【已实现】：增、删、查、改、导、印、统、序
+        【待修改】序：倒序查看时，如果修改了页码，页面会自动刷新，刷新会导致又变成正序，待修改
 
       </el-main>
     </el-container>
