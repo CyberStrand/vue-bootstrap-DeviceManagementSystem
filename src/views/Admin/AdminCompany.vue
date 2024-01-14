@@ -4,7 +4,7 @@
       <el-main>
         <!--选择栏-->
         <div class="search-bar">
-          <el-input class="search-input" v-model="company_name" placeholder="公司名称"></el-input>
+          <el-input  @input="change($event)" class="search-input" v-model="company_name" placeholder="公司名称"></el-input>
           <!-- <el-input class="search-input" v-model="locationId" placeholder="公司地址"></el-input> -->
           <!-- <el-select class="search-input" v-model="status" placeholder="公司状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -144,8 +144,6 @@ export default {
       fetchCompany();
     };//修改页码
     const fetchCompany = () => {
-      console.log(pageSize.value)
-      console.log(pageNum.value)
       fetch(`http://localhost:8080/admin/companies?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders

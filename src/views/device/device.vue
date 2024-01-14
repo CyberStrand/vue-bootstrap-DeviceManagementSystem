@@ -7,7 +7,7 @@
 export default {
   data(){
     return{
-      list:['设备概况','设备详情','我的设备']
+      list:['公司管理员:设备管理','设备详情','我的设备']
     }
   },
   mounted(){

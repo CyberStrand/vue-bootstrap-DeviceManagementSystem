@@ -28,7 +28,7 @@ export default {
   },
   data(){
     return{
-      stringList:Array,
+      stringList:JSON.parse(localStorage.getItem("stringList"))||[],
       isLoginPage: true,
     }
   },
@@ -42,25 +42,10 @@ export default {
   },
   methods:{
     getlist(list){
-      this.stringList=list
+      this.stringList=list;
+      localStorage.setItem("stringList",JSON.stringify(list));
     }
   },
-  mounted(){
-    API.post("/login", 
-        JSON.stringify({
-            "username": "yangyutong",
-            "password":12345678
-        }), 
-        {
-            headers:{
-                'Content-Type': 'application/json',
-            }
-        }
-    ).then((response)=>{
-      localStorage.setItem("token",response.data.data);
-      console.log(response.data.data)
-    })
-  }
 }
 </script>
 
