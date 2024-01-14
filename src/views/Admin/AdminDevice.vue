@@ -4,14 +4,14 @@
             <el-main>
                 <!--选择栏-->
                 <div class="search-bar">
-                    <el-input class="search-input" v-model="serialNumber" placeholder="序列号"></el-input>
-                    <el-input class="search-input" v-model="deviceName" placeholder="设备名称"></el-input>
-                    <el-input class="search-input" v-model="locationId" placeholder="设备地址"></el-input>
-                    <el-select class="search-input" v-model="status" placeholder="设备状态">
+                    <el-input class="search-input" v-model="serialNumber4search" placeholder="序列号"></el-input>
+                    <el-input class="search-input" v-model="deviceName4search" placeholder="设备名称"></el-input>
+                    <el-input class="search-input" v-model="locationId4search" placeholder="设备地址"></el-input>
+                    <el-select class="search-input" v-model="status4search" placeholder="设备状态">
                         <el-option v-for="item in options" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
-                    <el-button type="primary" @click="query">查询</el-button>
+                    <el-button type="primary" @click="fetchDevice">查询</el-button>
                 </div>
 
                 <!--增加与批量删除-->
@@ -126,7 +126,12 @@ export default {
         const status = ref('');
         const ownerId = ref(24);
         const serial_number = ref('');
+        const serialNumber4search = ref(null)
+        const deviceName4search = ref(null)
+        const locationId4search = ref(null)
+        const status4search = ref(null)
         const options = ref([
+            { value: '', label: '默认' },
             { value: '0', label: '正常运行中' },
             { value: '1', label: '维修中' },
             { value: '2', label: '发生错误' },
@@ -141,11 +146,11 @@ export default {
         const formData = ref({
             serialNumber: '',
             deviceName: '',
-            locationId: null,
+            locationId: '',
             ownerId: 12,
-            status: null,
+            status: '',
             deviceModel: '',
-            productionCompanyId: null,
+            productionCompanyId: '',
             purchaseDate: '',
             warrantyTime: 365,
         });
@@ -162,8 +167,6 @@ export default {
             fetchDevice();
         };//修改页码
         const fetchDevice = () => {
-            console.log(pageSize.value)
-            console.log(pageNum.value)
             fetch(`http://localhost:8080/admin/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders,
@@ -176,29 +179,39 @@ export default {
                 .then(res => {
                     tableData.value = res.data.list;
                     total.value = res.data.total;
+                    console.log(tableData.value)
+                    if (serialNumber4search.value) {
+                        tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumber4search.value));
+                        console.log('查询后结果：')
+                        console.log(tableData.value)
+                    }
+                    if (deviceName4search.value) {
+                        tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceName4search.value));
+                        console.log('查询后结果：')
+                        console.log(tableData.value)
+                    }
+                    if (locationId4search.value) {
+                        const locationIdSearch = parseInt(locationId4search.value, 10);
+                        tableData.value = tableData.value.filter(device => device.locationId === locationIdSearch);
+                        console.log('查询后结果：');
+                        console.log(tableData.value);
+                    }
+                    if (status4search.value) {
+                        const searchStatus = parseInt(status4search.value, 10);
+                        tableData.value = tableData.value.filter(device => device.status === searchStatus);
+                        console.log('查询后结果：');
+                        console.log(tableData.value);
+                    }
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
                 });
         };//获取设备信息（查）
         const query = () => {
-            fetch(`http://localhost:8080/admin/device_by_status?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
-                method: 'POST',
-                headers: apiHeaders,
-                body: JSON.stringify({
-                    "status": status.value,
-                    "pageNum": pageNum.value,
-                    "pageSize": pageSize.value,
-                })
-            })
-                .then(res => res.json())
-                .then(res => {
-                    tableData.value = res.data.list;
-                    total.value = res.data.total;
-                })
-                .catch(error => {
-                    console.error('获取数据失败:', error);
-                });
+            console.log(typeof serialNumber4search.value)
+            console.log(typeof deviceName4search.value)
+            console.log(typeof locationId4search.value)
+            console.log(typeof status4search.value)
         };//根据设备状态查询设备信息（查）
         const handleDelete = (serialNumber) => {
             console.log(serialNumber)
@@ -298,6 +311,11 @@ export default {
             models,
             inputStyle,
             formData,
+            serialNumber4search,
+            deviceName4search,
+            locationId4search,
+            status4search,
+            EditDialogVisible,
             getStatusColor,
             getStatusLabel,
             updateDevice,
@@ -311,7 +329,6 @@ export default {
             handleClose,
             formatDate,
             saveData,
-            EditDialogVisible,
         };
     },
 };
