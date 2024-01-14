@@ -6,11 +6,11 @@
                 <div style="padding: 10px 0">
                     订单号：<el-input style="width:100px" placeholder="请输入订单号" :style="inputStyle" v-model="orderId"></el-input>
                     订单状态：
-                    <el-select placeholder="请选择订单状态" :style="inputStyle" style="width:200px" v-model="orderStatus">
+                    <el-select placeholder="请选择订单状态" :style="inputStyle" v-model="orderStatus">
                         <el-option v-for="item in options" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
-                    <el-button type="primary" @click="query">查询</el-button>
+                    <el-button type="primary" @click="fetchOrder">查询</el-button>
                     <el-button type="primary" @click="openDialog">新增</el-button>
                 </div>
                 <!--数据表-->
@@ -150,11 +150,12 @@ export default {
         const total = ref(0);
         const pageNum = ref(1);
         const pageSize = ref(5);
-        const orderStatus = ref('');
+        const orderStatus = ref(null);
         const ownerId = ref(24);
         const orderId = ref(null);
         const orderDetail = ref('');
         const options = ref([
+            { value: '', label: '默认'},
             { value: 'accepted', label: '已接单' },
             { value: 'pending', label: '待接单' },
             { value: 'completed', label: '已结束、待评价' },
@@ -210,30 +211,23 @@ export default {
                 .then(res => {
                     tableData.value = res.data.list;
                     total.value = res.data.total;
+                    console.log(tableData.value)
+                    if (orderId.value) {
+                        const orderIdSearch = parseInt(orderId.value, 10);
+                        tableData.value = tableData.value.filter(order => order.orderId === orderIdSearch);
+                        console.log('查询后结果：')
+                        console.log(tableData.value)
+                    };
+                    if (orderStatus.value) {
+                        tableData.value = tableData.value.filter(order => order.orderStatus === orderStatus.value);
+                        console.log('查询后结果：')
+                        console.log(tableData.value)
+                    };
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
                 });
-        };//获取设备信息（查）
-        const query = () => {
-            fetch(`http://localhost:8080/ordinaryUser/orderSelect`, {
-                method: 'POST',
-                headers: apiHeaders,
-                body: JSON.stringify({
-                    "orderStatus": orderStatus.value,
-                    "pageNum": pageNum.value,
-                    "pageSize": pageSize.value,
-                })
-            })
-                .then(res => res.json())
-                .then(res => {
-                    tableData.value = res.data.list;
-                    total.value = res.data.total;
-                })
-                .catch(error => {
-                    console.error('获取数据失败:', error);
-                });
-        };//根据设备状态查询设备信息（查）
+        };
         const handleDelete = (orderId) => {
             fetch(`http://localhost:8080/admin/order`, {
                 method: 'DELETE',
@@ -315,6 +309,8 @@ export default {
             inputStyle,
             formData,
             orderStatus,
+            orderId,
+            EditDialogVisible,
             updateOrder,
             handleEdit,
             openDialog,
@@ -322,11 +318,9 @@ export default {
             handleSizeChange,
             handleCurrentChange,
             handleDelete,
-            query,
             handleClose,
             formatDate,
             saveData,
-            EditDialogVisible,
         };
     },
 };

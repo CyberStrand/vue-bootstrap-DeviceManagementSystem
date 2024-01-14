@@ -4,8 +4,9 @@
       <el-main>
         <!--选择栏-->
         <div class="search-bar">
-          <el-input class="search-input" v-model="companyName" placeholder="公司名称"></el-input>
-          <el-button type="primary" @click="query">查询</el-button>
+          <el-input type="text" class="search-input" v-model="company_name" :style="inputStyle"
+            placeholder="公司名称"></el-input>
+          <el-button type="primary" @click="fetchCompany">查询</el-button>
         </div>
 
         <!--增加与批量删除-->
@@ -74,9 +75,6 @@ const apiHeaders = {
 export default {
   name: 'AdminCompany',
   setup() {
-    const inputChange = () => {
-      this.$forceUpdate();  //强制刷新
-    };
     const dialogVisible = ref(false);
     const tableData = ref([]);
     const total = ref(0);
@@ -85,7 +83,7 @@ export default {
     const status = ref('');
     const ownerId = ref(24);
     const company_id = ref('');
-    const company_name = ref('')
+    const company_name = ref(null);
     const options = ref([
       { value: '0', label: '正常运行中' },
       { value: '1', label: '维修中' },
@@ -109,6 +107,15 @@ export default {
       pageNum.value = pagenum;
       fetchCompany();
     };//修改页码
+    // const filterCompany = () => {
+    //   fetchCompany()
+    //   console.log(company_name.value)
+    //   if (company_name.value) {
+    //     tableData.value = tableData.value.filter(company => company.companyName.includes(company_name.value));
+    //     console.log('查询后结果：')
+    //     console.log(tableData.value)
+    //   }
+    // }
     const fetchCompany = () => {
       fetch(`http://localhost:8080/admin/companies?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
@@ -118,30 +125,17 @@ export default {
         .then(res => {
           tableData.value = res.data.list;
           total.value = res.data.total;
-          console.log(tableData, total)
+          console.log(tableData.value)
+          if (company_name.value) {
+            tableData.value = tableData.value.filter(company => company.companyName.includes(company_name.value));
+            console.log('查询后结果：')
+            console.log(tableData.value)
+          }
         })
         .catch(error => {
           console.error('获取数据失败:', error);
         });
     };//获取公司信息（查）
-    const query = () => {
-      console.log(company_name.value)
-      fetch(`http://localhost:8080/admin/select_company`, {
-        method: 'POST',
-        headers: apiHeaders,
-        body: JSON.stringify({
-          "companyName": company_name.value,
-        })
-      })
-        .then(res => res.json())
-        .then(res => {
-          tableData.value = res.data.list;
-          total.value = res.data.total;
-        })
-        .catch(error => {
-          console.error('获取数据失败:', error);
-        });
-    };//根据公司状态查询公司信息（查）
     const handleDelete = (companyId) => {
       fetch(`http://localhost:8080/admin/company`, {
         method: 'DELETE',
@@ -235,12 +229,15 @@ export default {
       tableData,
       total,
       pageNum,
+      company_name,
       pageSize,
       status,
       ownerId,
       options,
       inputStyle,
       formData,
+      EditDialogVisible,
+      // filterCompany,
       getStatusColor,
       getStatusLabel,
       updateCompany,
@@ -250,12 +247,9 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       handleDelete,
-      query,
       handleClose,
       formatDate,
       saveData,
-      inputChange,
-      EditDialogVisible,
     };
   },
 };
