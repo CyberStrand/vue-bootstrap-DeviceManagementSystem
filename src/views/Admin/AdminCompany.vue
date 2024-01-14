@@ -1,14 +1,10 @@
-<template>
+<template slot-scope="scope">
   <el-container style="min-height: 100vh">
     <el-container>
       <el-main>
         <!--选择栏-->
         <div class="search-bar">
-          <el-input  @input="change($event)" class="search-input" v-model="company_name" placeholder="公司名称"></el-input>
-          <!-- <el-input class="search-input" v-model="locationId" placeholder="公司地址"></el-input> -->
-          <!-- <el-select class="search-input" v-model="status" placeholder="公司状态">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-          </el-select> -->
+          <el-input class="search-input" v-model="companyName" placeholder="公司名称"></el-input>
           <el-button type="primary" @click="query">查询</el-button>
         </div>
 
@@ -21,20 +17,6 @@
         <el-table :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }" style="width: 100%">
           <el-table-column fixed prop="companyId" label="公司ID" width="80" />
           <el-table-column prop="companyName" label="公司名称" width="100" />
-          <!-- <el-table-column prop="productionCompanyId" label="生产公司" width="100" />
-          <el-table-column prop="status" label="公司状态" width="100">
-            <template v-slot="scope">
-              <span :style="{ color: getStatusColor(scope.row.status) }">{{ getStatusLabel(scope.row.status) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="deviceModel" label="公司类型" width="100" />
-          <el-table-column prop="purchaseDate" label="购买时间" width="100">
-            <template v-slot="scope">
-              {{ formatDate(scope.row.purchaseDate) }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="warrantyTime" label="保修期" width="100" />
-          <el-table-column prop="locationId" label="公司地址" width="100" /> -->
           <el-table-column fixed="right" label="操作">
             <template v-slot="scope">
               <el-button size="mini" type="primary" @click="handleEdit(scope.row.companyId)">编辑</el-button>
@@ -59,11 +41,6 @@
             <el-form-item label="公司名称" prop="companyName">
               <el-input v-model="formData.companyName"></el-input>
             </el-form-item>
-            <!-- <el-form-item label="运行状态" prop="status">
-              <el-select v-model="formData.status">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
-            </el-form-item> -->
             <el-form-item>
               <el-button type="primary" @click="saveData">保存</el-button>
             </el-form-item>
@@ -76,14 +53,6 @@
             <el-form-item label="公司名称" prop="companyName">
               <el-input v-model="formData.companyName"></el-input>
             </el-form-item>
-            <!-- <el-form-item label="公司ID" prop="companyID">
-              <el-input v-model="formData.companyId"></el-input>
-            </el-form-item> -->
-            <!-- <el-form-item label="运行状态" prop="status">
-              <el-select v-model="formData.status">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-              </el-select>
-            </el-form-item> -->
             <el-form-item>
               <el-button type="primary" @click="updateCompany">修改</el-button>
             </el-form-item>
@@ -105,6 +74,9 @@ const apiHeaders = {
 export default {
   name: 'AdminCompany',
   setup() {
+    const inputChange = () => {
+      this.$forceUpdate();  //强制刷新
+    };
     const dialogVisible = ref(false);
     const tableData = ref([]);
     const total = ref(0);
@@ -124,12 +96,6 @@ export default {
     const formData = ref({
       companyId: '',
       companyName: '',
-      // locationId: null,
-      // ownerId: 12,
-      // status: null,
-      // deviceModel: '',
-      // purchaseDate: '',
-      // warrantyTime: 365,
     });
     const formatDate = (dateString) => {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -245,7 +211,7 @@ export default {
         .catch(error => {
           console.error('Error during data submission:', error);
         });
-    }
+    };
     const getStatusLabel = (status) => {
       const statusMap = {
         '0': '正常运行中',
@@ -288,6 +254,7 @@ export default {
       handleClose,
       formatDate,
       saveData,
+      inputChange,
       EditDialogVisible,
     };
   },
