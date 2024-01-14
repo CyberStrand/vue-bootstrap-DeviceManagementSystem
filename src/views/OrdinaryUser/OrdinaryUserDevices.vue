@@ -6,27 +6,28 @@
         <div class="search-bar">
           <el-input class="search-input" v-model="serialNumber" placeholder="序列号"></el-input>
           <el-input class="search-input" v-model="deviceName" placeholder="设备名称"></el-input>
-          <el-input class="search-input" v-model="locationId" placeholder="设备地址"></el-input>
           <el-select class="search-input" v-model="status" placeholder="设备状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
           <el-button type="primary" @click="query">查询</el-button>
         </div>
 
-        <!--增加与批量删除-->
         <div class="action-buttons">
           <el-button type="primary" @click="openDialog">新增</el-button>
-          <el-button type="danger">批量删除</el-button>
+          <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印当前页</el-button>
+          <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
+          <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
+          <el-button type="danger">查看设备地址</el-button>
         </div>
 
         <!--数据表-->
+        <div id = "1">
         <el-table :data="tableData"
-                  :default-sort="{ prop: 'purchaseDate', order: 'descending' }"
                   style="width: 100%">
-          <el-table-column fixed prop="serialNumber" label="序列号" width="80"/>
+          <el-table-column fixed prop="serialNumber" label="序列号"  width="100" sortable/>
           <el-table-column prop="deviceName" label="设备名称" width="100"/>
           <el-table-column prop="productionCompanyId" label="生产公司" width="100"/>
-          <el-table-column prop="status" label="设备状态" width="100">
+          <el-table-column prop="status" label="设备状态" width="120" sortable>
           <template v-slot="scope">
             <span :style="{ color: getStatusColor(scope.row.status) }">{{ getStatusLabel(scope.row.status) }}</span>
           </template>
@@ -38,14 +39,14 @@
             </template>
           </el-table-column>
           <el-table-column prop="warrantyTime" label="保修期" width="100"/>
-          <el-table-column prop="locationId" label="设备地址" width="100"/>
           <el-table-column fixed="right" label="操作">
             <template v-slot="scope">
-              <el-button size="mini" type="primary" @click="handleEdit(scope.row.serialNumber)">编辑</el-button>
-              <el-button size="mini" type="danger" @click="handleDelete(scope.row.serialNumber)">删除</el-button>
+              <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row.serialNumber)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
+        </div>
 
         <!--分页栏-->
         <div class="pagination-bar">
@@ -89,10 +90,7 @@
             </el-form-item>
           </el-form>
         </el-dialog>
-
-        <!--编辑设备对话框-->
-        <el-dialog
-            title="编辑设备"
+        <el-dialog title="编辑设备信息"
             v-model="EditDialogVisible"
             width="30%"
             :before-close="handleClose"
@@ -116,6 +114,33 @@
             </el-form-item>
           </el-form>
         </el-dialog>
+        <el-dialog title="导出设备信息"
+                   v-model="exportDialogVisible"
+                   width="30%"
+                   :before-close="handleClose">
+          <el-switch
+              v-model="exportAll"
+              class="ml-2"
+              inline-prompt
+              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+              active-text="导出所有"
+              inactive-text="导出当前"
+          />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <el-button type="primary" @click="exportTodoList"> &nbsp;导出</el-button>
+        </el-dialog>
+        <el-dialog title="统计设备状态"
+                   v-model="statisticDialogVisible"
+                   width="50%"
+                   :before-close="handleClose">
+          &nbsp; <div id="chart" style="height: 300px;"></div>
+        </el-dialog>
+
+
+        <div style="text-align: left;">
+          【已实现】：删、改、导、印、统<br>
+          【待实现】：增、查、序<br>
+          【待修改】：更新设备状态后，设备购买时间莫名其妙会少一天
+        </div>
 
       </el-main>
     </el-container>
@@ -124,13 +149,18 @@
 
 <script>
 import {ref, onMounted, toRaw} from 'vue';
+import print from "print-js";
+import {export_json_to_excel} from "@/vendor/Export2Excel";
+import * as echarts from "echarts";
+import {PieChart, Printer, Promotion} from "@element-plus/icons-vue";
 
 const apiHeaders = {
   'Content-Type': 'application/json',
-  'Authorization': "Bearer "+localStorage.getItem("token") // Replace with your actual JWT token
+  'Authorization': "Bearer "+localStorage.getItem("token")
 };
 export default {
   name: 'OrdinaryUserDevices',
+  components: {Promotion, Printer, PieChart},
   setup() {
     const dialogVisible = ref(false);
     const tableData = ref([]);
@@ -139,7 +169,11 @@ export default {
     const pageSize = ref(5);
     const status = ref('');
     const ownerId = ref(24);
-    const serial_number = ref('');
+    const serialNumber = ref('');
+    const deviceName = ref('');
+    const exportDialogVisible = ref(false);
+    const exportAll = ref(true);
+    const statisticDialogVisible = ref(false);
     const options = ref([
       { value: '0', label: '正常运行中' },
       { value: '1', label: '维修中' },
@@ -151,12 +185,24 @@ export default {
       serialNumber: '',
       deviceName: '',
       locationId: null,
-      ownerId:12,
+      ownerId:null,
       status: null,
       deviceModel: '',
       purchaseDate: '',
       warrantyTime: 365,
-    });
+      productionCompanyId:null,
+    });//编辑设备
+    const addData = ref({
+      serialNumber: '',
+      deviceName: '',
+      locationId: null,
+      ownerId:null,
+      status: null,
+      deviceModel: '',
+      purchaseDate: '',
+      warrantyTime: 365,
+      productionCompanyId:null,
+    });//添加设备
     const formatDate = (dateString) => {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(dateString).toLocaleDateString(undefined, options);
@@ -171,24 +217,20 @@ export default {
     };//修改页码
     const fetchDevice = () => {
       console.log("开始获取数据")
-      console.log(apiHeaders)
-      fetch('http://localhost:8080/ordinaryUser/devices', {
+      fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
-        body: JSON.stringify({
-          "pageNum": pageNum.value,
-          "pageSize": pageSize.value,
-        })
       })
           .then(res => res.json())
           .then(res => {
+            console.log(res.data.list);
             tableData.value = res.data.list;
             total.value = res.data.total;
           })
           .catch(error => {
             console.error('获取数据失败:', error);
           });
-    };//获取设备信息（查）
+    };//获取设备信息,保存到tableData中（查）
     const query = () => {
       fetch(`http://localhost:8080/ordinaryUser/devicesSelect`, {
         method: 'POST',
@@ -225,9 +267,17 @@ export default {
             console.error('删除失败', error.message);
           });
     };//删除设备（删）
-    const handleEdit =(serialNumber) =>{
+    const handleEdit =(row) =>{
+      formData.value.serialNumber = row.serialNumber;
+      formData.value.warrantyTime = row.warrantyTime;
+      formData.value.locationId = row.locationId;
+      formData.value.purchaseDate  = row.purchaseDate;
+      formData.value.deviceModel = row.deviceModel;
+      formData.value.productionCompanyId = row.productionCompanyId;
+      formData.value.serialNumber = row.serialNumber;
+      formData.value.deviceName = row.deviceName;
+      formData.value.status = null;
       EditDialogVisible.value = true;
-      serial_number.value = serialNumber;
     };
     const openDialog = () => {
       dialogVisible.value = true;
@@ -254,9 +304,7 @@ export default {
           });
     };//保存添加设备对话框中的数据
     const updateDevice = () =>{
-      formData.value.serialNumber = serial_number.value;
-      console.log(formData.value)
-      console.log(toRaw(formData.value))
+      EditDialogVisible.value = false;
       fetch("http://localhost:8080/ordinaryUser/devices",{
         method:'PUT',
         headers:apiHeaders,
@@ -280,10 +328,135 @@ export default {
       };
       return statusMap[status] || '';
     };
-
     const getStatusColor = (status) => {
       if(status===2)return '#ff7b7b'
       else if(status===0)return '#5b952a'
+    };
+    const printBox = () => {
+      console.log("执行了printBox函数");
+      setTimeout(() => {
+        // 在这里使用 this.$print
+        print({
+          printable: '1',
+          type: 'html',
+          scanStyles: false,
+          targetStyles: ['*']
+        });
+      }, 500);
+    };//打印当页的数据
+    const clickExport = () =>{
+      exportDialogVisible.value = true;
+    };//弹出导出的对话框
+    const exportTodoList = ()=>{
+      if (exportAll.value === true) exportAllTodo();
+      else if (exportAll.value===false) exportTodo();
+    } //选择导出什么数据
+    const exportTodo = () => {
+      console.log("执行了exportTodo函数");
+      fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            const todoList = res.data.list;
+            console.log(res.data.list);
+            const tHeader = ['序列号', '设备名称','生产公司ID','设备状态','设备类型','购买时间','保修期'];
+            const filterVal = ['serialNumber', 'deviceName','productionCompanyId','status','deviceModel','purchaseDate','warrantyTime'];
+            const data = formatJson(filterVal, todoList);
+            export_json_to_excel(tHeader, data, '本页设备信息');
+          });
+    };//导出当页的数据
+    const exportAllTodo = () => {
+      console.log("执行了exportAllTodo函数");
+      fetch(`http://localhost:8080/ordinaryUser/allDevices`, {
+        method: 'GET',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res);
+            const todoList = res.data;
+            console.log(res.data);
+            const tHeader = ['序列号', '设备名称','生产公司ID','设备状态','设备类型','购买时间','保修期'];
+            const filterVal = ['serialNumber', 'deviceName','productionCompanyId','status','deviceModel','purchaseDate','warrantyTime'];
+            const data = formatJson(filterVal, todoList);
+            export_json_to_excel(tHeader, data, '所有设备信息');
+          });
+    };//导出所有的数据
+    const formatJson = (filterVal, jsonData) => {
+      console.log("执行了formatJson函数");
+      return jsonData.map(v => filterVal.map(j => v[j]));
+    };
+    const statistics = () => {
+      console.log("执行了Statistics函数");
+      statisticDialogVisible.value = true;
+      fetchStatistics();
+    };
+    const fetchStatistics = () => {
+      fetch(`http://localhost:8080/ordinaryUser/deviceStatistic`, {
+        method: 'GET',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res);
+            // 添加映射关系将标签转化为文字
+            const data = res.data.map(item => ({ value: item.count, name: mapStatus(item.status) }));
+            // 绘制饼状图
+            drawPieChart(data);
+          })
+          .catch(error => {
+            console.error('获取统计数据失败:', error);
+          });
+    };
+
+// 添加一个映射函数
+    const mapStatus = (status) => {
+      const statusMap = {
+        '0': '正常运行中',
+        '1': '维修中',
+        '2': '发生错误'
+      };
+      return statusMap[status] || '';
+    };
+
+    const drawPieChart = (data) => {
+      // 使用 ECharts 绘制饼状图
+      const chart = echarts.init(document.getElementById('chart'));
+      const option = {
+        title: {
+          text: '设备运行状态统计',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)',
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: data.map(item => item.name),
+        },
+        series: [
+          {
+            name: '数量',
+            type: 'pie',
+            radius: '55%',
+            center: ['50%', '60%'],
+            data: data,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
+
+      chart.setOption(option);
     };
 
     onMounted(() => {
@@ -301,6 +474,12 @@ export default {
       options,
       inputStyle,
       formData,
+      serialNumber,
+      deviceName,
+      EditDialogVisible,
+      exportDialogVisible,
+      exportAll,
+      statisticDialogVisible,
       getStatusColor,
       getStatusLabel,
       updateDevice,
@@ -314,7 +493,11 @@ export default {
       handleClose,
       formatDate,
       saveData,
-      EditDialogVisible,
+      printBox,
+      clickExport,
+      exportTodoList,
+      statistics,
+
     };
   },
 };
@@ -345,12 +528,4 @@ export default {
   text-align: center;
 }
 
-.el-dialog {
-  overflow-y: auto;
-}
-
-/* Custom styles for status */
-.error-status {
-  color: #ff7b7b; /* Light red */
-}
 </style>
