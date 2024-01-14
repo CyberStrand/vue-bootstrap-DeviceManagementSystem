@@ -45,9 +45,9 @@
     </AddModal>
     <br>
     <!-- 分页控件 -->
-    <button @click="currentPage--" class="btn btn-primary my-3" :disabled="currentPage <= 1">上一页</button>
+    <button @click="currentPage--" class="btn btn-primary my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
     <span>页码: {{ currentPage }}</span>
-    <button @click="currentPage++" class="btn btn-primary my-3" :disabled="orders.length<pageSize">下一页</button>
+    <button @click="currentPage++" class="btn btn-primary my-3 mx-3" :disabled="orders.length<pageSize">下一页</button>
 </template>
 
 <script>
@@ -70,12 +70,6 @@ export default {
         pageCount() {
         return Math.ceil(this.orders.length / this.pageSize);
         },
-        // 计算当前页的订单
-        paginatedOrders() {
-        const start = (this.currentPage - 1) * this.pageSize;
-        const end = start + this.pageSize;
-        return this.orders.slice(start, end);
-        }
     },
     created(){
         this.getOrders()

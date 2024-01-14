@@ -60,7 +60,7 @@ const routes = [
   },
   {
     path: '/device1',
-    name: '设备概况',
+    name: '公司管理员:设备管理',
     component: deviceView1
   },
   {
@@ -80,7 +80,7 @@ const routes = [
   },
   {
     path: '/staff1',
-    name: '人员概况',
+    name: '公司管理员:人员管理',
     component: staffView1
   },
   {

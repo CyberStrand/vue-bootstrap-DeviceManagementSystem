@@ -6,7 +6,7 @@
 export default {
   data(){
     return{
-      list:['人员概况','人员详情','我的人员']
+      list:['公司管理员:人员管理','人员详情','我的人员']
     }
   },
   mounted(){
