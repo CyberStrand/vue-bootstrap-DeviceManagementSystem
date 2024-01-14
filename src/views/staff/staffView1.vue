@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="user in filteredUsers" :key="user.userId">
+                <tr v-for="user in currentUsers" :key="user.userId">
                     <td>{{ user.userId }}</td>
                     <td>{{ user.username }}</td>
                     <td>{{ user.phoneNumber }}</td>
@@ -65,7 +65,7 @@
         <!-- 分页控件 -->
         <button @click="currentPage--" class="btn btn-primary my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
         <span>页码: {{ currentPage }}/{{ pageCount }}</span>
-        <button @click="currentPage++" class="btn btn-primary my-3 mx-3" :disabled="users.length<pageSize">下一页</button>
+        <button @click="currentPage++" class="btn btn-primary my-3 mx-3" :disabled="filteredUsers.length<=currentPage*pageSize">下一页</button>
     </div>
 </template>
 
@@ -80,7 +80,7 @@ export default {
             users:[],
             Change:false,
             currentPage: 1,
-            pageSize: 8,
+            pageSize: 7,
             //用于插入
             username:"",
             password:"",
@@ -94,7 +94,7 @@ export default {
     computed: {
         // 计算总页数
         pageCount() {
-        return Math.ceil(this.users.length / this.pageSize);
+        return Math.ceil(this.filteredUsers.length / this.pageSize);
         },
         //筛选后的用户
         filteredUsers(){
@@ -121,16 +121,15 @@ export default {
         Change(){
             this.getusers()
         },
-        currentPage() {
-            this.getusers()
-        },
+        // currentPage() {
+        //     this.getusers()
+        // },
     },
     methods: {
         async getusers() {
             await API.get("/company/personals", {
                 params: {
-                    pageNum: this.currentPage,
-                    pageSize: this.pageSize
+                    pageNum: -1,
                 },
                 headers: {
                     'Authorization': "Bearer " + localStorage.getItem("token")

@@ -1,5 +1,18 @@
 <template>
     <div>
+        <form class="row g-6">
+        <div class="col">
+            <label for="queryInput" class="visually-hidden">查询</label>
+            <input type="text" class="form-control" id="queryInput" v-model="this.serialNumber_Find" placeholder="输入查询序列号">
+        </div>
+        <div class="col">
+            <label for="queryInput" class="visually-hidden">查询</label>
+            <input type="text" class="form-control" id="queryInput" v-model="this.deviceName_Find" placeholder="输入设备名称">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3" @click.prevent="finduser">查询</button>
+        </div>
+        </form>
         <table class="table table-striped">
             <thead class="table-light">
                 <tr>
@@ -16,7 +29,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="device in devices" :key="device.serialNumber">
+                <tr v-for="device in currentDevices" :key="device.serialNumber">
                     <td>{{ device.serialNumber }}</td>
                     <td>{{ device.deviceName }}</td>
                     <td>{{ device.ownerId }}</td>
@@ -60,8 +73,8 @@
         <br>
         <!-- 分页控件 -->
         <button @click="currentPage--" class="btn btn-primary my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
-        <span>页码: {{ currentPage }}</span>
-        <button @click="currentPage++" class="btn btn-primary my-3 mx-3" :disabled="devices.length<pageSize">下一页</button>
+        <span>页码: {{ currentPage }}/{{ pageCount }}</span>
+        <button @click="currentPage++" class="btn btn-primary my-3 mx-3" :disabled="filteredDevices.length<=currentPage*pageSize">下一页</button>
     </div>
 </template>
 
@@ -76,19 +89,40 @@ export default {
             devices:[],
             Change:false,
             currentPage: 1,
-            pageSize: 8,
+            pageSize: 7,
             serialNumber:"",
             deviceName:"",
             deviceModel:"",
             purchaseDate:null,
             warrantyTime:Int32Array,
+
+            //用于查询
+            serialNumber_Find:"",
+            deviceName_Find:"",
         }
     },
     computed: {
         // 计算总页数
         pageCount() {
-        return Math.ceil(this.devices.length / this.pageSize);
+            return Math.ceil(this.filteredDevices.length / this.pageSize);
         },
+        //筛选后的设备
+        filteredDevices(){
+            if(this.serialNumber_Find || this.deviceName_Find){
+                return this.devices.filter((device) => {
+                    return String(device.serialNumber).includes(String(this.serialNumber_Find)) && String(device.deviceName).includes(String(this.deviceName_Find))
+                })
+            }
+            else{
+                return this.devices
+            }
+        },
+        //当前页的数据
+        currentDevices() {
+            let start = (this.currentPage - 1) * this.pageSize;
+            let end = this.currentPage * this.pageSize;
+            return this.filteredDevices.slice(start, end);
+        }
     },
     created(){
         this.getDevices()
@@ -97,9 +131,9 @@ export default {
         Change(){
             this.getDevices()
         },
-        currentPage() {
-            this.getDevices()
-        },
+        // currentPage() {
+        //     this.getDevices()
+        // },
     },
     methods: {
         formatDate(date) {
@@ -110,8 +144,7 @@ export default {
         async getDevices() {
         await API.get("/company/devices", {
             params: {
-                pageNum: this.currentPage,
-                pageSize: this.pageSize
+                pageNum: -1,
             },
             headers: {
                 'Authorization': "Bearer " + localStorage.getItem("token")
