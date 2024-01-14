@@ -10,7 +10,7 @@
                 <input type="text" class="form-control" id="queryInput" v-model="this.username_Find" placeholder="输入用户名">
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary mb-3" @click.prevent="finduser">查询</button>
+                <button type="submit" class="btn btn-success mb-3" @click.prevent="finduser">查询</button>
             </div>
         </form>
         <table class="table table-striped">
@@ -23,7 +23,8 @@
                     <th>用户类型</th>
                     <th>评分</th>
                     <th>公司ID</th>
-                    <th></th>
+                    <th> </th>
+                    <th> </th>
                 </tr>
             </thead>
             <tbody>
@@ -36,6 +37,32 @@
                     <td>{{ user.score }}</td>
                     <td>{{ companyId}}</td>
                     <td><button class="btn btn-danger py-2 " @click.prevent="Delete(user.userId)">Delete</button></td>
+                    <td><PutModal button="Update" title="修改人员信息" @submit="UpdateUser" @default="SetDefult(user)">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">ID:</label>
+                                    <input class="form-control" v-model="this.userId_update">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">用户名:</label>
+                                    <input class="form-control" v-model="this.username_update">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">密码:</label>
+                                    <input class="form-control" v-model="this.password_update" type="password">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">手机号:</label>
+                                    <input class="form-control" v-model.number="this.phoneNumber_update" type="tel">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">邮箱</label>
+                                    <input class="form-control" v-model="this.email_update" type="email">
+                                </div>
+                            </div>
+                        </form>
+                    </PutModal></td>
                 </tr>
             </tbody>
         </table>
@@ -63,15 +90,16 @@
         </AddModal>
         <br>
         <!-- 分页控件 -->
-        <button @click="currentPage--" class="btn btn-primary my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
+        <button @click="currentPage--" class="btn btn-success my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
         <span>页码: {{ currentPage }}/{{ pageCount }}</span>
-        <button @click="currentPage++" class="btn btn-primary my-3 mx-3" :disabled="filteredUsers.length<=currentPage*pageSize">下一页</button>
+        <button @click="currentPage++" class="btn btn-success my-3 mx-3" :disabled="filteredUsers.length<=currentPage*pageSize">下一页</button>
     </div>
 </template>
 
 <script>
 import API from '@/plugins/axiosInstance'
 import AddModal from '@/components/AddModal.vue'
+import PutModal from '@/components/PutModal.vue'
 
 export default {
     data(){
@@ -89,6 +117,12 @@ export default {
             //用于查询
             userId_Find:"",
             username_Find:"",
+            //用于更新
+            userId_update:"",
+            username_update:"",
+            password_update:"",
+            phoneNumber_update:"",
+            email_update:"",
         }
     },
     computed: {
@@ -119,7 +153,8 @@ export default {
     },
     watch: {
         Change(){
-            this.getusers()
+            this.getusers();
+            //this.$router.go(0);
         },
         // currentPage() {
         //     this.getusers()
@@ -165,7 +200,31 @@ export default {
                 }
             })
         },
-
+        async UpdateUser(){
+            await API.put("/company/personals",
+            //传入的参数:userId,username,password,phoneNumber,email
+            JSON.stringify({
+                "userId":this.userId_update,
+                "username":this.username_update,
+                "password":this.password_update,
+                "phoneNumber":this.phoneNumber_update,
+                "email":this.email_update,}),
+            {
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': "Bearer "+localStorage.getItem("token")
+                }
+            }).then((response)=>{
+                console.log(response)
+                if(response.data.message==='success'){
+                    alert("修改成功")
+                    this.Change=!this.Change
+                }
+                else{
+                    alert("修改失败")
+                }
+            })
+        },
         async Delete(number){
             await API.request({
                 method: 'delete',
@@ -187,9 +246,16 @@ export default {
                 console.log(error)
             })
         },
+        SetDefult(user){
+            this.userId_update=user.userId
+            this.username_update=user.username
+            this.password_update=user.password
+            this.phoneNumber_update=user.phoneNumber
+            this.email_update=user.email
+        },
     },
     components:{
-        AddModal
+        AddModal,PutModal
     }
 }
 </script>

@@ -9,7 +9,7 @@
         <input type="text" class="form-control" id="queryInput" v-model="this.userId_Find" placeholder="输入用户ID">
     </div>
     <div class="col-auto">
-        <button type="submit" class="btn btn-primary mb-3" @click.prevent="finduser">查询</button>
+        <button type="submit" class="btn btn-success mb-3" @click.prevent="finduser">查询</button>
     </div>
     </form>
     <table class="table table-striped">
@@ -58,9 +58,9 @@
     </AddModal>
     <br>
     <!-- 分页控件 -->
-    <button @click="currentPage--" class="btn btn-primary my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
+    <button @click="currentPage--" class="btn btn-success my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
     <span>页码: {{ currentPage }}/{{ pageCount }}</span>
-    <button @click="currentPage++" class="btn btn-primary my-3 mx-3" :disabled="filteredOrders.length<=currentPage*pageSize">下一页</button>
+    <button @click="currentPage++" class="btn btn-success my-3 mx-3" :disabled="filteredOrders.length<=currentPage*pageSize">下一页</button>
 </template>
 
 <script>
