@@ -1,12 +1,12 @@
 <template>
-  
+  <h1>公司管理员</h1>
 </template>
 
 <script>
 export default {
   data(){
     return{
-      list:['公司管理员:人员管理','人员详情','我的人员']
+      list:['公司管理员:设备管理','公司管理员:员工管理','公司管理员:订单管理']
     }
   },
   mounted(){

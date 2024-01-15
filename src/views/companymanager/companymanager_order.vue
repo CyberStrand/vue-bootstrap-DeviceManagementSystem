@@ -42,20 +42,30 @@
             </tr>
         </tbody>
     </table>
-    <AddModal button="分派订单" title="输入分派信息" @submit="Distribute">
-        <form>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">分派人ID:</label>
-                    <input class="form-control" v-model="userID">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">订单ID:</label>
-                    <input class="form-control" v-model="orderID">
-                </div>
+    <div class="row g-6">
+        <div class="col-auto">
+            <AddModal button="分派订单" title="输入分派信息" @submit="Distribute">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">分派人ID:</label>
+                            <input class="form-control" v-model="userID">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">订单ID:</label>
+                            <input class="form-control" v-model="orderID">
+                        </div>
+                    </div>
+                </form>
+            </AddModal>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-success" @click.prevent="Export">导出表单</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-success" @click="PagePrint()">打印页面</button>
             </div>
-        </form>
-    </AddModal>
+    </div>
     <br>
     <!-- 分页控件 -->
     <button @click="currentPage--" class="btn btn-success my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
@@ -154,7 +164,30 @@ export default {
                     alert("分派失败")
                 }
             })
-        }
+        },
+
+        async Export(){
+            await API.request({
+                method: 'get',
+                url: "/company/orders/export",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': "Bearer "+localStorage.getItem("token")
+                },
+                responseType: 'blob',
+            }).then((response)=>{
+                    const blob = new Blob([response.data], {type: 'application/vnd.ms-excel'})
+                    const filename = '订单信息表.xls'
+                    saveAs(blob, filename)
+                    alert("导出成功")
+            }).catch((error)=>{
+                alert("导出失败")
+                console.log(error)
+            })
+        },
+        PagePrint(){
+            window.print()
+        },
     },
     components:{
         AddModal

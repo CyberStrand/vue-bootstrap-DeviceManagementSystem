@@ -3,10 +3,12 @@
   <router-view></router-view>
 </div>
 <div v-else>
+  <div class="d-print-none">
   <Navbar></Navbar>
+  </div>
   <div class="container m-0">
     <div class="row">
-      <div class="col-3 ps-0 pe-1">
+      <div class="col-3 ps-0 pe-1 d-print-none">
         <Sidebar :stringList="this.stringList"></Sidebar>
       </div>
       <div class="col-9 pe-0 pt-3">

@@ -66,28 +66,41 @@
                 </tr>
             </tbody>
         </table>
-        <AddModal button="添加人员" title="输入人员信息" @submit="Adduser">
-            <form>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">用户名:</label>
-                        <input class="form-control" v-model="this.username">
+        <div class="row g-6">
+            <div class="col-auto">
+            <AddModal button="添加人员" title="输入人员信息" @submit="Adduser">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">用户名:</label>
+                            <input class="form-control" v-model="this.username">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">密码:</label>
+                            <input class="form-control" v-model="this.password" type="password">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">手机号:</label>
+                            <input class="form-control" v-model.number="this.phoneNumber" type="tel">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">邮箱</label>
+                            <input class="form-control" v-model="this.email" type="email">
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">密码:</label>
-                        <input class="form-control" v-model="this.password" type="password">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">手机号:</label>
-                        <input class="form-control" v-model.number="this.phoneNumber" type="tel">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">邮箱</label>
-                        <input class="form-control" v-model="this.email" type="email">
-                    </div>
-                </div>
-            </form>
-        </AddModal>
+                </form>
+            </AddModal>
+            </div>
+
+            <div class="col-auto">
+            <button class="btn btn-success" @click="Export">导出表单</button>
+            </div>
+
+            <div class="col-auto">
+            <button class="btn btn-success" @click="PagePrint()">打印页面</button>
+            </div>
+
+        </div>
         <br>
         <!-- 分页控件 -->
         <button @click="currentPage--" class="btn btn-success my-3 mx-3" :disabled="currentPage <= 1">上一页</button>
@@ -245,6 +258,28 @@ export default {
             }).catch((error)=>{
                 console.log(error)
             })
+        },
+        async Export(){
+            await API.request({
+                method: 'get',
+                url: "/company/personals/export",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': "Bearer "+localStorage.getItem("token")
+                },
+                responseType: 'blob',
+            }).then((response)=>{
+                    const blob = new Blob([response.data], {type: 'application/vnd.ms-excel'})
+                    const filename = '人员信息表.xls'
+                    saveAs(blob, filename)
+                    alert("导出成功")
+            }).catch((error)=>{
+                alert("导出失败")
+                console.log(error)
+            })
+        },
+        PagePrint(){
+            window.print()
         },
         SetDefult(user){
             this.userId_update=user.userId

@@ -1,19 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import device from '../views/device/device.vue'
-import deviceView1 from '../views/device/deviceView1.vue'
-import deviceView2 from '../views/device/deviceView2.vue'
-import deviceView3 from '../views/device/deviceView3.vue'
-import staff from '../views/staff/staff.vue'
-import staffView1 from '../views/staff/staffView1.vue'
-import staffView2 from '../views/staff/staffView2.vue'
-import staffView3 from '../views/staff/staffView3.vue'
+import companymanager from '../views/companymanager/manager.vue'
+import companymanager_deviceVue from '../views/companymanager/companymanager_device.vue'
+import companymanager_staffVue from '../views/companymanager/companymanager_staff.vue'
+import companymanager_orderVue from '../views/companymanager/companymanager_order.vue'
+
 import order from '../views/order/order.vue'
-import orderView1 from '../views/order/orderView1.vue'
-import orderView2 from '../views/order/orderView2.vue'
-import orderView3 from '../views/order/orderView3.vue'
 import orderView4 from '../views/order/orderView4.vue'
 import orderView5 from '@/views/order/orderView5.vue'
+
 import person from '../views/person.vue'
 import login from '../views/login.vue'
 import OrdinaryUserToDo from "../views/OrdinaryUser/OrdinaryUserToDo.vue";
@@ -91,65 +86,32 @@ const routes = [
     component:OrdinaryUserToDo ,
   },
   {
-    path: '/device',
-    name: 'device',
-    component: device
+    path: '/companymanager',
+    name: '公司管理员',
+    component: companymanager
   },
   {
-    path: '/device1',
+    path: '/companymanager_device',
     name: '公司管理员:设备管理',
-    component: deviceView1
+    component: companymanager_deviceVue
   },
   {
-    path: '/device2',
-    name: '设备详情',
-    component: deviceView2
+    path: '/companymanager_staff',
+    name: '公司管理员:员工管理',
+    component: companymanager_staffVue
   },
   {
-    path: '/device3',
-    name: '我的设备',
-    component: deviceView3
+    path: '/companymanager_order',
+    name: '公司管理员:订单管理',
+    component: companymanager_orderVue
   },
-  {
-    path: '/staff',
-    name: 'staff',
-    component: staff
-  },
-  {
-    path: '/staff1',
-    name: '公司管理员:人员管理',
-    component: staffView1
-  },
-  {
-    path: '/staff2',
-    name: '人员详情',
-    component: staffView2
-  },
-  {
-    path: '/staff3',
-    name: '我的人员',
-    component: staffView3
-  },
+
   {
     path: '/order',
     name: 'order',
     component: order
   },
-  {
-    path: '/order1',
-    name: '公司管理员:订单管理',
-    component: orderView1
-  },
-  {
-    path: '/order2',
-    name: '订单详情',
-    component: orderView2
-  },
-  {
-    path: '/order3',
-    name: '我的订单',
-    component: orderView3
-  },
+
   {
     path: '/order4',
     name: '维修人员：可接订单',
