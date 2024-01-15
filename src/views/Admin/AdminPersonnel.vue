@@ -5,11 +5,11 @@
                 <!--选择栏-->
                 <div class="search-bar">
                     <el-input class="search-input" v-model="username" placeholder="用户名"></el-input>
-                    <el-select class="search-input" v-model="user_type" placeholder="用户类型">
+                    <el-select class="search-input" v-model="userType" placeholder="用户类型">
                         <el-option v-for="item in options" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
-                    <el-button type="primary" @click="query">查询</el-button>
+                    <el-button type="primary" @click="fetchPersonnel">查询</el-button>
                 </div>
 
                 <!--增加与批量删除-->
@@ -129,7 +129,10 @@ export default {
         const pageNum = ref(1);
         const pageSize = ref(5);
         const user_id = ref('');
+        const username = ref(null)
+        const userType = ref(null)
         const options = ref([
+            { value: '', label: '默认'},
             { value: 'ordinary', label: '普通用户' },
             { value: 'admin', label: '平台管理员' },
             { value: 'company_manager', label: '公司管理员' },
@@ -170,32 +173,22 @@ export default {
                 .then(res => {
                     console.log(res.data.list);
                     tableData.value = res.data.list;
-
                     total.value = res.data.total;
+                    if (username.value) {
+                        tableData.value = tableData.value.filter(personnel => personnel.username.includes(username.value));
+                        console.log('查询后结果：')
+                        console.log(tableData.value)
+                    };
+                    if (userType.value) {
+                        tableData.value = tableData.value.filter(personnel => personnel.userType.includes(userType.value));
+                        console.log('查询后结果：')
+                        console.log(tableData.value)
+                    };
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
                 });
-        };//获取设备信息（查）
-        const query = () => {
-            fetch(`http://localhost:8080/admin/device_by_status?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
-                method: 'POST',
-                headers: apiHeaders,
-                body: JSON.stringify({
-                    "status": status.value,
-                    "pageNum": pageNum.value,
-                    "pageSize": pageSize.value,
-                })
-            })
-                .then(res => res.json())
-                .then(res => {
-                    tableData.value = res.data.list;
-                    total.value = res.data.total;
-                })
-                .catch(error => {
-                    console.error('获取数据失败:', error);
-                });
-        };//根据设备状态查询设备信息（查）
+        };
         const handleDelete = (userId) => {
             console.log(userId)
             fetch(`http://localhost:8080/admin/user`, {
@@ -292,6 +285,9 @@ export default {
             options,
             inputStyle,
             formData,
+            EditDialogVisible,
+            username,
+            userType,
             getStatusColor,
             getUserTypeLabel,
             updateDevice,
@@ -301,10 +297,8 @@ export default {
             handleSizeChange,
             handleCurrentChange,
             handleDelete,
-            query,
             handleClose,
             saveData,
-            EditDialogVisible,
         };
     },
 };
