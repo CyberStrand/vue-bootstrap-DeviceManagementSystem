@@ -116,10 +116,6 @@ export default {
       companyId: '',
       companyName: '',
     });
-    const formatDate = (dateString) => {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    };//重定义时间表达格式
     const handleSizeChange = (pagesize) => {
       pageSize.value = pagesize;
       fetchCompany();
@@ -316,7 +312,6 @@ export default {
       handleDelete,
       handleClose,
       formatJson,
-      formatDate,
       saveData,
       statistics,
     };
