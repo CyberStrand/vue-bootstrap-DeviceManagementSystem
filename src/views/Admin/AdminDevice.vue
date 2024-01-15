@@ -21,6 +21,10 @@
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
                         </el-icon>打印</el-button>
+                    <!-- 统计 -->
+                    <el-button type="success" @click="statistics"><el-icon>
+                            <PieChart />
+                        </el-icon>&nbsp;统计</el-button>
                     <el-button type="primary" @click="openDialog">新增</el-button>
                 </div>
 
@@ -113,7 +117,9 @@
                 <el-dialog title="导出设备" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
                     <el-button type="primary" @click="exportAllDevices"> &nbsp;导出</el-button>
                 </el-dialog>
-
+                <el-dialog title="统计设备" v-model="statisticDialogVisible" width="50%" :before-close="handleClose">
+                    &nbsp; <div id="chart" style="height: 300px;"></div>
+                </el-dialog>
             </el-main>
         </el-container>
     </el-container>
@@ -122,6 +128,17 @@
 <script>
 import { ref, onMounted, toRaw } from 'vue';
 import { export_json_to_excel } from "@/vendor/Export2Excel";
+import * as echarts from 'echarts'
+import {
+    CirclePlus,
+    DeleteFilled, EditPen,
+    PieChart,
+    Printer,
+    Promotion,
+    Search,
+    SortDown,
+    SortUp
+} from "@element-plus/icons-vue";
 
 const apiHeaders = {
     'Content-Type': 'application/json',
@@ -334,6 +351,82 @@ export default {
             return jsonData.map(v => filterVal.map(j => v[j]));
         };
 
+        const statisticDialogVisible = ref(false);
+        const statistics = () => {
+            console.log("执行了Statistics函数");
+            statisticDialogVisible.value = true;
+            fetchStatistics();
+        };
+        const fetchStatistics = () => {
+            fetch(`http://localhost:8080/admin/devices?pageNum=-1&pageSize=${pageSize.value}`, {
+                method: 'POST',
+                headers: apiHeaders,
+            })
+                .then(res => res.json())
+                .then(res => {
+                    console.log('Raw response:', res.data.list);
+                    // 添加映射关系将标签转化为文字
+                    const statusSet = new Set(res.data.list.map(item => item.status));
+                    const data = Array.from(statusSet).map(status => ({
+                        value: res.data.list.filter(item => item.status === status).length,
+                        name: mapStatus(status),
+                    }));
+                    // 绘制饼状图
+                    console.log(data)
+                    drawPieChart(data);
+                })
+                .catch(error => {
+                    console.error('获取统计数据失败:', error);
+                });
+        };
+        const mapStatus = (status) => {
+            const statusMap = {
+                0: '正常运行中',
+                1: '维修中',
+                2: '发生错误',
+            };
+            return statusMap[status] || '';
+        };
+
+        const drawPieChart = (data) => {
+            console.log(data)
+            // 使用 ECharts 绘制饼状图
+            const chart = echarts.init(document.getElementById('chart'));
+            const option = {
+                title: {
+                    text: '设备统计',
+                    subtext: '设备状态数量',
+                    left: 'center',
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b} : {c} ({d}%)',
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: data.map(item => item.name), // 修改这里
+                },
+                series: [
+                    {
+                        name: '数量',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data: data,
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)',
+                            },
+                        },
+                    },
+                ],
+            };
+            chart.setOption(option);
+        };
+
         onMounted(() => {
             fetchDevice();
         });
@@ -356,6 +449,7 @@ export default {
             status4search,
             EditDialogVisible,
             exportDialogVisible,
+            statisticDialogVisible,
             exportAllDevices,
             clickExport,
             formatJson,
@@ -372,6 +466,7 @@ export default {
             handleClose,
             formatDate,
             saveData,
+            statistics,
         };
     },
 };

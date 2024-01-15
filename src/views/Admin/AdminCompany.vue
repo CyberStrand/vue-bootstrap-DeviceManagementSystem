@@ -8,17 +8,19 @@
             placeholder="公司名称"></el-input>
           <el-button type="primary" @click="fetchCompany">查询</el-button>
           <!-- 导出 -->
-          <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+          <el-button type="success" @click="clickExport"><el-icon>
               <Promotion />
             </el-icon>&nbsp;导出</el-button>
           <!-- 打印 -->
           <el-button v-print="'#printArea'" type="success"> <el-icon>
               <Printer />
             </el-icon>打印</el-button>
+            <!-- 统计 -->
+          <el-button type="success" @click="statistics"><el-icon>
+              <PieChart />
+            </el-icon>&nbsp;统计</el-button>
           <!--增加-->
-          <div class="action-buttons">
-            <el-button type="primary" @click="openDialog">新增</el-button>
-          </div>
+          <el-button type="primary" @click="openDialog">新增</el-button>
         </div>
 
 
@@ -74,6 +76,9 @@
           <el-button type="primary" @click="exportAllCompanies"> &nbsp;导出</el-button>
         </el-dialog>
 
+        <el-dialog title="统计公司" v-model="statisticDialogVisible" width="50%" :before-close="handleClose">
+          &nbsp; <div id="chart" style="height: 300px;"></div>
+        </el-dialog>
       </el-main>
     </el-container>
   </el-container>
@@ -253,6 +258,32 @@ export default {
       return jsonData.map(v => filterVal.map(j => v[j]));
     };
 
+    const statisticDialogVisible = ref(false);
+    const statistics = () => {
+      console.log("执行了Statistics函数");
+      statisticDialogVisible.value = true;
+      fetchStatistics();
+    };
+    const fetchStatistics = () => {
+      fetch(`http://localhost:8080/admin/companies?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log('Raw response:', res.data.list);
+
+          // 添加映射关系将标签转化为文字
+          const data = res.data.list.map(item => ({ value: item.count, name: mapStatus(item.companyName) }));
+
+          // 绘制饼状图
+          drawPieChart(data);
+        })
+        .catch(error => {
+          console.error('获取统计数据失败:', error);
+        });
+    };
+
     onMounted(() => {
       fetchCompany();
     });
@@ -271,6 +302,7 @@ export default {
       formData,
       EditDialogVisible,
       exportDialogVisible,
+      statisticDialogVisible,
       exportAllCompanies,
       clickExport,
       getStatusColor,
@@ -286,6 +318,7 @@ export default {
       formatJson,
       formatDate,
       saveData,
+      statistics,
     };
   },
 };

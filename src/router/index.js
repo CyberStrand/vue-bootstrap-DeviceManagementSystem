@@ -17,6 +17,8 @@ import AdminCompany from "../views/Admin/AdminCompany.vue"
 import AdminDevice from "../views/Admin/AdminDevice.vue"
 import AdminPersonnel from "../views/Admin/AdminPersonnel.vue"
 import AdminOrder from "../views/Admin/AdminOrder.vue"
+import AdminLog from "../views/Admin/AdminLog.vue"
+import AdminTodo from "../views/Admin/AdminTodo.vue"
 import OrdinaryUser from "@/views/OrdinaryUser/OrdinaryUser.vue";
 import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
 import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
@@ -54,6 +56,16 @@ const routes = [
     path: "/admin/order",
     name: '平台管理员：订单管理',
     component: AdminOrder
+  },
+  {
+    path: "/admin/log",
+    name: '平台管理员：日志管理',
+    component: AdminLog
+  },
+  {
+    path: "/admin/todo",
+    name: '平台管理员：待办事项管理',
+    component: AdminTodo
   },
   {
     path: '/home',
