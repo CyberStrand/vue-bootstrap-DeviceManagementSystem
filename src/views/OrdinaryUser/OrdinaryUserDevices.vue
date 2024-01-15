@@ -68,15 +68,18 @@
             width="30%"
             :before-close="handleClose"
         >
-          <el-form :model="formData" ref="formDataRef" label-width="80px">
+          <el-form :model="addData" ref="formDataRef" label-width="80px">
             <el-form-item label="序列号" prop="serialNumber">
-              <el-input v-model="formData.serialNumber"></el-input>
+              <el-input v-model="addData.serialNumber"></el-input>
             </el-form-item>
             <el-form-item label="设备名称" prop="deviceName">
-              <el-input v-model="formData.deviceName"></el-input>
+              <el-input v-model="addData.deviceName"></el-input>
+            </el-form-item>
+            <el-form-item label="设备类型" prop="deviceModel">
+              <el-input v-model="addData.deviceModel"></el-input>
             </el-form-item>
             <el-form-item label="运行状态" prop="status">
-              <el-select v-model="formData.status">
+              <el-select v-model="addData.status">
                 <el-option
                     v-for="item in options"
                     :key="item.value"
@@ -135,10 +138,9 @@
           &nbsp; <div id="chart" style="height: 300px;"></div>
         </el-dialog>
 
-
         <div style="text-align: left;">
-          【已实现】：删、改、导、印、统<br>
-          【待实现】：增、查、序<br>
+          【已实现】：增、删、改、导、印、统<br>
+          【待实现】：查、序<br>
           【待修改】：更新设备状态后，设备购买时间莫名其妙会少一天
         </div>
 
@@ -189,19 +191,17 @@ export default {
       status: null,
       deviceModel: '',
       purchaseDate: '',
-      warrantyTime: 365,
+      warrantyTime: null,
       productionCompanyId:null,
     });//编辑设备
     const addData = ref({
       serialNumber: '',
       deviceName: '',
-      locationId: null,
-      ownerId:null,
       status: null,
       deviceModel: '',
-      purchaseDate: '',
-      warrantyTime: 365,
-      productionCompanyId:null,
+      purchaseDate: new Date().toISOString(),
+      warrantyTime:365,
+      productionCompanyId:1,
     });//添加设备
     const formatDate = (dateString) => {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -286,12 +286,12 @@ export default {
       done();
     };//关闭添加设备对话框
     const saveData = () => {
-      console.log(formData.value)
-      console.log(toRaw(formData.value))
-      fetch("http://localhost:8080/ordinaryUser/devicesAdd",{
+      console.log(addData.value)
+      console.log(toRaw(addData.value))
+      fetch("http://localhost:8080/ordinaryUser/deviceAdd",{
         method:'POST',
         headers:apiHeaders,
-        body: JSON.stringify(formData.value)
+        body: JSON.stringify(addData.value)
       })
           .then(response => response.json())
           .then(data => {
@@ -410,8 +410,6 @@ export default {
             console.error('获取统计数据失败:', error);
           });
     };
-
-// 添加一个映射函数
     const mapStatus = (status) => {
       const statusMap = {
         '0': '正常运行中',
@@ -420,7 +418,6 @@ export default {
       };
       return statusMap[status] || '';
     };
-
     const drawPieChart = (data) => {
       // 使用 ECharts 绘制饼状图
       const chart = echarts.init(document.getElementById('chart'));
@@ -480,6 +477,7 @@ export default {
       exportDialogVisible,
       exportAll,
       statisticDialogVisible,
+      addData,
       getStatusColor,
       getStatusLabel,
       updateDevice,

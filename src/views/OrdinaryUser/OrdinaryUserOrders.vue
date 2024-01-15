@@ -76,12 +76,7 @@
             @close="resetFormData"
         >
           <el-form :model="formData" ref="formDataRef" label-width="80px">
-       <!--     <el-form-item label="设备ID" palceholder= "请在此处修改要报修的设备" prop="deviceId">
-              <el-input v-model="formData.deviceId"></el-input>
-            </el-form-item>
-            <el-form-item label="订单详情" palceholder= "请在此处修改描述设备的具体情况" prop="orderDetail">
-              <el-input v-model="formData.orderDetail"></el-input>
-            </el-form-item> -->
+
             <el-form-item label="加急" palceholder= "请在此处修改订单紧急状态" prop="urgencyLevel">
               <el-input v-model="formData.urgencyLevel"></el-input>
             </el-form-item>
@@ -90,6 +85,11 @@
             </el-form-item>
           </el-form>
         </el-dialog>
+
+        <div style="text-align: left;">
+          【已实现】：查<br>
+        </div>
+
       </el-main>
     </el-container>
   </el-container>
@@ -100,11 +100,11 @@ import {ref, onMounted, toRaw} from 'vue';
 
 const apiHeaders = {
   'Content-Type': 'application/json',
-  'Authorization': "Bearer "+localStorage.getItem("token") // Replace with your actual JWT token
+  'Authorization': "Bearer "+localStorage.getItem("token")
 };
 
 export default {
-  name: 'OrdinaryUserDevices',
+  name: 'OrdinaryUserOrder',
   setup() {
     const dialogVisible = ref(false);
     const tableData = ref([]);
@@ -145,13 +145,9 @@ export default {
       fetchDevice();
     };//修改页码
     const fetchDevice = () => {
-      fetch('http://localhost:8080/ordinaryUser/order', {
+      fetch(`http://localhost:8080/ordinaryUser/order?pageSize=${pageSize.value}&pageNum=${pageNum.value}`, {
         method: 'POST',
         headers: apiHeaders,
-        body: JSON.stringify({
-          "pageNum": pageNum.value,
-          "pageSize": pageSize.value,
-        })
       })
           .then(res => res.json())
           .then(res => {
@@ -259,6 +255,7 @@ export default {
       inputStyle,
       formData,
       orderStatus,
+      EditDialogVisible,
       updateDevice,
       handleEdit,
       openDialog,
@@ -270,7 +267,7 @@ export default {
       handleClose,
       formatDate,
       saveData,
-      EditDialogVisible,
+
     };
   },
 };
