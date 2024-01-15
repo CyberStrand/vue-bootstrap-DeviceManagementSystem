@@ -12,20 +12,21 @@
                             :value="item.value"></el-option>
                     </el-select>
                     <el-button type="primary" @click="fetchDevice">查询</el-button>
-                </div>
+                    <!-- 导出 -->
+                    <el-button type="success" @click="clickExport"><el-icon>
+                            <Promotion />
+                        </el-icon>&nbsp;导出</el-button>
 
-                <!-- 导出 -->
-                <el-button style="float:left" type="success" @click="clickExport"><el-icon>
-                        <Promotion />
-                    </el-icon>&nbsp;导出</el-button>
-
-                <!--增加与批量删除-->
-                <div class="action-buttons">
+                    <!-- 打印 -->
+                    <el-button v-print="'#printArea'" type="success"> <el-icon>
+                            <Printer />
+                        </el-icon>打印</el-button>
                     <el-button type="primary" @click="openDialog">新增</el-button>
                 </div>
 
+
                 <!--数据表-->
-                <el-table :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }"
+                <el-table id="printArea" :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }"
                     style="width: 100%">
                     <el-table-column fixed prop="serialNumber" label="序列号" width="80" />
                     <el-table-column prop="deviceName" label="设备名称" width="100" />

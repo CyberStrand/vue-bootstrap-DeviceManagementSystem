@@ -7,20 +7,24 @@
           <el-input type="text" class="search-input" v-model="company_name" :style="inputStyle"
             placeholder="公司名称"></el-input>
           <el-button type="primary" @click="fetchCompany">查询</el-button>
+          <!-- 导出 -->
+          <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+              <Promotion />
+            </el-icon>&nbsp;导出</el-button>
+          <!-- 打印 -->
+          <el-button v-print="'#printArea'" type="success"> <el-icon>
+              <Printer />
+            </el-icon>打印</el-button>
+          <!--增加-->
+          <div class="action-buttons">
+            <el-button type="primary" @click="openDialog">新增</el-button>
+          </div>
         </div>
 
-        <!-- 导出 -->
-        <el-button style="float:left" type="success" @click="clickExport"><el-icon>
-            <Promotion />
-          </el-icon>&nbsp;导出</el-button>
 
-        <!--增加与批量删除-->
-        <div class="action-buttons">
-          <el-button type="primary" @click="openDialog">新增</el-button>
-        </div>
-
-        <!--数据表-->
-        <el-table :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }" style="width: 100%">
+        <!-- 数据表 -->
+        <el-table id="printArea" :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }"
+          style="width: 100%">
           <el-table-column fixed prop="companyId" label="公司ID" width="80" />
           <el-table-column prop="companyName" label="公司名称" width="100" />
           <el-table-column fixed="right" label="操作">
@@ -78,6 +82,7 @@
 <script>
 import { ref, onMounted, toRaw } from 'vue';
 import { export_json_to_excel } from "@/vendor/Export2Excel";
+
 
 const apiHeaders = {
   'Content-Type': 'application/json',

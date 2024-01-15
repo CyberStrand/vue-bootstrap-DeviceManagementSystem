@@ -6,21 +6,25 @@
                 <div style="padding: 10px 0">
                     订单号：<el-input style="width:100px" placeholder="请输入订单号" :style="inputStyle" v-model="orderId"></el-input>
                     订单状态：
-                    <el-select placeholder="请选择订单状态" :style="inputStyle" v-model="orderStatus">
+                    <el-select style="width:100px" placeholder="请选择订单状态" :style="inputStyle" v-model="orderStatus">
                         <el-option v-for="item in options" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
                     <el-button type="primary" @click="fetchOrder">查询</el-button>
                     <el-button type="primary" @click="openDialog">新增</el-button>
-
                     <!-- 导出 -->
-                    <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+                    <el-button  type="success" @click="clickExport"><el-icon>
                             <Promotion />
                         </el-icon>&nbsp;导出</el-button>
+
+                    <!-- 打印 -->
+                    <el-button v-print="'#printArea'" type="success"> <el-icon>
+                            <Printer />
+                        </el-icon>打印</el-button>
                 </div>
 
                 <!--数据表-->
-                <el-table :data="tableData" style="width: 100%">
+                <el-table id="printArea" :data="tableData" style="width: 100%">
                     <el-table-column fixed prop="orderId" label="订单号" width="80" />
                     <el-table-column prop="orderStatus" label="订单状态" width="100">
                         <template v-slot="scope">

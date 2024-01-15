@@ -13,17 +13,18 @@
                 </div>
 
                 <!-- 导出 -->
-                <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+                <el-button type="success" @click="clickExport"><el-icon>
                         <Promotion />
                     </el-icon>&nbsp;导出</el-button>
-
+                <!-- 打印 -->
+                <el-button v-print="'#printArea'" type="success"> <el-icon>
+                        <Printer />
+                    </el-icon>打印</el-button>
                 <!--增加与批量删除-->
-                <div class="action-buttons">
-                    <el-button type="primary" @click="openDialog">新增</el-button>
-                </div>
+                <el-button type="primary" @click="openDialog">新增</el-button>
 
                 <!--数据表-->
-                <el-table :data="tableData" style="width: 100%">
+                <el-table id="printArea" :data="tableData" style="width: 100%">
                     <el-table-column fixed prop="userId" label="用户ID" width="80" />
                     <el-table-column prop="username" label="用户名" width="100" />
                     <el-table-column prop="phoneNumber" label="电话" width="100" />
