@@ -12,7 +12,13 @@
                     </el-select>
                     <el-button type="primary" @click="fetchOrder">查询</el-button>
                     <el-button type="primary" @click="openDialog">新增</el-button>
+
+                    <!-- 导出 -->
+                    <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+                            <Promotion />
+                        </el-icon>&nbsp;导出</el-button>
                 </div>
+
                 <!--数据表-->
                 <el-table :data="tableData" style="width: 100%">
                     <el-table-column fixed prop="orderId" label="订单号" width="80" />
@@ -117,6 +123,12 @@
                         </el-form-item>
                     </el-form>
                 </el-dialog>
+
+                <!-- 导出设备 -->
+                <el-dialog title="导出订单" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
+                    <el-button type="primary" @click="exportAllOrders"> &nbsp;导出</el-button>
+                </el-dialog>
+
             </el-main>
         </el-container>
     </el-container>
@@ -124,6 +136,7 @@
   
 <script>
 import { ref, onMounted, toRaw } from 'vue';
+import { export_json_to_excel } from "@/vendor/Export2Excel";
 
 const apiHeaders = {
     'Content-Type': 'application/json',
@@ -155,7 +168,7 @@ export default {
         const orderId = ref(null);
         const orderDetail = ref('');
         const options = ref([
-            { value: '', label: '默认'},
+            { value: '', label: '默认' },
             { value: 'accepted', label: '已接单' },
             { value: 'pending', label: '待接单' },
             { value: 'completed', label: '已结束、待评价' },
@@ -294,6 +307,34 @@ export default {
                     console.error('Error during data submission:', error);
                 });
         };
+
+        const clickExport = () => {
+            exportDialogVisible.value = true;
+        };
+        const exportDialogVisible = ref(false);
+        const exportAllOrders = () => {
+            console.log("执行了exportAllOrders函数");
+            fetch(`http://localhost:8080/admin/orders?pageNum=-1&pageSize=${pageSize.value}`, {
+                method: 'POST',
+                headers: apiHeaders,
+            })
+                .then(res => res.json())
+                .then(res => {
+                    const orders = res.data.list;
+                    console.log(orders);
+                    const tHeader = ['订单ID', '订单状态', '紧急程度', '设备序列号',
+                        '订单创建时间', '订单详情', '公司ID', '用户ID', '维修人员ID'];
+                    const filterVal = ['orderId', 'orderStatus', 'urgencyLevel', 'deviceId',
+                        'createdAt', 'orderDetail', 'companyId', 'userId', 'maintenancePersonnelId'];
+                    const data = formatJson(filterVal, orders);
+                    export_json_to_excel(tHeader, data, '所有订单');
+                });
+        };
+        const formatJson = (filterVal, jsonData) => {
+            console.log("执行了formatJson函数");
+            return jsonData.map(v => filterVal.map(j => v[j]));
+        };
+
         onMounted(() => {
             fetchOrder();
         });
@@ -311,6 +352,10 @@ export default {
             orderStatus,
             orderId,
             EditDialogVisible,
+            exportDialogVisible,
+            exportAllOrders,
+            clickExport,
+            formatJson,
             updateOrder,
             handleEdit,
             openDialog,

@@ -9,6 +9,11 @@
           <el-button type="primary" @click="fetchCompany">查询</el-button>
         </div>
 
+        <!-- 导出 -->
+        <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+            <Promotion />
+          </el-icon>&nbsp;导出</el-button>
+
         <!--增加与批量删除-->
         <div class="action-buttons">
           <el-button type="primary" @click="openDialog">新增</el-button>
@@ -60,6 +65,11 @@
           </el-form>
         </el-dialog>
 
+        <!-- 导出 -->
+        <el-dialog title="导出所有公司" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
+          <el-button type="primary" @click="exportAllCompanies"> &nbsp;导出</el-button>
+        </el-dialog>
+
       </el-main>
     </el-container>
   </el-container>
@@ -67,6 +77,7 @@
 
 <script>
 import { ref, onMounted, toRaw } from 'vue';
+import { export_json_to_excel } from "@/vendor/Export2Excel";
 
 const apiHeaders = {
   'Content-Type': 'application/json',
@@ -106,16 +117,7 @@ export default {
     const handleCurrentChange = (pagenum) => {
       pageNum.value = pagenum;
       fetchCompany();
-    };//修改页码
-    // const filterCompany = () => {
-    //   fetchCompany()
-    //   console.log(company_name.value)
-    //   if (company_name.value) {
-    //     tableData.value = tableData.value.filter(company => company.companyName.includes(company_name.value));
-    //     console.log('查询后结果：')
-    //     console.log(tableData.value)
-    //   }
-    // }
+    };
     const fetchCompany = () => {
       fetch(`http://localhost:8080/admin/companies?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
@@ -220,6 +222,32 @@ export default {
       else if (status === 0) return '#5b952a'
     };
 
+    const clickExport = () => {
+      exportDialogVisible.value = true;
+    };
+    const exportDialogVisible = ref(false);
+    const exportAllCompanies = () => {
+      console.log("执行了exportAllCompanies函数");
+      fetch(`http://localhost:8080/admin/companies?pageNum=-1&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+        .then(res => res.json())
+        .then(res => {
+          const companies = res.data.list;
+          console.log(companies);
+          console.log(typeof companies)
+          const tHeader = ['公司ID', '公司名'];
+          const filterVal = ['companyId', 'companyName'];
+          const data = formatJson(filterVal, companies);
+          export_json_to_excel(tHeader, data, '所有公司');
+        });
+    };
+    const formatJson = (filterVal, jsonData) => {
+      console.log("执行了formatJson函数");
+      return jsonData.map(v => filterVal.map(j => v[j]));
+    };
+
     onMounted(() => {
       fetchCompany();
     });
@@ -237,7 +265,9 @@ export default {
       inputStyle,
       formData,
       EditDialogVisible,
-      // filterCompany,
+      exportDialogVisible,
+      exportAllCompanies,
+      clickExport,
       getStatusColor,
       getStatusLabel,
       updateCompany,
@@ -248,6 +278,7 @@ export default {
       handleCurrentChange,
       handleDelete,
       handleClose,
+      formatJson,
       formatDate,
       saveData,
     };

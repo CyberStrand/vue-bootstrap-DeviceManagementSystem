@@ -12,6 +12,11 @@
                     <el-button type="primary" @click="fetchPersonnel">查询</el-button>
                 </div>
 
+                <!-- 导出 -->
+                <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+                        <Promotion />
+                    </el-icon>&nbsp;导出</el-button>
+
                 <!--增加与批量删除-->
                 <div class="action-buttons">
                     <el-button type="primary" @click="openDialog">新增</el-button>
@@ -108,6 +113,11 @@
                     </el-form>
                 </el-dialog>
 
+                <!-- 导出设备 -->
+                <el-dialog title="导出人员" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
+                    <el-button type="primary" @click="exportAllPersonnels"> &nbsp;导出</el-button>
+                </el-dialog>
+
             </el-main>
         </el-container>
     </el-container>
@@ -115,6 +125,7 @@
   
 <script>
 import { ref, onMounted, toRaw } from 'vue';
+import { export_json_to_excel } from "@/vendor/Export2Excel";
 
 const apiHeaders = {
     'Content-Type': 'application/json',
@@ -132,7 +143,7 @@ export default {
         const username = ref(null)
         const userType = ref(null)
         const options = ref([
-            { value: '', label: '默认'},
+            { value: '', label: '默认' },
             { value: 'ordinary', label: '普通用户' },
             { value: 'admin', label: '平台管理员' },
             { value: 'company_manager', label: '公司管理员' },
@@ -271,6 +282,31 @@ export default {
             if (status === 2) return '#ff7b7b'
             else if (status === 0) return '#5b952a'
         };
+        const clickExport = () => {
+            exportDialogVisible.value = true;
+        };
+        const exportDialogVisible = ref(false);
+        const exportAllPersonnels = () => {
+            console.log("执行了exportAllPersonnel函数");
+            fetch(`http://localhost:8080/admin/users?pageNum=-1&pageSize=${pageSize.value}`, {
+                method: 'POST',
+                headers: apiHeaders,
+            })
+                .then(res => res.json())
+                .then(res => {
+                    const personnels = res.data.list;
+                    console.log(personnels);
+                    const tHeader = ['用户ID', '用户名', '电话', '电子邮件',
+                        '评分', '公司ID', '用户类型'];
+                    const filterVal = ['userId', 'username', 'phoneNumber', 'email', 'score', 'companyId', 'userType'];
+                    const data = formatJson(filterVal, personnels);
+                    export_json_to_excel(tHeader, data, '所有人员');
+                });
+        };
+        const formatJson = (filterVal, jsonData) => {
+            console.log("执行了formatJson函数");
+            return jsonData.map(v => filterVal.map(j => v[j]));
+        };
 
         onMounted(() => {
             fetchPersonnel();
@@ -288,6 +324,10 @@ export default {
             EditDialogVisible,
             username,
             userType,
+            exportDialogVisible,
+            exportAllPersonnels,
+            clickExport,
+            formatJson,
             getStatusColor,
             getUserTypeLabel,
             updateDevice,

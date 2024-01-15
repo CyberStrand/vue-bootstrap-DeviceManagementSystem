@@ -14,6 +14,11 @@
                     <el-button type="primary" @click="fetchDevice">查询</el-button>
                 </div>
 
+                <!-- 导出 -->
+                <el-button style="float:left" type="success" @click="clickExport"><el-icon>
+                        <Promotion />
+                    </el-icon>&nbsp;导出</el-button>
+
                 <!--增加与批量删除-->
                 <div class="action-buttons">
                     <el-button type="primary" @click="openDialog">新增</el-button>
@@ -103,6 +108,11 @@
                     </el-form>
                 </el-dialog>
 
+                <!-- 导出设备 -->
+                <el-dialog title="导出设备" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
+                    <el-button type="primary" @click="exportAllDevices"> &nbsp;导出</el-button>
+                </el-dialog>
+
             </el-main>
         </el-container>
     </el-container>
@@ -110,6 +120,7 @@
   
 <script>
 import { ref, onMounted, toRaw } from 'vue';
+import { export_json_to_excel } from "@/vendor/Export2Excel";
 
 const apiHeaders = {
     'Content-Type': 'application/json',
@@ -295,6 +306,33 @@ export default {
             else if (status === 0) return '#5b952a'
         };
 
+        const clickExport = () => {
+            exportDialogVisible.value = true;
+        };
+        const exportDialogVisible = ref(false);
+        const exportAllDevices = () => {
+            console.log("执行了exportAllDevices函数");
+            fetch(`http://localhost:8080/admin/devices?pageNum=-1&pageSize=${pageSize.value}`, {
+                method: 'POST',
+                headers: apiHeaders,
+            })
+                .then(res => res.json())
+                .then(res => {
+                    const devices = res.data.list;
+                    console.log(devices);
+                    const tHeader = ['序列号', '设别名称', '生产公司', '设备状态',
+                        '设备类型', '购买时间', '保修期', '设备地址'];
+                    const filterVal = ['serialNumber', 'deviceName', 'productionCompanyId',
+                        'status', 'deviceModel', 'purchaseDate', 'warrantyTime', 'locationId'];
+                    const data = formatJson(filterVal, devices);
+                    export_json_to_excel(tHeader, data, '所有设备');
+                });
+        };
+        const formatJson = (filterVal, jsonData) => {
+            console.log("执行了formatJson函数");
+            return jsonData.map(v => filterVal.map(j => v[j]));
+        };
+
         onMounted(() => {
             fetchDevice();
         });
@@ -316,6 +354,10 @@ export default {
             locationId4search,
             status4search,
             EditDialogVisible,
+            exportDialogVisible,
+            exportAllDevices,
+            clickExport,
+            formatJson,
             getStatusColor,
             getStatusLabel,
             updateDevice,
