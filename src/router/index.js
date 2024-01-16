@@ -4,6 +4,7 @@ import companymanager from '../views/companymanager/manager.vue'
 import companymanager_deviceVue from '../views/companymanager/companymanager_device.vue'
 import companymanager_staffVue from '../views/companymanager/companymanager_staff.vue'
 import companymanager_orderVue from '../views/companymanager/companymanager_order.vue'
+import companymanager_todoVue from '../views/companymanager/companymanager_todo.vue'
 
 import order from '../views/order/order.vue'
 import orderView4 from '../views/order/orderView4.vue'
@@ -105,7 +106,11 @@ const routes = [
     name: '公司管理员:订单管理',
     component: companymanager_orderVue
   },
-
+  {
+    path: '/companymanager_todo',
+    name: '公司管理员:ToDo',
+    component: companymanager_todoVue
+  },
   {
     path: '/order',
     name: 'order',
