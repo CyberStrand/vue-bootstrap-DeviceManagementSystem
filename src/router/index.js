@@ -25,6 +25,7 @@ import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
 import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
 import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
 import signup from "@/views/signup.vue";
+import rank from "../views/order/rank.vue";
 
 
 
@@ -138,6 +139,11 @@ const routes = [
     path: '/order5',
     name: '维修人员：我的订单',
     component: orderView5
+  },
+  {
+    path: '/rank',
+    name: '维修人员排行榜',
+    component: rank
   },
   {
     path: '/person',
