@@ -7,15 +7,26 @@
           <el-input type="text" class="search-input" v-model="company_name" :style="inputStyle"
             placeholder="公司名称"></el-input>
           <el-button type="primary" @click="fetchCompany">查询</el-button>
-        </div>
-
-        <!--增加与批量删除-->
-        <div class="action-buttons">
+          <!-- 导出 -->
+          <el-button type="success" @click="clickExport"><el-icon>
+              <Promotion />
+            </el-icon>&nbsp;导出</el-button>
+          <!-- 打印 -->
+          <el-button v-print="'#printArea'" type="success"> <el-icon>
+              <Printer />
+            </el-icon>打印</el-button>
+            <!-- 统计 -->
+          <el-button type="success" @click="statistics"><el-icon>
+              <PieChart />
+            </el-icon>&nbsp;统计</el-button>
+          <!--增加-->
           <el-button type="primary" @click="openDialog">新增</el-button>
         </div>
 
-        <!--数据表-->
-        <el-table :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }" style="width: 100%">
+
+        <!-- 数据表 -->
+        <el-table id="printArea" :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }"
+          style="width: 100%">
           <el-table-column fixed prop="companyId" label="公司ID" width="80" />
           <el-table-column prop="companyName" label="公司名称" width="100" />
           <el-table-column fixed="right" label="操作">
@@ -60,6 +71,14 @@
           </el-form>
         </el-dialog>
 
+        <!-- 导出 -->
+        <el-dialog title="导出所有公司" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
+          <el-button type="primary" @click="exportAllCompanies"> &nbsp;导出</el-button>
+        </el-dialog>
+
+        <el-dialog title="统计公司" v-model="statisticDialogVisible" width="50%" :before-close="handleClose">
+          &nbsp; <div id="chart" style="height: 300px;"></div>
+        </el-dialog>
       </el-main>
     </el-container>
   </el-container>
@@ -67,6 +86,8 @@
 
 <script>
 import { ref, onMounted, toRaw } from 'vue';
+import { export_json_to_excel } from "@/vendor/Export2Excel";
+
 
 const apiHeaders = {
   'Content-Type': 'application/json',
@@ -95,10 +116,6 @@ export default {
       companyId: '',
       companyName: '',
     });
-    const formatDate = (dateString) => {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    };//重定义时间表达格式
     const handleSizeChange = (pagesize) => {
       pageSize.value = pagesize;
       fetchCompany();
@@ -106,16 +123,7 @@ export default {
     const handleCurrentChange = (pagenum) => {
       pageNum.value = pagenum;
       fetchCompany();
-    };//修改页码
-    // const filterCompany = () => {
-    //   fetchCompany()
-    //   console.log(company_name.value)
-    //   if (company_name.value) {
-    //     tableData.value = tableData.value.filter(company => company.companyName.includes(company_name.value));
-    //     console.log('查询后结果：')
-    //     console.log(tableData.value)
-    //   }
-    // }
+    };
     const fetchCompany = () => {
       fetch(`http://localhost:8080/admin/companies?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
@@ -220,6 +228,58 @@ export default {
       else if (status === 0) return '#5b952a'
     };
 
+    const clickExport = () => {
+      exportDialogVisible.value = true;
+    };
+    const exportDialogVisible = ref(false);
+    const exportAllCompanies = () => {
+      console.log("执行了exportAllCompanies函数");
+      fetch(`http://localhost:8080/admin/companies?pageNum=-1&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+        .then(res => res.json())
+        .then(res => {
+          const companies = res.data.list;
+          console.log(companies);
+          console.log(typeof companies)
+          const tHeader = ['公司ID', '公司名'];
+          const filterVal = ['companyId', 'companyName'];
+          const data = formatJson(filterVal, companies);
+          export_json_to_excel(tHeader, data, '所有公司');
+        });
+    };
+    const formatJson = (filterVal, jsonData) => {
+      console.log("执行了formatJson函数");
+      return jsonData.map(v => filterVal.map(j => v[j]));
+    };
+
+    const statisticDialogVisible = ref(false);
+    const statistics = () => {
+      console.log("执行了Statistics函数");
+      statisticDialogVisible.value = true;
+      fetchStatistics();
+    };
+    const fetchStatistics = () => {
+      fetch(`http://localhost:8080/admin/companies?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders
+      })
+        .then(res => res.json())
+        .then(res => {
+          console.log('Raw response:', res.data.list);
+
+          // 添加映射关系将标签转化为文字
+          const data = res.data.list.map(item => ({ value: item.count, name: mapStatus(item.companyName) }));
+
+          // 绘制饼状图
+          drawPieChart(data);
+        })
+        .catch(error => {
+          console.error('获取统计数据失败:', error);
+        });
+    };
+
     onMounted(() => {
       fetchCompany();
     });
@@ -237,7 +297,10 @@ export default {
       inputStyle,
       formData,
       EditDialogVisible,
-      // filterCompany,
+      exportDialogVisible,
+      statisticDialogVisible,
+      exportAllCompanies,
+      clickExport,
       getStatusColor,
       getStatusLabel,
       updateCompany,
@@ -248,8 +311,9 @@ export default {
       handleCurrentChange,
       handleDelete,
       handleClose,
-      formatDate,
+      formatJson,
       saveData,
+      statistics,
     };
   },
 };
