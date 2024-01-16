@@ -17,28 +17,26 @@
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </div>
-        <br>
-        <hr>
         <!--数据表-->
         <div id="1">
-        <el-table :data="tableData"
-                  :default-sort="{ prop: 'todoId', order:'ascending' }"
-                  style="width: 100%">
-          <el-table-column type="index" label="序列号" width="80" />
+          <el-table :data="tableData"
+                    :default-sort="{ prop: 'todoId', order:'ascending' }"
+                    style="width: 100%">
+            <el-table-column type="index" label="序列号" width="80" />
 
-          <el-table-column  prop="todoContent" label="待办事项" width="565"/>
-          <el-table-column prop="todoStatus" label="状态" width="100">
-            <template v-slot="scope">
-              <span :style="{ color: getStatusColor(scope.row.todoStatus) }">{{ getStatusLabel(scope.row.todoStatus) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="操作">
-            <template v-slot="scope">
-              <el-button size="small" type="primary" @click="handleEdit(scope.row)"><el-icon><EditPen /></el-icon>修改</el-button>
-              <el-button size="small" type="danger" @click="handleDelete(scope.row.todoId)"><el-icon><DeleteFilled /></el-icon>&nbsp;删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+            <el-table-column  prop="todoContent" label="待办事项" width="565"/>
+            <el-table-column prop="todoStatus" label="状态" width="100">
+              <template v-slot="scope">
+                <span :style="{ color: getStatusColor(scope.row.todoStatus) }">{{ getStatusLabel(scope.row.todoStatus) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作">
+              <template v-slot="scope">
+                <el-button size="small" type="primary" @click="handleEdit(scope.row)"><el-icon><EditPen /></el-icon>修改</el-button>
+                <el-button size="small" type="danger" @click="handleDelete(scope.row.todoId)"><el-icon><DeleteFilled /></el-icon>&nbsp;删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
         <!--分页栏-->
         <div class="pagination-bar">
@@ -53,9 +51,9 @@
           />
         </div>
         <el-dialog title="新增待办事项"
-            v-model="dialogVisible"
-            width="30%"
-            :before-close="handleClose"
+                   v-model="dialogVisible"
+                   width="30%"
+                   :before-close="handleClose"
         >
           <el-form :model="formData" ref="formDataRef" label-width="80px">
             <el-form-item label="待办内容" prop="todoContent">
@@ -67,9 +65,9 @@
           </el-form>
         </el-dialog>
         <el-dialog title="编辑待办事项"
-            v-model="EditDialogVisible"
-            width="30%"
-            :before-close="handleClose"
+                   v-model="EditDialogVisible"
+                   width="30%"
+                   :before-close="handleClose"
         >
           <el-form :model="formData" ref="formDataRef" label-width="80px">
             <el-form-item label="待办内容" prop="todoContent">
@@ -95,17 +93,17 @@
               active-text="导出所有"
               inactive-text="导出当前"
           />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <el-button type="primary" @click="exportTodoList"> &nbsp;导出</el-button>
+          <el-button type="primary" @click="exportTodoList"> &nbsp;导出</el-button>
         </el-dialog>
         <el-dialog title="统计待办事项"
                    v-model="statisticDialogVisible"
                    width="50%"
                    :before-close="handleClose">
-        &nbsp; <div id="chart" style="height: 300px;"></div>
+          &nbsp; <div id="chart" style="height: 300px;"></div>
         </el-dialog>
         <div style="text-align: left;">
-        【已实现】：增、删、查、改、导、印、统、序<br>
-        【待修改】序：
+          【已实现】：增、删、查、改、导、印、统、序<br>
+          【待修改】序：倒序查看时，如果修改了页码，页面会自动刷新，刷新会导致又变成正序，待修改
         </div>
       </el-main>
     </el-container>
@@ -173,7 +171,7 @@ export default {
       console.log("执行了fetchTodo函数");
       if (todo_status==null){
         console.log("没有进行条件查询，查询所有函数")
-        fetch(`http://localhost:8080/ordinaryUser/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        fetch(`http://localhost:8080/maintenancePersonnel/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
           method: 'POST',
           headers: apiHeaders,
         })
@@ -187,31 +185,31 @@ export default {
             });
       }
       else{
-          console.log("在条件查询")
-          console.log(todoStatus)
-          fetch(`http://localhost:8080/ordinaryUser/todoSelect`, {
-            method: 'POST',
-            headers: apiHeaders,
-            body: JSON.stringify({
-              "todoStatus": todoStatus.value,
-              "pageNum": pageNum.value,
-              "pageSize": pageSize.value,
-            })
+        console.log("在条件查询")
+        console.log(todoStatus)
+        fetch(`http://localhost:8080/maintenancePersonnel/todoSelect`, {
+          method: 'POST',
+          headers: apiHeaders,
+          body: JSON.stringify({
+            "todoStatus": todoStatus.value,
+            "pageNum": pageNum.value,
+            "pageSize": pageSize.value,
           })
-              .then(res => res.json())
-              .then(res => {
-                tableData.value = res.data.list;
-                total.value = res.data.total;
-              })
-              .catch(error => {
-                console.error('获取数据失败:', error);
-              });
-        }
+        })
+            .then(res => res.json())
+            .then(res => {
+              tableData.value = res.data.list;
+              total.value = res.data.total;
+            })
+            .catch(error => {
+              console.error('获取数据失败:', error);
+            });
       }
+    }
     const fetchDevice = () => {
       todoStatus.value = null;
       console.log("执行了fetchDevice函数");
-      fetch(`http://localhost:8080/ordinaryUser/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+      fetch(`http://localhost:8080/maintenancePersonnel/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
       })
@@ -226,7 +224,7 @@ export default {
     };//（查）
     const handleDelete = (todoId) => {
       console.log("执行了handleDelete函数");
-      fetch(`http://localhost:8080/ordinaryUser/todo?todoId=${todoId}`, {
+      fetch(`http://localhost:8080/maintenancePersonnel/todo?todoId=${todoId}`, {
         method: 'DELETE',
         headers: apiHeaders,
       })
@@ -262,7 +260,7 @@ export default {
       console.log("执行力saveData函数")
       console.log(formData.value)
       console.log(toRaw(formData.value))
-      fetch("http://localhost:8080/ordinaryUser/todoModify",{
+      fetch("http://localhost:8080/maintenancePersonnel/todo",{
         method:'POST',
         headers:apiHeaders,
         body: JSON.stringify(formData.value)
@@ -285,7 +283,7 @@ export default {
       else formData.value.todoStatus = 'undone'
       console.log(formData.value)
 
-      fetch("http://localhost:8080/ordinaryUser/todo",{
+      fetch("http://localhost:8080/maintenancePersonnel/todo",{
         method:'PUT',
         headers:apiHeaders,
         body: JSON.stringify(formData.value)
@@ -309,7 +307,7 @@ export default {
       return statusMap[status] || '';
     };
     const getStatusColor = (status) => {
-     // console.log("执行了getStatusColor函数");
+      // console.log("执行了getStatusColor函数");
       if(status==='undone')return '#ff7b7b'
       else if(status==='done')return '#5b952a'
     };
@@ -334,7 +332,7 @@ export default {
     } //选择导出什么数据
     const exportTodo = () => {
       console.log("执行了exportTodo函数");
-      fetch(`http://localhost:8080/ordinaryUser/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+      fetch(`http://localhost:8080/maintenancePersonnel/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
       })
@@ -350,7 +348,7 @@ export default {
     };//导出当页的数据
     const exportAllTodo = () => {
       console.log("执行了exportAllTodo函数");
-      fetch(`http://localhost:8080/ordinaryUser/allTodos`, {
+      fetch(`http://localhost:8080/maintenancePersonnel/allTodos`, {
         method: 'GET',
         headers: apiHeaders,
       })
@@ -371,7 +369,7 @@ export default {
     };
     const Sort = () =>{
       console.log("执行了Sort函数");
-      fetch(`http://localhost:8080/ordinaryUser/sortdown?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+      fetch(`http://localhost:8080/maintenancePersonnel/sortdown?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
       })
@@ -384,13 +382,14 @@ export default {
             console.error('获取数据失败:', error);
           });
     };
+
     const statistics = () => {
       console.log("执行了Statistics函数");
       statisticDialogVisible.value = true;
       fetchStatistics();
     };
     const fetchStatistics = () => {
-      fetch(`http://localhost:8080/ordinaryUser/statistic`, {
+      fetch(`http://localhost:8080/maintenancePersonnel/statistic`, {
         method: 'GET',
         headers: apiHeaders,
       })
@@ -408,6 +407,8 @@ export default {
             console.error('获取统计数据失败:', error);
           });
     };
+
+// 添加一个映射函数
     const mapStatus = (status) => {
       const statusMap = {
         'done': '已完成',
@@ -415,6 +416,7 @@ export default {
       };
       return statusMap[status] || '';
     };
+
     const drawPieChart = (data) => {
       // 使用 ECharts 绘制饼状图
       const chart = echarts.init(document.getElementById('chart'));
@@ -457,6 +459,7 @@ export default {
       console.log("执行了onMounted函数");
       fetchDevice();
     });
+
     return {
       dialogVisible,
       tableData,

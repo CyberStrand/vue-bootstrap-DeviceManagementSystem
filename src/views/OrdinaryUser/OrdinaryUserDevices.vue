@@ -4,22 +4,22 @@
       <el-main>
         <!--选择栏-->
         <div class="search-bar">
-          <el-input class="search-input" v-model="serialNumber" placeholder="序列号"></el-input>
-          <el-input class="search-input" v-model="deviceName" placeholder="设备名称"></el-input>
-          <el-select class="search-input" v-model="status" placeholder="设备状态">
+          <el-input class="search-input" v-model="serialNumberForSearch" placeholder="序列号"></el-input>
+          <el-input class="search-input" v-model="deviceNameForSearch" placeholder="设备名称"></el-input>
+          <el-select class="search-input" v-model="statusForSearch" placeholder="设备状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
-          <el-button type="primary" @click="query">查询</el-button>
+          <el-button type="primary" @click="fetchDevice">查询</el-button>
         </div>
-
         <div class="action-buttons">
-          <el-button type="primary" @click="openDialog">新增</el-button>
+          <el-button style="float:left" type="primary" @click="openDialog">新增</el-button>
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印当前页</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
-          <el-button type="danger">查看设备地址</el-button>
+          <el-button style="float:left" type="success" @click="Sort"><el-icon><SortUp /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="danger">查看设备地址</el-button>
         </div>
-
+        <br><hr>
         <!--数据表-->
         <div id = "1">
         <el-table :data="tableData"
@@ -60,7 +60,6 @@
               @current-change="handleCurrentChange"
           />
         </div>
-
         <!--添加设备对话框-->
         <el-dialog
             title="新增设备"
@@ -139,9 +138,10 @@
         </el-dialog>
 
         <div style="text-align: left;">
-          【已实现】：增、删、改、导、印、统<br>
-          【待实现】：查、序<br>
-          【待修改】：更新设备状态后，设备购买时间莫名其妙会少一天
+          【已实现】：增、删、查、改、导、印、统、序<br>
+          【待修改】：查：只能查询分页内的结果<br>
+          【待修改】：改：更新信息后修改后页面时间会增加1天<br>
+          【待修改】：序：倒序排列后,如果点击页面跳转，就会导致刷新
         </div>
 
       </el-main>
@@ -154,7 +154,7 @@ import {ref, onMounted, toRaw} from 'vue';
 import print from "print-js";
 import {export_json_to_excel} from "@/vendor/Export2Excel";
 import * as echarts from "echarts";
-import {PieChart, Printer, Promotion} from "@element-plus/icons-vue";
+import {PieChart, Printer, Promotion, SortUp} from "@element-plus/icons-vue";
 
 const apiHeaders = {
   'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ const apiHeaders = {
 };
 export default {
   name: 'OrdinaryUserDevices',
-  components: {Promotion, Printer, PieChart},
+  components: {SortUp, Promotion, Printer, PieChart},
   setup() {
     const dialogVisible = ref(false);
     const tableData = ref([]);
@@ -176,6 +176,9 @@ export default {
     const exportDialogVisible = ref(false);
     const exportAll = ref(true);
     const statisticDialogVisible = ref(false);
+    const serialNumberForSearch = ref('');
+    const deviceNameForSearch = ref('');
+    const statusForSearch = ref(null);
     const options = ref([
       { value: '0', label: '正常运行中' },
       { value: '1', label: '维修中' },
@@ -226,6 +229,17 @@ export default {
             console.log(res.data.list);
             tableData.value = res.data.list;
             total.value = res.data.total;
+            if(serialNumberForSearch.value){
+              tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumberForSearch.value));
+            }
+            if(deviceNameForSearch.value){
+              tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceNameForSearch.value));
+            }
+            if(statusForSearch.value){
+              const searchStatus = parseInt(statusForSearch.value, 10);
+              tableData.value = tableData.value.filter(device => device.status ===searchStatus);
+            }
+
           })
           .catch(error => {
             console.error('获取数据失败:', error);
@@ -495,7 +509,9 @@ export default {
       clickExport,
       exportTodoList,
       statistics,
-
+      serialNumberForSearch,
+      deviceNameForSearch,
+      statusForSearch,
     };
   },
 };

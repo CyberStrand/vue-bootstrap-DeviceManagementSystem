@@ -27,6 +27,7 @@ import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
 import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
 import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
 import signup from "@/views/signup.vue";
+import maintainerToDo from "@/views/order/maintainerToDo.vue";
 
 
 
@@ -164,6 +165,11 @@ const routes = [
     path: '/person',
     name: 'person',
     component: person
+  },
+  {
+    path:'/maintainerToDo',
+    name:"维修人员：待办事项",
+    component:maintainerToDo
   },
   {
     path: '/login',
