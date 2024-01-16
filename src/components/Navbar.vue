@@ -20,14 +20,8 @@
         </li>
 
         <li class="nav-item">
-          <router-link :to="{name:'device'}" class="nav-link">
-            设备管理
-          </router-link>
-        </li>
-
-        <li class="nav-item">
-          <router-link :to="{name:'staff'}" class="nav-link">
-            员工管理
+          <router-link :to="{name:'公司管理员'}" class="nav-link">
+            公司管理员
           </router-link>
         </li>
 
