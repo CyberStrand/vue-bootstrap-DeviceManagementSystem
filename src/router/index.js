@@ -26,6 +26,8 @@ import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue"
 import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
 import signup from "@/views/signup.vue";
 import rank from "../views/order/rank.vue";
+import feedback from "../views/Admin/Feedback.vue";
+import AdminFeedback from "../views/Admin/AdminFeedback.vue";
 
 
 
@@ -38,6 +40,16 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: Admin
+  },
+  {
+    path: "/feedback",
+    name: '提出反馈',
+    component: feedback
+  },
+  {
+    path: "/admin/feedback",
+    name: '平台管理员：反馈管理',
+    component: AdminFeedback
   },
   {
     path: "/admin/company",
