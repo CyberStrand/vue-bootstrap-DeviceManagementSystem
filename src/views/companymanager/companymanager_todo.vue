@@ -112,7 +112,7 @@ export default {
         filteredtodos(){
             if(this.todoId_Find||this.todoStatus_Find){
                 return this.todos.filter((todo)=>{
-                    return String(todo.todoId).includes(String(this.todoId_Find))&&String(todo.todoStatus)===(String(this.todoStatus_Find))
+                    return String(todo.todoId).includes(String(this.todoId_Find))&&String(todo.todoStatus).include(String(this.todoStatus_Find))
                 })
             }
             else{
