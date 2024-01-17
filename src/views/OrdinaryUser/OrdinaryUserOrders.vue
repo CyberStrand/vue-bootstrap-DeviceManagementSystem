@@ -40,7 +40,7 @@
           <el-table-column fixed="right" label="操作">
             <template v-slot="scope">
               <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button size="small" type="primary" @click="handleEvaluate(scope.row)">评价</el-button>
+              <el-button size="small" type="primary" @click="handleFeedback(scope.row)">评价</el-button>
               <el-button size="small" type="danger" @click="handleDelete(scope.row.orderId)">删除</el-button>
             </template>
           </el-table-column>
@@ -123,6 +123,20 @@
                    :before-close="handleClose">
           &nbsp; <div id="chart" style="height: 300px;"></div>
         </el-dialog>
+        <el-dialog title="报修"
+                   v-model="feedbackDialogVisible"
+                   width="30%"
+                   :before-close="handleClose"
+        >
+          <el-form :model="feedbackData" ref="formDataRef" label-width="80px">
+            <el-form-item label="评价内容" prop="feedbackContent">
+              <el-input v-model="feedbackData.feedbackContent"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="addFeedback">保存</el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
 
         <div style="text-align: left;">
           【已实现】：增、删、改、导、印、统<br>
@@ -157,8 +171,8 @@ export default {
     const pageSize = ref(5);
     const orderStatus = ref('');
     const ownerId = ref(24);
-    const orderId = ref(null);
     const exportDialogVisible= ref(false);
+    const feedbackDialogVisible=ref(false);
     const exportAll = ref(false);
     const statisticDialogVisible = ref(false);
     const orderStatusOptions = ref([
@@ -197,6 +211,11 @@ export default {
       createAt: new Date().toISOString(), //默认为当前时间
       orderDetail: ''//用户自己填
     });
+    const feedbackData = ref({
+      companyId:null,
+      feedbackContent:'',
+      orderId:null,
+    })
     const formatDate = (dateString) => {
       const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
       return new Date(dateString).toLocaleDateString(undefined, options);
@@ -461,6 +480,27 @@ export default {
 
       chart.setOption(option);
     };
+    const handleFeedback = (row) =>{
+      feedbackDialogVisible.value=true;
+      feedbackData.value.companyId = row.companyId;
+      feedbackData.value.orderId = row.orderId;
+    }
+    const addFeedback =()=>{
+      console.log(feedbackData)
+      fetch("http://localhost:8080/ordinaryUser/addFeedBack", {
+        method: 'POST',
+        headers: apiHeaders,
+        body: JSON.stringify(feedbackData.value)
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Response from server:', data);
+            feedbackDialogVisible.value = false;// 关闭对话框
+          })
+          .catch(error => {
+            console.error('Error during data submission:', error);
+          });
+    }
 
     onMounted(() => {
       fetchDevice();
@@ -483,6 +523,9 @@ export default {
       statisticDialogVisible,
       addData,
       urgencyLevelOptions,
+      feedbackDialogVisible,
+      feedbackData,
+      Sort,
       updateDevice,
       handleEdit,
       openDialog,
@@ -500,6 +543,8 @@ export default {
       clickExport,
       statistics,
       exportOrderList,
+      handleFeedback,
+      addFeedback,
     };
   },
 };

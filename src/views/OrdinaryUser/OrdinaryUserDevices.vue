@@ -16,7 +16,8 @@
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印当前页</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
-          <el-button style="float:left" type="success" @click="Sort"><el-icon><SortUp /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="success" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="success" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
           <el-button style="float:left" type="danger">查看设备地址</el-button>
         </div>
         <br><hr>
@@ -154,7 +155,7 @@ import {ref, onMounted, toRaw} from 'vue';
 import print from "print-js";
 import {export_json_to_excel} from "@/vendor/Export2Excel";
 import * as echarts from "echarts";
-import {PieChart, Printer, Promotion, SortUp} from "@element-plus/icons-vue";
+import {PieChart, Printer, Promotion, SortDown, SortUp} from "@element-plus/icons-vue";
 
 const apiHeaders = {
   'Content-Type': 'application/json',
@@ -162,7 +163,7 @@ const apiHeaders = {
 };
 export default {
   name: 'OrdinaryUserDevices',
-  components: {SortUp, Promotion, Printer, PieChart},
+  components: {SortDown, SortUp, Promotion, Printer, PieChart},
   setup() {
     const dialogVisible = ref(false);
     const tableData = ref([]);
@@ -179,6 +180,7 @@ export default {
     const serialNumberForSearch = ref('');
     const deviceNameForSearch = ref('');
     const statusForSearch = ref(null);
+    const sortStatus = ref(false);
     const options = ref([
       { value: '0', label: '正常运行中' },
       { value: '1', label: '维修中' },
@@ -469,6 +471,64 @@ export default {
 
       chart.setOption(option);
     };
+    const SortUP = () =>{
+      console.log("执行了SortUp函数，用于正序排列")
+      fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res.data.list);
+            tableData.value = res.data.list;
+            total.value = res.data.total;
+            if(serialNumberForSearch.value){
+              tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumberForSearch.value));
+            }
+            if(deviceNameForSearch.value){
+              tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceNameForSearch.value));
+            }
+            if(statusForSearch.value){
+              const searchStatus = parseInt(statusForSearch.value, 10);
+              tableData.value = tableData.value.filter(device => device.status ===searchStatus);
+            }
+
+          })
+          .catch(error => {
+            console.error('获取数据失败:', error);
+          });
+
+    }
+    const SortDown = () =>{
+      sortStatus.value = true;
+      console.log("执行了SortDown函数，用于倒序排列")
+      fetch(`http://localhost:8080/ordinaryUser/devicesDesc?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res.data.list);
+            tableData.value = res.data.list;
+            total.value = res.data.total;
+            if(serialNumberForSearch.value){
+              tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumberForSearch.value));
+            }
+            if(deviceNameForSearch.value){
+              tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceNameForSearch.value));
+            }
+            if(statusForSearch.value){
+              const searchStatus = parseInt(statusForSearch.value, 10);
+              tableData.value = tableData.value.filter(device => device.status ===searchStatus);
+            }
+
+          })
+          .catch(error => {
+            console.error('获取数据失败:', error);
+          });
+
+
+    }
 
     onMounted(() => {
       fetchDevice();
@@ -492,6 +552,7 @@ export default {
       exportAll,
       statisticDialogVisible,
       addData,
+      sortStatus,
       getStatusColor,
       getStatusLabel,
       updateDevice,
@@ -509,9 +570,11 @@ export default {
       clickExport,
       exportTodoList,
       statistics,
+      SortDown,
       serialNumberForSearch,
       deviceNameForSearch,
       statusForSearch,
+      SortUp,
     };
   },
 };

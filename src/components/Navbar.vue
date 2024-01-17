@@ -38,13 +38,16 @@
         </li>
 
       </ul>
-
+天气：
+      <div id="he-plugin-simple"></div>
 
       <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
     </div>
+
+
   </div>
 </nav>
 <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
@@ -58,11 +61,11 @@
             <img src="../assets/img_avatar1.png" style="width:60px" class="rounded-pill"/>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>邮箱</span>  
+            <span>邮箱</span>
             <span>{{ email }}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>名称</span>  
+            <span>名称</span>
             <span>{{ name }}</span>
           </li>
           <li class="list-group-item" v-if="offline">
@@ -78,14 +81,49 @@
 
 <script>
 export default {
-  data(){
+  data() {
     return {
       email: '245231528@qq.com',
-      name:'未来最棒',
+      name: '未来最棒',
       offline: true,
-    }
+    };
+  },
+  created() {
+    // 和风天气插件调用
+    window.WIDGET = {
+      "CONFIG": {
+        "modules": "01234",
+        "background": "5",
+        "tmpColor": "FFFFFF",
+        "tmpSize": "16",
+        "cityColor": "FFFFFF",
+        "citySize": "16",
+        "aqiColor": "FFFFFF",
+        "aqiSize": "16",
+        "weatherIconSize": "24",
+        "alertIconSize": "18",
+        "padding": "10px 10px 10px 10px",
+        "shadow": "0",
+        "language": "auto",
+        "fixed": "false",
+        "vertical": "top",
+        "horizontal": "left",
+        "city": "CN101010100",
+        "key": "80df397da0874e0aadace9f9ef3ccd92"
+      }
+    };
+    (function (d) {
+      const c = d.createElement('link');
+      c.rel = 'stylesheet'
+      c.href = 'https://widget.qweather.net/simple/static/css/he-simple.css?v=1.5.0'
+      const s = d.createElement('script');
+      s.src = 'https://widget.qweather.net/simple/static/js/he-simple.js?v=1.5.0'
+      const sn = d.getElementsByTagName('script')[0];
+      sn.parentNode.insertBefore(c, sn)
+      sn.parentNode.insertBefore(s, sn)
+    })(document)
   }
-}
+};
 </script>
 
 <style>

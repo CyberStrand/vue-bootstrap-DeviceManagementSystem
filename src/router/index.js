@@ -23,8 +23,13 @@ import OrdinaryUser from "@/views/OrdinaryUser/OrdinaryUser.vue";
 import OrdinaryUserDevices from "@/views/OrdinaryUser/OrdinaryUserDevices.vue";
 import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue";
 import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
+
 import signup from "@/views/signup.vue";
 import maintainerToDo from "@/views/order/maintainerToDo.vue";
+import OrdinaryUserFeedback from "@/views/OrdinaryUser/OrdinaryUserFeedback.vue";
+import companymanager_feedback from "@/views/companymanager/companymanager_feedback.vue";
+import weather from "@/views/OrdinaryUser/weather.vue"
+
 
 
 
@@ -99,6 +104,16 @@ const routes = [
     component:OrdinaryUserToDo ,
   },
   {
+    path:'/OrdinaryUserFeedback',
+    name:'普通用户：评价反馈',
+    component: OrdinaryUserFeedback ,
+  },
+  {
+    path:'/OrdinaryUserFeedback',
+    name:'普通用户:反馈评价',
+    component: OrdinaryUserFeedback ,
+  },
+  {
     path: '/companymanager',
     name: '公司管理员',
     component: companymanager
@@ -116,6 +131,26 @@ const routes = [
   {
     path: '/companymanager_order',
     name: '公司管理员:订单管理',
+    component: companymanager_orderVue
+  },
+  {
+    path: '/companymanager_feedback',
+    name:'公司管理员:查看评价',
+    component: companymanager_feedback
+  },
+  {
+    path: '/gongsiguanliyuan',
+    name: '公司管理员:人员管理',
+    component: companymanager_orderVue
+  },
+  {
+    path: '/renyuanxinagqing',
+    name: '人员详情',
+    component: companymanager_orderVue
+  },
+  {
+    path: '/woderenyuan',
+    name: '我的人员',
     component: companymanager_orderVue
   },
 
@@ -155,8 +190,13 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: signup
-
+  },
+  {
+    path:'/weather',
+    name:'天气测试',
+    component: weather
   }
+
 ]
 
 const router = createRouter({

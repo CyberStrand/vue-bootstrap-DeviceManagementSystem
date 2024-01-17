@@ -17,6 +17,7 @@
     "print-js": "^1.6.0",
     "typescript": "^4.4.2",
     "vue": "^3.2.13",
+    "vue-mini-weather": "^0.3.8",
     "vue-print-nb": "^1.7.5",
     "vue-router": "^4.0.3",
     "vue3-print-nb": "^0.1.4",
