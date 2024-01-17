@@ -90,7 +90,26 @@ export default {
                     console.error('获取数据失败:', error);
                 });
         };//获取公司信息（查）
-        const handleDelete = (companyId) => {
+        const handleDelete = (feedbackId) => {
+            fetch(`http://localhost:8080/admin/feedback`, {
+                method: 'DELETE',
+                headers: apiHeaders,
+                body: JSON.stringify({
+                    "feedbackId": feedbackId,
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('删除成功');
+                        fetchFeedback();
+                    } else {
+                        console.error(`删除失败: ${response.status} - ${response.statusText}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('删除失败', error.message);
+                });
+
         };
         const formatJson = (filterVal, jsonData) => {
             console.log("执行了formatJson函数");

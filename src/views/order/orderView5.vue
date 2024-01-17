@@ -4,13 +4,13 @@
             <el-main>
                 <!--选择栏-->
                 <div style="padding: 10px 0">
-                    订单号：<el-input style="width:100px" placeholder="请输入订单号" :style="inputStyle" v-model="orderId"></el-input>
+                    <!-- 订单号：<el-input style="width:100px" placeholder="请输入订单号" :style="inputStyle" v-model="orderId"></el-input>
                     订单状态：
                     <el-select style="width:100px" placeholder="请选择订单状态" :style="inputStyle" v-model="orderStatus">
                         <el-option v-for="item in options" :key="item.value" :label="item.label"
                             :value="item.value"></el-option>
                     </el-select>
-                    <el-button type="primary" @click="fetchOrder">查询</el-button>
+                    <el-button type="primary" @click="fetchOrder">查询</el-button> -->
                     <!-- 导出 -->
                     <el-button type="success" @click="clickExport"><el-icon>
                             <Promotion />
@@ -20,10 +20,6 @@
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
                         </el-icon>打印</el-button>
-                    <!-- 统计 -->
-                    <el-button type="success" @click="statistics"><el-icon>
-                            <PieChart />
-                        </el-icon>&nbsp;统计</el-button>
                 </div>
 
                 <!--数据表-->
@@ -47,7 +43,7 @@
                     <el-table-column prop="userId" label="用户ID" width="100" />
                     <el-table-column fixed="right" label="操作">
                         <template v-slot="scope">
-                            <el-button size="mini" type="primary" @click="handleEdit(scope.row.orderId)">编辑</el-button>
+                            <el-button size="mini" type="primary" @click="handleEdit(scope.row.orderId)">完成订单</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -145,6 +141,7 @@
 import { ref, onMounted, toRaw } from 'vue';
 import { export_json_to_excel } from "@/vendor/Export2Excel";
 import * as echarts from 'echarts'
+import { ElMessage, ElMessageBox } from 'element-plus';
 import {
     CirclePlus,
     DeleteFilled, EditPen,
@@ -243,25 +240,40 @@ export default {
                     tableData.value = res.data.list;
                     total.value = res.data.total;
                     console.log(tableData.value)
-                    if (orderId.value) {
-                        const orderIdSearch = parseInt(orderId.value, 10);
-                        tableData.value = tableData.value.filter(order => order.orderId === orderIdSearch);
-                        console.log('查询后结果：')
-                        console.log(tableData.value)
-                    };
-                    if (orderStatus.value) {
-                        tableData.value = tableData.value.filter(order => order.orderStatus === orderStatus.value);
-                        console.log('查询后结果：')
-                        console.log(tableData.value)
-                    };
+                    tableData.value = tableData.value.filter(order => order.orderStatus === 'accepted');
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
                 });
         };
         const handleEdit = (order_id) => {
-            EditDialogVisible.value = true;
-            orderId.value = order_id;
+            fetch('http://localhost:8080/completeOrder', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("token") // Replace with your actual JWT token
+                },
+                body: JSON.stringify({
+                    order_id: order_id // Send orderId to the backend
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    ElMessage({
+                        type: 'success',
+                        message: '订单完成！',
+                    })
+                    console.log('Order accepted:', data);
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error accepting order:', error);
+                });
         };
         const openDialog = () => {
             dialogVisible.value = true;

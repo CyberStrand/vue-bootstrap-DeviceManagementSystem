@@ -57,78 +57,6 @@
                         layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
                         @current-change="handleCurrentChange" />
                 </div>
-                <!--新增对话框-->
-                <el-dialog title="报修" v-model="dialogVisible" width="30%" :before-close="handleClose">
-                    <el-form :model="formData" ref="formDataRef" label-width="80px">
-                        <el-form-item label="紧急程度" prop="urgencyLevel">
-                            <el-input v-model="formData.urgencyLevel"></el-input>
-                        </el-form-item>
-                        <el-form-item label="用户ID" prop="userId">
-                            <el-input v-model="formData.userId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="维修人员ID" prop="maintenancePersonnelId">
-                            <el-input v-model="formData.maintenancePersonnelId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="公司ID" prop="companyId">
-                            <el-input v-model="formData.companyId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="设备序列号" prop="deviceSerialNumber">
-                            <el-input v-model="formData.deviceSerialNumber"></el-input>
-                        </el-form-item>
-                        <el-form-item label="订单详情" prop="orderDetail">
-                            <el-input v-model="formData.orderDetail"></el-input>
-                        </el-form-item>
-                        <!-- <el-form-item label="地址ID" prop="locationId">
-                            <el-input v-model="formData.locationId"></el-input>
-                        </el-form-item> -->
-                        <el-form-item label="订单状态" prop="orderStatus">
-                            <el-select v-model="formData.orderStatus">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label"
-                                    :value="item.value"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" @click="saveData">保存</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-dialog>
-                <!--编辑设备对话框-->
-                <el-dialog title="修改信息" v-model="EditDialogVisible" width="30%" :before-close="handleClose"
-                    @close="resetFormData">
-                    <el-form :model="formData" ref="formDataRef" label-width="80px">
-                        <el-form-item label="紧急程度" prop="urgencyLevel">
-                            <el-input v-model="formData.urgencyLevel"></el-input>
-                        </el-form-item>
-                        <el-form-item label="用户ID" prop="userId">
-                            <el-input v-model="formData.userId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="维修人员ID" prop="maintenancePersonnelId">
-                            <el-input v-model="formData.maintenancePersonnelId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="公司ID" prop="companyId">
-                            <el-input v-model="formData.companyId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="设备序列号" prop="deviceSerialNumber">
-                            <el-input v-model="formData.deviceSerialNumber"></el-input>
-                        </el-form-item>
-                        <el-form-item label="订单详情" prop="orderDetail">
-                            <el-input v-model="formData.orderDetail"></el-input>
-                        </el-form-item>
-                        <!-- <el-form-item label="地址ID" prop="locationId">
-                            <el-input v-model="formData.locationId"></el-input>
-                        </el-form-item> -->
-                        <el-form-item label="订单状态" prop="orderStatus">
-                            <el-select v-model="formData.orderStatus">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label"
-                                    :value="item.value"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" @click="updateOrder">修改</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-dialog>
-
                 <!-- 导出设备 -->
                 <el-dialog title="导出订单" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
                     <el-button type="primary" @click="exportAllOrders"> &nbsp;导出</el-button>
@@ -145,15 +73,11 @@
 import { ref, onMounted, toRaw } from 'vue';
 import { export_json_to_excel } from "@/vendor/Export2Excel";
 import * as echarts from 'echarts'
+import { ElMessage, ElMessageBox } from 'element-plus';
 import {
-    CirclePlus,
-    DeleteFilled, EditPen,
     PieChart,
     Printer,
     Promotion,
-    Search,
-    SortDown,
-    SortUp
 } from "@element-plus/icons-vue";
 
 const apiHeaders = {
@@ -184,7 +108,6 @@ export default {
         const orderStatus = ref(null);
         const ownerId = ref(24);
         const orderId = ref(null);
-        const orderDetail = ref('');
         const options = ref([
             { value: '', label: '默认' },
             { value: 'accepted', label: '已接单' },
@@ -206,15 +129,6 @@ export default {
             orderDetail: '',
             // locationId: null,//初始未分配为空
         });
-        const getOrderStatusLabel = (status) => {
-            const statusMap = {
-                'accepted': '已接单',
-                'pending': '待接单',
-                'completed': '已结束、待评价',
-                'evaluated': '已评价',
-            };
-            return statusMap[status] || '';
-        };
         const formatDate = (dateString) => {
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
             return new Date(dateString).toLocaleDateString(undefined, options);
@@ -243,7 +157,7 @@ export default {
                     tableData.value = res.data.list;
                     total.value = res.data.total;
                     console.log(tableData.value)
-                    tableData.value = tableData.value.filter(order => user.orderStatus === 'pending');
+                    tableData.value = tableData.value.filter(order => order.orderStatus === 'pending');
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
@@ -257,7 +171,7 @@ export default {
                     'Authorization': 'Bearer ' + localStorage.getItem("token") // Replace with your actual JWT token
                 },
                 body: JSON.stringify({
-                    order_id: orderId // Send orderId to the backend
+                    order_id: order_id // Send orderId to the backend
                 })
             })
                 .then(response => {
@@ -267,6 +181,10 @@ export default {
                     return response.json();
                 })
                 .then(data => {
+                    ElMessage({
+                        type: 'success',
+                        message: '接单成功',
+                    })
                     console.log('Order accepted:', data);
                     window.location.reload();
                 })
@@ -274,12 +192,6 @@ export default {
                     console.error('Error accepting order:', error);
                 });
         };
-        const openDialog = () => {
-            dialogVisible.value = true;
-        };//打开添加设备对话框
-        const handleClose = (done) => {
-            done();
-        };//关闭添加设备对话框
         const updateOrder = () => {
             formData.value.orderId = orderId.value
             console.log(formData.value)
@@ -434,11 +346,9 @@ export default {
             formatJson,
             updateOrder,
             handleEdit,
-            openDialog,
             fetchOrder,
             handleSizeChange,
             handleCurrentChange,
-            handleClose,
             formatDate,
             statistics,
         };
