@@ -4,6 +4,7 @@ import companymanager from '../views/companymanager/manager.vue'
 import companymanager_deviceVue from '../views/companymanager/companymanager_device.vue'
 import companymanager_staffVue from '../views/companymanager/companymanager_staff.vue'
 import companymanager_orderVue from '../views/companymanager/companymanager_order.vue'
+import companymanager_todoVue from '../views/companymanager/companymanager_todo.vue'
 
 import order from '../views/order/order.vue'
 import orderView4 from '../views/order/orderView4.vue'
@@ -25,10 +26,11 @@ import OrdinaryUserMessages from "@/views/OrdinaryUser/OrdinaryUserMessages.vue"
 import OrdinaryUserOrder from "@/views/OrdinaryUser/OrdinaryUserOrders.vue";
 
 import signup from "@/views/signup.vue";
-import maintainerToDo from "@/views/order/maintainerToDo.vue";
 import OrdinaryUserFeedback from "@/views/OrdinaryUser/OrdinaryUserFeedback.vue";
 import companymanager_feedback from "@/views/companymanager/companymanager_feedback.vue";
-import weather from "@/views/OrdinaryUser/weather.vue"
+import rank from "../views/order/rank.vue";
+import feedback from "../views/Admin/Feedback.vue";
+import AdminFeedback from "../views/Admin/AdminFeedback.vue";
 
 
 
@@ -42,6 +44,16 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: Admin
+  },
+  {
+    path: "/feedback",
+    name: '提出反馈',
+    component: feedback
+  },
+  {
+    path: "/admin/feedback",
+    name: '平台管理员：反馈管理',
+    component: AdminFeedback
   },
   {
     path: "/admin/company",
@@ -139,21 +151,10 @@ const routes = [
     component: companymanager_feedback
   },
   {
-    path: '/gongsiguanliyuan',
-    name: '公司管理员:人员管理',
-    component: companymanager_orderVue
+    path: '/companymanager_todo',
+    name: '公司管理员:ToDo',
+    component: companymanager_todoVue
   },
-  {
-    path: '/renyuanxinagqing',
-    name: '人员详情',
-    component: companymanager_orderVue
-  },
-  {
-    path: '/woderenyuan',
-    name: '我的人员',
-    component: companymanager_orderVue
-  },
-
   {
     path: '/order',
     name: 'order',
@@ -169,6 +170,11 @@ const routes = [
     path: '/order5',
     name: '维修人员：我的订单',
     component: orderView5
+  },
+  {
+    path: '/rank',
+    name: '维修人员排行榜',
+    component: rank
   },
   {
     path: '/person',
