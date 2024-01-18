@@ -6,14 +6,13 @@
       <el-main>
         <!--选择栏-->
         <div class="search-bar">
-          <el-button style="float:left" type="warning" @click="fetchDevice"><el-icon><CirclePlus /></el-icon>&nbsp;查询所有</el-button>
+          <el-button style="float:left" type="warning" @click="fetchDevice"><el-icon><CirclePlus /></el-icon>&nbsp正序查询所有</el-button>
           <el-button style="float:left" type="success" @click="openDialog"><el-icon><CirclePlus /></el-icon>&nbsp;新增</el-button>
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
           <el-button style="float:left" type="info" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
-          <el-button style="float:left" type="info" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;正序查看</el-button>
-          <el-button style="float:right" type="primary" @click="fetchTodo"><el-icon><Search /></el-icon>&nbsp;查询</el-button>
+          <el-button style="float:right" type="primary" @click="queryTodo"><el-icon><Search /></el-icon>&nbsp;查询</el-button>
           <el-select style="float:right" class="search-input" v-model="todoStatus" placeholder="状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
@@ -106,7 +105,6 @@
         </el-dialog>
         <div style="text-align: left;">
         【已实现】：增、删、查、改、导、印、统、序<br>
-        【待修改】序：
         </div>
       </el-main>
     </el-container>
@@ -147,6 +145,7 @@ export default {
     const ownerId = ref(24);
     const todoId = ref(null);
     const exportAll = ref(true);
+    const sortDownStatus = ref(false);
     const options = ref([
       { value: 'done', label: '已完成' },
       { value: 'undone', label: '未完成' },
@@ -170,24 +169,28 @@ export default {
       fetchTodo();
     };//修改页码
     const fetchTodo = () =>{
-      let todo_status = todoStatus.value
       console.log("执行了fetchTodo函数");
-      if (todo_status==null){
-        console.log("没有进行条件查询，查询所有函数")
-        fetch(`http://localhost:8080/ordinaryUser/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
-          method: 'POST',
-          headers: apiHeaders,
-        })
-            .then(res => res.json())
-            .then(res => {
-              tableData.value = res.data.list;
-              total.value = res.data.total;
-            })
-            .catch(error => {
-              console.error('获取数据失败:', error);
-            });
+      if( sortDownStatus.value===true){
+        console.log("当前处于倒序查看的状态中")
+        SortDown();
       }
-      else{
+      else {
+        if (todoStatus.value==null){
+          console.log("没有进行条件查询，查询所有函数")
+          fetch(`http://localhost:8080/ordinaryUser/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            method: 'POST',
+            headers: apiHeaders,
+          })
+              .then(res => res.json())
+              .then(res => {
+                tableData.value = res.data.list;
+                total.value = res.data.total;
+              })
+              .catch(error => {
+                console.error('获取数据失败:', error);
+              });
+        }
+        else{
           console.log("在条件查询")
           console.log(todoStatus)
           fetch(`http://localhost:8080/ordinaryUser/todoSelect`, {
@@ -209,8 +212,14 @@ export default {
               });
         }
       }
+      };
+    const queryTodo = () =>{
+      sortDownStatus.value = false;
+      fetchTodo();
+    }
     const fetchDevice = () => {
       todoStatus.value = null;
+      sortDownStatus.value = false;
       console.log("执行了fetchDevice函数");
       fetch(`http://localhost:8080/ordinaryUser/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
@@ -279,6 +288,7 @@ export default {
           });
     };//保存添加设备对话框中的数据
     const updateDevice = () =>{
+      EditDialogVisible.value = false;
       console.log("执行了updateDevice函数");
       formData.value.todoId = todoId.value;
       console.log(formData.value.todoBoolStatus);
@@ -371,6 +381,8 @@ export default {
       return jsonData.map(v => filterVal.map(j => v[j]));
     };
     const SortDown = () =>{
+      todoStatus.value = null;
+      sortDownStatus.value = true;
       console.log("执行了SortDown函数");
       fetch(`http://localhost:8080/ordinaryUser/sortdown?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
@@ -385,9 +397,6 @@ export default {
             console.error('获取数据失败:', error);
           });
     };
-    const SortUp = () =>{
-      console.log("执行了SortDown函数");
-    }
     const statistics = () => {
       console.log("执行了Statistics函数");
       statisticDialogVisible.value = true;
@@ -477,6 +486,7 @@ export default {
       exportDialogVisible,
       statisticDialogVisible,
       exportAll,
+      sortDownStatus,
       getStatusColor,
       getStatusLabel,
       updateDevice,
@@ -497,6 +507,7 @@ export default {
       exportAllTodo,
       clickExport,
       exportTodoList,
+      queryTodo,
     };
   },
 };

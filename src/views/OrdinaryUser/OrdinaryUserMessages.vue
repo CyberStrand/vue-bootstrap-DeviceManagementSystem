@@ -22,8 +22,8 @@
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
           <el-button style="float:left" type="success" @click="sortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="success" @click="addMessage"><el-icon><CirclePlus /></el-icon>发送消息</el-button>
         </div >
-
         <!--数据表-->
         <div id="1">
           <el-table
@@ -74,7 +74,6 @@
               @current-change="handleCurrentChange"
           />
         </div>
-
         <el-dialog title="导出消息"
                    v-model="exportDialogVisible"
                    width="30%"
@@ -89,16 +88,32 @@
           />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <el-button type="primary" @click="exportMessageList"> &nbsp;导出</el-button>
         </el-dialog>
-
         <el-dialog title="统计待办事项"
                    v-model="statisticDialogVisible"
                    width="50%"
                    :before-close="handleClose">
           &nbsp; <div id="chart" style="height: 300px;"></div>
         </el-dialog>
+        <el-dialog title="发送消息"
+                   v-model="addDialogVisible"
+                   width="30%"
+                   :before-close="handleClose"
+        >
+          <el-form :model="addData" ref="formDataRef" label-width="80px">
+            <el-form-item label="接受人ID" prop="serialNumber">
+              <el-input v-model="addData.receiverId"></el-input>
+            </el-form-item>
+            <el-form-item label="消息内容" prop="deviceName">
+              <el-input v-model="addData.messageContent"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="sendMessage">发送</el-button>
+            </el-form-item>
+          </el-form>
+        </el-dialog>
         <div style="text-align: left;">
-        【已实现】删、改、导、印、统、序。<br>
-        【待实现】增、查
+        【已实现】增、删、改、导、印、统、序。<br>
+        【待实现】查
         </div>
       </el-main>
     </el-container>
@@ -109,7 +124,7 @@
 import {ref, onMounted} from 'vue';
 import print from "print-js";
 import {export_json_to_excel} from "@/vendor/Export2Excel";
-import {PieChart, Printer, Promotion, SortDown, SortUp} from "@element-plus/icons-vue";
+import {CirclePlus, PieChart, Printer, Promotion, SortDown, SortUp} from "@element-plus/icons-vue";
 import * as echarts from "echarts";
 const apiHeaders = {
   'Content-Type': 'application/json',
@@ -117,7 +132,7 @@ const apiHeaders = {
 };
 export default {
   name: 'OrdinaryUserMessages',
-  components: {SortDown, PieChart, SortUp, Printer, Promotion},
+  components: {CirclePlus, SortDown, PieChart, SortUp, Printer, Promotion},
   setup() {
     const size = ref<'default' | 'large' | 'small'>('default');
     const exportDialogVisible = ref(false);
@@ -129,6 +144,7 @@ export default {
     const tableOrder=ref('descending');
     const exportAll = ref (true);
     const dialogVisible = ref(false);
+    const addDialogVisible = ref(false);
     const tableData = ref([]);
     const total = ref(0);
     const pageNum = ref(1);
@@ -148,6 +164,10 @@ export default {
       messageContent:'',
       sendTime:''
     });
+    const addData = ref({
+      receiverId:null,
+      messageContent:''
+    })
     const formatDate = (dateString) => {
       const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
       return new Date(dateString).toLocaleDateString(undefined, options);
@@ -456,6 +476,28 @@ export default {
             console.error('Error during data submission:', error);
           });
     };
+    const addMessage=()=>{
+      addDialogVisible.value=true;
+    };
+    const sendMessage = () => {
+      addDialogVisible.value = false;
+      fetch('http://localhost:8080/ordinaryUser/addMessage', {
+        method: 'POST',
+        headers: apiHeaders,
+        body: JSON.stringify(addData.value), // 请确保 addData 已经定义且包含正确的数据
+      })
+          .then(response => {
+            if (response.ok) {
+              console.log('添加成功');
+            } else {
+              console.error('添加失败');
+            }
+          })
+          .catch(error => {
+            console.error('发生错误:', error);
+          });
+    };
+
     onMounted(() => {
       getMessage();
     });
@@ -480,6 +522,8 @@ export default {
       EditDialogVisible,
       statisticDialogVisible,
       readStatusBool,
+      addDialogVisible,
+      addData,
       sortDown,
       handleClose,
       getStatusColor,
@@ -503,6 +547,8 @@ export default {
       fetchStatistics,
       handleSwitchChange,
       getStatusModelValue,
+      addMessage,
+      sendMessage,
     };
   },
 };

@@ -16,6 +16,8 @@
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
+          <el-button style="float:left" type="success" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;正序查看</el-button>
+          <el-button style="float:left" type="success" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
         </div>
         <!--数据表-->
         <div id="1">
@@ -42,6 +44,7 @@
               <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
               <el-button size="small" type="primary" @click="handleFeedback(scope.row)">评价</el-button>
               <el-button size="small" type="danger" @click="handleDelete(scope.row.orderId)">删除</el-button>
+
             </template>
           </el-table-column>
         </el-table>
@@ -139,8 +142,8 @@
         </el-dialog>
 
         <div style="text-align: left;">
-          【已实现】：增、删、改、导、印、统<br>
-          【待实现】：查、序、评价
+          【已实现】：增、删、改、导、印、统、序、评价<br>
+          【待实现】：查
         </div>
 
       </el-main>
@@ -150,7 +153,7 @@
 
 <script>
 import {ref, onMounted, toRaw} from 'vue';
-import {PieChart, Printer, Promotion} from "@element-plus/icons-vue";
+import {PieChart, Printer, Promotion, SortDown, SortUp} from "@element-plus/icons-vue";
 import print from "print-js";
 import {export_json_to_excel} from "@/vendor/Export2Excel";
 import * as echarts from "echarts";
@@ -162,9 +165,10 @@ const apiHeaders = {
 
 export default {
   name: 'OrdinaryUserOrder',
-  components: {PieChart, Promotion, Printer},
+  components: {SortDown, SortUp, PieChart, Promotion, Printer},
   setup() {
     const dialogVisible = ref(false);
+    const orderId = ref(null);
     const tableData = ref([]);
     const total = ref(0);
     const pageNum = ref(1);
@@ -243,19 +247,17 @@ export default {
           });
     };//获取设备信息（查）
     const query = () => {
-      fetch(`http://localhost:8080/ordinaryUser/orderSelect`, {
+      console.log(orderId.value);
+      fetch(`http://localhost:8080/ordinaryUser/orderFind?orderId=${orderId.value}&orderStatus=${orderStatus.value}&pageSize=${pageSize.value}&pageNum=${pageNum.value}`, {
         method: 'POST',
         headers: apiHeaders,
-        body: JSON.stringify({
-          "orderStatus": orderStatus.value,
-          "pageNum": pageNum.value,
-          "pageSize": pageSize.value,
-        })
       })
           .then(res => res.json())
           .then(res => {
             tableData.value = res.data.list;
             total.value = res.data.total;
+            orderStatus.value = null;
+            orderId.value = null;
           })
           .catch(error => {
             console.error('获取数据失败:', error);
@@ -287,6 +289,7 @@ export default {
       formData.value.orderStatus = row.orderStatus;
       formData.value.deviceId = row.deviceId;
       formData.value.createAt = row.createAt;
+      formData.value.orderDetail = row.orderDetail;
     };
     const openDialog = () => {
       dialogVisible.value = true;
@@ -312,6 +315,7 @@ export default {
           });
     };//保存添加设备对话框中的数据
     const updateDevice = () => {
+      EditDialogVisible.value=false;
       console.log(formData.value)
       console.log(toRaw(formData.value))
       fetch("http://localhost:8080/ordinaryUser/order", {
@@ -501,6 +505,12 @@ export default {
             console.error('Error during data submission:', error);
           });
     }
+    const SortUp=()=>{
+
+    }
+    const SortDown=()=>{
+
+    }
 
     onMounted(() => {
       fetchDevice();
@@ -525,6 +535,7 @@ export default {
       urgencyLevelOptions,
       feedbackDialogVisible,
       feedbackData,
+      orderId,
       Sort,
       updateDevice,
       handleEdit,
@@ -545,6 +556,8 @@ export default {
       exportOrderList,
       handleFeedback,
       addFeedback,
+      SortUp,
+      SortDown,
     };
   },
 };

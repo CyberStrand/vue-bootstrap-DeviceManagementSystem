@@ -62,8 +62,7 @@
           />
         </div>
         <!--添加设备对话框-->
-        <el-dialog
-            title="新增设备"
+        <el-dialog title="新增设备"
             v-model="dialogVisible"
             width="30%"
             :before-close="handleClose"

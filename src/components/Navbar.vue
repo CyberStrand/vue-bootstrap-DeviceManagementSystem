@@ -108,8 +108,7 @@ export default {
         "fixed": "false",
         "vertical": "top",
         "horizontal": "left",
-        "city": "CN101010100",
-        "key": "8aedbe9db95c4b4da391cef7f7556335"
+        "key": "dbf7ce395e2c4aaf9c65a9c0cdd4a5c4"
       }
     };
     (function (d) {
