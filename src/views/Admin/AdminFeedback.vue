@@ -15,6 +15,10 @@
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
                         </el-icon>打印</el-button>
+                    <!-- 排序 -->
+                    <el-button type="success" @click="changeSort"><el-icon>
+                            <PieChart />
+                        </el-icon>&nbsp;更改排序（反馈ID）</el-button>
                 </div>
 
 
@@ -70,21 +74,29 @@ export default {
             fetchFeedback();
         };
         const fetchFeedback = () => {
-            fetch(`http://localhost:8080/admin/feedbacks?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/admin/feedbacks?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders
             })
                 .then(res => res.json())
                 .then(res => {
                     tableData.value = res.data.list;
-                    total.value = res.data.total;
-                    console.log(tableData.value)
+                    const startIndex = (pageNum.value - 1) * pageSize.value
+                    const endIndex = pageNum.value * pageSize.value
                     if (feedbackContent.value) {
-                        tableData.value = tableData.value.filter(feedback => feedback.feedbackContent.includes(feedbackContent.value));
+                        tableData.value = tableData.value.filter(feedback => {
+                            return feedback.feedbackContent && feedback.feedbackContent.includes(feedbackContent.value);
+                        });
                         console.log('查询后结果：')
                         console.log(tableData.value)
-
                     }
+                    if (sort.value) {
+                        tableData.value = tableData.value.sort((a, b) => a.feedbackId - b.feedbackId)
+                    } else {
+                        tableData.value = tableData.value.sort((a, b) => b.feedbackId - a.feedbackId)
+                    }
+                    total.value = tableData.value.length;
+                    tableData.value = tableData.value.slice(startIndex, endIndex)
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
@@ -132,6 +144,16 @@ export default {
                     export_json_to_excel(tHeader, data, '所有公司');
                 });
         };
+        const sort = ref(false)
+        const changeSort = () => {
+            if (sort.value) {
+                sort.value = false
+            } else {
+                sort.value = true
+            }
+            console.log('改变了排序', sort.value)
+            fetchFeedback()
+        }
 
         onMounted(() => {
             fetchFeedback();
@@ -144,6 +166,8 @@ export default {
             pageSize,
             inputStyle,
             feedbackContent,
+            sort,
+            changeSort,
             clickExport,
             fetchFeedback,
             handleSizeChange,

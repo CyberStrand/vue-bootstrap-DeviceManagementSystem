@@ -12,23 +12,15 @@
                         <Printer />
                     </el-icon>打印
                 </el-button>
-
                 <!--数据表-->
                 <el-table id="printArea" :data="tableData">
-                    <el-table-column fixed prop="userId" label="维修人员ID" width="80" />
-                    <el-table-column prop="username" label="用户名" width="100" />
-                    <el-table-column prop="phoneNumber" label="电话" width="100" />
-                    <el-table-column prop="email" label="电子邮件" width="100" />
-                    <el-table-column prop="score" label="评分" width="100" :sortable="true" />
-                    <el-table-column prop="companyId" label="公司ID" width="100" />
-                    <el-table-column prop="userType" label="用户类型" width="100">
-                        <template v-slot="scope">
-                            <span>{{ getUserTypeLabel(scope.row.userType) }}</span>
-                        </template>
-                    </el-table-column>
+                    <el-table-column prop="score" label="评分" :sortable="true" />
+                    <el-table-column prop="userId" label="维修人员ID" />
+                    <el-table-column prop="username" label="维修人员名称" />
+                    <el-table-column prop="phoneNumber" label="电话" />
+                    <el-table-column prop="email" label="电子邮件" />
+                    <el-table-column prop="companyId" label="公司ID" />
                 </el-table>
-
-
             </el-main>
         </el-container>
     </el-container>
@@ -94,7 +86,7 @@ export default {
         const fetchPersonnel = () => {
             console.log(pageSize.value)
             console.log(pageNum.value)
-            fetch(`http://localhost:8080/admin/users?pageNum=-1&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/rank?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders,
                 body: JSON.stringify({
@@ -107,6 +99,7 @@ export default {
                     console.log(res.data.list);
                     tableData.value = res.data.list;
                     tableData.value = tableData.value.filter(user => user.userType === 'maintenance_personnel');
+                    tableData.value = tableData.value.sort((a, b) => a.score - b.score)
                     total.value = res.data.total;
                 })
                 .catch(error => {

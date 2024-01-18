@@ -14,6 +14,10 @@
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
                         </el-icon>打印</el-button>
+                    <!-- 排序 -->
+                    <el-button type="success" @click="changeSort"><el-icon>
+                            <PieChart />
+                        </el-icon>&nbsp;更改排序（日志ID）</el-button>
                     <!-- 统计 -->
                     <el-button type="success" @click="statistics"><el-icon>
                             <PieChart />
@@ -134,20 +138,29 @@ export default {
             fetchLog();
         };
         const fetchLog = () => {
-            fetch(`http://localhost:8080/loginLog?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/loginLog?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders
             })
                 .then(res => res.json())
                 .then(res => {
                     tableData.value = res.data.list;
-                    total.value = res.data.total;
-                    console.log(tableData.value)
+                    const startIndex = (pageNum.value - 1) * pageSize.value
+                    const endIndex = pageNum.value * pageSize.value
                     if (userName4search.value) {
-                        tableData.value = tableData.value.filter(log => log.userName.includes(userName4search.value));
+                        tableData.value = tableData.value.filter(log => {
+                            return log.userName && log.userName.includes(userName4search.value);
+                        })
                         console.log('查询后结果：')
                         console.log(tableData.value)
                     }
+                    if (sort.value) {
+                        tableData.value = tableData.value.sort((a, b) => a.loginLogId - b.loginLogId)
+                    } else {
+                        tableData.value = tableData.value.sort((a, b) => b.loginLogId - a.loginLogId)
+                    }
+                    total.value = tableData.value.length;
+                    tableData.value = tableData.value.slice(startIndex, endIndex)
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
@@ -314,6 +327,16 @@ export default {
             };
             chart.setOption(option);
         };
+        const sort = ref(false)
+        const changeSort = () => {
+            if (sort.value) {
+                sort.value = false
+            } else {
+                sort.value = true
+            }
+            console.log('改变了排序', sort.value)
+            fetchLog()
+        }
 
         onMounted(() => {
             fetchLog();
@@ -331,6 +354,8 @@ export default {
             options,
             userName4search,
             statisticDialogVisible,
+            sort,
+            changeSort,
             statistics,
             exportAllLog,
             updateLog,

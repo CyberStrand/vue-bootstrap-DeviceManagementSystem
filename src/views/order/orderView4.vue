@@ -5,11 +5,6 @@
                 <!--选择栏-->
                 <div style="padding: 10px 0">
                     订单号：<el-input style="width:100px" placeholder="请输入订单号" :style="inputStyle" v-model="orderId"></el-input>
-                    订单状态：
-                    <el-select style="width:100px" placeholder="请选择订单状态" :style="inputStyle" v-model="orderStatus">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label"
-                            :value="item.value"></el-option>
-                    </el-select>
                     <el-button type="primary" @click="fetchOrder">查询</el-button>
                     <!-- 导出 -->
                     <el-button type="success" @click="exportAllOrders"><el-icon>
@@ -20,6 +15,10 @@
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
                         </el-icon>打印</el-button>
+                    <!-- 排序 -->
+                    <el-button type="success" @click="changeSort"><el-icon>
+                            <PieChart />
+                        </el-icon>&nbsp;更改排序（订单ID）</el-button>
                     <!-- 统计 -->
                     <el-button type="success" @click="statistics"><el-icon>
                             <PieChart />
@@ -144,7 +143,7 @@ export default {
         const fetchOrder = () => {
             console.log(pageSize.value)
             console.log(pageNum.value)
-            fetch(`http://localhost:8080/unacceptedOrders?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/unacceptedOrders?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders,
                 body: JSON.stringify({
@@ -155,9 +154,22 @@ export default {
                 .then(res => res.json())
                 .then(res => {
                     tableData.value = res.data.list;
-                    total.value = res.data.total;
-                    console.log(tableData.value)
+                    const startIndex = (pageNum.value - 1) * pageSize.value
+                    const endIndex = pageNum.value * pageSize.value
                     tableData.value = tableData.value.filter(order => order.orderStatus === 'pending');
+                    if (orderId.value) {
+                        const orderIdSearch = parseInt(orderId.value, 10);
+                        tableData.value = tableData.value.filter(order => order.orderId === orderIdSearch);
+                        console.log('查询后结果：')
+                        console.log(tableData.value)
+                    };
+                    if (sort.value) {
+                        tableData.value = tableData.value.sort((a, b) => a.orderId - b.orderId)
+                    } else {
+                        tableData.value = tableData.value.sort((a, b) => b.orderId - a.orderId)
+                    }
+                    total.value = tableData.value.length;
+                    tableData.value = tableData.value.slice(startIndex, endIndex)
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
@@ -325,6 +337,16 @@ export default {
             };
             chart.setOption(option);
         };
+        const sort = ref(false)
+        const changeSort = () => {
+            if (sort.value) {
+                sort.value = false
+            } else {
+                sort.value = true
+            }
+            console.log('改变了排序', sort.value)
+            fetchOrder()
+        }
 
         return {
             dialogVisible,
@@ -341,6 +363,8 @@ export default {
             EditDialogVisible,
             exportDialogVisible,
             statisticDialogVisible,
+            sort,
+            changeSort,
             exportAllOrders,
             clickExport,
             formatJson,
