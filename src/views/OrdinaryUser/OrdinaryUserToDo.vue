@@ -11,7 +11,8 @@
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
-          <el-button style="float:left" type="info" @click="Sort"><el-icon><SortUp /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="info" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="info" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;正序查看</el-button>
           <el-button style="float:right" type="primary" @click="fetchTodo"><el-icon><Search /></el-icon>&nbsp;查询</el-button>
           <el-select style="float:right" class="search-input" v-model="todoStatus" placeholder="状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
@@ -369,8 +370,8 @@ export default {
       console.log("执行了formatJson函数");
       return jsonData.map(v => filterVal.map(j => v[j]));
     };
-    const Sort = () =>{
-      console.log("执行了Sort函数");
+    const SortDown = () =>{
+      console.log("执行了SortDown函数");
       fetch(`http://localhost:8080/ordinaryUser/sortdown?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
@@ -384,6 +385,9 @@ export default {
             console.error('获取数据失败:', error);
           });
     };
+    const SortUp = () =>{
+      console.log("执行了SortDown函数");
+    }
     const statistics = () => {
       console.log("执行了Statistics函数");
       statisticDialogVisible.value = true;
@@ -486,7 +490,7 @@ export default {
       handleClose,
       saveData,
       printBox,
-      Sort,
+      SortDown,
       exportTodo,
       formatJson,
       statistics,

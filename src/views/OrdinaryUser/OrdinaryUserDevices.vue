@@ -16,7 +16,7 @@
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印当前页</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
-          <el-button style="float:left" type="success" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="success" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;正序查看</el-button>
           <el-button style="float:left" type="success" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
           <el-button style="float:left" type="danger">查看设备地址</el-button>
         </div>
@@ -141,8 +141,6 @@
         <div style="text-align: left;">
           【已实现】：增、删、查、改、导、印、统、序<br>
           【待修改】：查：只能查询分页内的结果<br>
-          【待修改】：改：更新信息后修改后页面时间会增加1天<br>
-          【待修改】：序：倒序排列后,如果点击页面跳转，就会导致刷新
         </div>
 
       </el-main>
@@ -222,50 +220,13 @@ export default {
     };//修改页码
     const fetchDevice = () => {
       console.log("开始获取数据")
-      fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
-        method: 'POST',
-        headers: apiHeaders,
-      })
-          .then(res => res.json())
-          .then(res => {
-            console.log(res.data.list);
-            tableData.value = res.data.list;
-            total.value = res.data.total;
-            if(serialNumberForSearch.value){
-              tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumberForSearch.value));
-            }
-            if(deviceNameForSearch.value){
-              tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceNameForSearch.value));
-            }
-            if(statusForSearch.value){
-              const searchStatus = parseInt(statusForSearch.value, 10);
-              tableData.value = tableData.value.filter(device => device.status ===searchStatus);
-            }
-
-          })
-          .catch(error => {
-            console.error('获取数据失败:', error);
-          });
+      if (sortStatus.value === false){
+        SortUp();
+      }
+      else if(sortStatus.value ===true){
+        SortDown();
+      }
     };//获取设备信息,保存到tableData中（查）
-    const query = () => {
-      fetch(`http://localhost:8080/ordinaryUser/devicesSelect`, {
-        method: 'POST',
-        headers: apiHeaders,
-        body: JSON.stringify({
-          "status": status.value,
-          "pageNum": pageNum.value,
-          "pageSize": pageSize.value,
-        })
-      })
-          .then(res => res.json())
-          .then(res => {
-            tableData.value = res.data.list;
-            total.value = res.data.total;
-          })
-          .catch(error => {
-            console.error('获取数据失败:', error);
-          });
-    };//根据设备状态查询设备信息（查）
     const handleDelete = (serialNumber) => {
       fetch(`http://localhost:8080/ordinaryUser/devices?serialNumber=${serialNumber}`, {
         method: 'DELETE',
@@ -471,7 +432,8 @@ export default {
 
       chart.setOption(option);
     };
-    const SortUP = () =>{
+    const SortUp = () =>{
+      sortStatus.value = false;
       console.log("执行了SortUp函数，用于正序排列")
       fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
@@ -526,8 +488,6 @@ export default {
           .catch(error => {
             console.error('获取数据失败:', error);
           });
-
-
     }
 
     onMounted(() => {
@@ -562,7 +522,6 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       handleDelete,
-      query,
       handleClose,
       formatDate,
       saveData,
@@ -571,10 +530,10 @@ export default {
       exportTodoList,
       statistics,
       SortDown,
+      SortUp,
       serialNumberForSearch,
       deviceNameForSearch,
-      statusForSearch,
-      SortUp,
+      statusForSearch
     };
   },
 };

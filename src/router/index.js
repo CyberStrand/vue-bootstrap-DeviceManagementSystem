@@ -31,6 +31,7 @@ import companymanager_feedback from "@/views/companymanager/companymanager_feedb
 import rank from "../views/order/rank.vue";
 import feedback from "../views/Admin/Feedback.vue";
 import AdminFeedback from "../views/Admin/AdminFeedback.vue";
+import maintainerToDo from "@/views/order/maintainerToDo.vue";
 
 
 
@@ -196,11 +197,6 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: signup
-  },
-  {
-    path:'/weather',
-    name:'天气测试',
-    component: weather
   }
 
 ]

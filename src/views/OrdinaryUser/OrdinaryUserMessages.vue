@@ -160,10 +160,6 @@ export default {
       pageNum.value = pagenum;
       getMessage();
     };//修改页码
-
-    //获取消息，这里需要注意，由于每次调整页码，都会调用这个函数
-    //如果这个时候已经筛选了一些条件，再调整页码，会导致查询结果又变成未筛选的状态，
-    // 因此这里要根据是否处于查询场景进行一些判断
     const getMessage = () => {
       console.log("执行了getMessage函数")
       fetch(`http://localhost:8080/ordinaryUser/message?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {

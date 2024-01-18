@@ -109,7 +109,7 @@ export default {
         "vertical": "top",
         "horizontal": "left",
         "city": "CN101010100",
-        "key": "80df397da0874e0aadace9f9ef3ccd92"
+        "key": "8aedbe9db95c4b4da391cef7f7556335"
       }
     };
     (function (d) {
