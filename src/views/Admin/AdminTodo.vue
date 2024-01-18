@@ -3,12 +3,12 @@
         <el-container>
             <el-main>
                 <!--选择栏-->
+                <el-input class="search-input" v-model="todoContent4search" placeholder="待办内容"></el-input>
+                <el-select class="search-input" v-model="todoStatus4search" placeholder="待办状态">
+                    <el-option v-for="item in options" :key="item.value" :label="item.label"
+                        :value="item.value"></el-option>
+                </el-select>
                 <div class="search-bar">
-                    <el-input class="search-input" v-model="todoContent4search" placeholder="待办内容"></el-input>
-                    <el-select class="search-input" v-model="todoStatus4search" placeholder="待办状态">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label"
-                            :value="item.value"></el-option>
-                    </el-select>
                     <el-button type="primary" @click="fetchTodo">查询</el-button>
                     <!-- 导出 -->
                     <el-button type="success" @click="exportAllTodo"><el-icon>
@@ -19,6 +19,10 @@
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
                         </el-icon>打印</el-button>
+                    <!-- 排序 -->
+                    <el-button type="success" @click="changeSort"><el-icon>
+                            <PieChart />
+                        </el-icon>&nbsp;更改排序（待办ID）</el-button>
                     <!-- 统计 -->
                     <el-button type="success" @click="statistics"><el-icon>
                             <PieChart />
@@ -143,16 +147,19 @@ export default {
             fetchTodo();
         };
         const fetchTodo = () => {
-            fetch(`http://localhost:8080/admin/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/admin/todos?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders
             })
                 .then(res => res.json())
                 .then(res => {
                     tableData.value = res.data.list;
-                    total.value = res.data.total;
+                    const startIndex = (pageNum.value - 1) * pageSize.value
+                    const endIndex = pageNum.value * pageSize.value
                     if (todoContent4search.value) {
-                        tableData.value = tableData.value.filter(todo => todo.todoContent.includes(todoContent4search.value));
+                        tableData.value = tableData.value.filter(todo => {
+                            return todo.todoContent && todo.todoContent.includes(todoContent4search.value)
+                        });
                         console.log('查询后结果：')
                         console.log(tableData.value)
                     }
@@ -162,6 +169,13 @@ export default {
                         console.log('查询后结果：')
                         console.log(tableData.value)
                     }
+                    if (sort.value) {
+                        tableData.value = tableData.value.sort((a, b) => a.todoId - b.todoId)
+                    } else {
+                        tableData.value = tableData.value.sort((a, b) => b.todoId - a.todoId)
+                    }
+                    total.value = tableData.value.length;
+                    tableData.value = tableData.value.slice(startIndex, endIndex)
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
@@ -267,7 +281,7 @@ export default {
                     export_json_to_excel(tHeader, data, '所有待办');
                 });
         };
-        
+
         const formatJson = (filterVal, jsonData) => {
             console.log("执行了formatJson函数");
             return jsonData.map(v => filterVal.map(j => v[j]));
@@ -347,6 +361,16 @@ export default {
             };
             chart.setOption(option);
         };
+        const sort = ref(false)
+        const changeSort = () => {
+            if (sort.value) {
+                sort.value = false
+            } else {
+                sort.value = true
+            }
+            console.log('改变了排序', sort.value)
+            fetchTodo()
+        }
 
         onMounted(() => {
             fetchTodo();
@@ -366,6 +390,8 @@ export default {
             todoContent4search,
             todoStatus4search,
             statisticDialogVisible,
+            sort,
+            changeSort,
             statistics,
             exportAllTodo,
             updateTodo,

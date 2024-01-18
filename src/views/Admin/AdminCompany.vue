@@ -15,10 +15,14 @@
           <el-button v-print="'#printArea'" type="success"> <el-icon>
               <Printer />
             </el-icon>打印</el-button>
-            <!-- 统计 -->
+          <!-- 统计 -->
           <el-button type="success" @click="statistics"><el-icon>
               <PieChart />
             </el-icon>&nbsp;统计</el-button>
+          <!-- 排序 -->
+          <el-button type="success" @click="changeSort"><el-icon>
+              <PieChart />
+            </el-icon>&nbsp;更改排序（公司ID）</el-button>
           <!--增加-->
           <el-button type="primary" @click="openDialog">新增</el-button>
         </div>
@@ -88,7 +92,6 @@
 import { ref, onMounted, toRaw } from 'vue';
 import { export_json_to_excel } from "@/vendor/Export2Excel";
 
-
 const apiHeaders = {
   'Content-Type': 'application/json',
   'Authorization': "Bearer " + localStorage.getItem("token") // Replace with your actual JWT token
@@ -116,6 +119,7 @@ export default {
       companyId: '',
       companyName: '',
     });
+    const sort = ref(false)
     const handleSizeChange = (pagesize) => {
       pageSize.value = pagesize;
       fetchCompany();
@@ -125,20 +129,27 @@ export default {
       fetchCompany();
     };
     const fetchCompany = () => {
-      fetch(`http://localhost:8080/admin/companies?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+      fetch(`http://localhost:8080/admin/companies?pageNum=-1&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders
       })
         .then(res => res.json())
         .then(res => {
           tableData.value = res.data.list;
-          total.value = res.data.total;
-          console.log(tableData.value)
+          const startIndex = (pageNum.value - 1) * pageSize.value
+          const endIndex = pageNum.value * pageSize.value
           if (company_name.value) {
             tableData.value = tableData.value.filter(company => company.companyName.includes(company_name.value));
             console.log('查询后结果：')
             console.log(tableData.value)
           }
+          if (sort.value) {
+            tableData.value = tableData.value.sort((a, b) => a.companyId - b.companyId)
+          } else {
+            tableData.value = tableData.value.sort((a, b) => b.companyId - a.companyId)
+          }
+          total.value = tableData.value.length;
+          tableData.value = tableData.value.slice(startIndex, endIndex)
         })
         .catch(error => {
           console.error('获取数据失败:', error);
@@ -279,6 +290,15 @@ export default {
           console.error('获取统计数据失败:', error);
         });
     };
+    const changeSort = () => {
+      if (sort.value) {
+        sort.value = false
+      } else {
+        sort.value = true
+      }
+      console.log('改变了排序', sort.value)
+      fetchCompany()
+    }
 
     onMounted(() => {
       fetchCompany();
@@ -299,6 +319,8 @@ export default {
       EditDialogVisible,
       exportDialogVisible,
       statisticDialogVisible,
+      sort,
+      changeSort,
       exportAllCompanies,
       clickExport,
       getStatusColor,

@@ -3,14 +3,14 @@
         <el-container>
             <el-main>
                 <!--选择栏-->
+                <el-input class="search-input" v-model="serialNumber4search" placeholder="序列号"></el-input>
+                <el-input class="search-input" v-model="deviceName4search" placeholder="设备名称"></el-input>
+                <el-input class="search-input" v-model="locationId4search" placeholder="设备地址"></el-input>
+                <el-select class="search-input" v-model="status4search" placeholder="设备状态">
+                    <el-option v-for="item in options" :key="item.value" :label="item.label"
+                        :value="item.value"></el-option>
+                </el-select>
                 <div class="search-bar">
-                    <el-input class="search-input" v-model="serialNumber4search" placeholder="序列号"></el-input>
-                    <el-input class="search-input" v-model="deviceName4search" placeholder="设备名称"></el-input>
-                    <el-input class="search-input" v-model="locationId4search" placeholder="设备地址"></el-input>
-                    <el-select class="search-input" v-model="status4search" placeholder="设备状态">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label"
-                            :value="item.value"></el-option>
-                    </el-select>
                     <el-button type="primary" @click="fetchDevice">查询</el-button>
                     <!-- 导出 -->
                     <el-button type="success" @click="clickExport"><el-icon>
@@ -25,6 +25,10 @@
                     <el-button type="success" @click="statistics"><el-icon>
                             <PieChart />
                         </el-icon>&nbsp;统计</el-button>
+                    <!-- 排序 -->
+                    <el-button type="success" @click="changeSort"><el-icon>
+                            <PieChart />
+                        </el-icon>&nbsp;更改排序（保修期）</el-button>
                     <el-button type="primary" @click="openDialog">新增</el-button>
                 </div>
 
@@ -196,7 +200,7 @@ export default {
             fetchDevice();
         };//修改页码
         const fetchDevice = () => {
-            fetch(`http://localhost:8080/admin/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/admin/devices?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders,
                 body: JSON.stringify({
@@ -207,15 +211,17 @@ export default {
                 .then(res => res.json())
                 .then(res => {
                     tableData.value = res.data.list;
-                    total.value = res.data.total;
-                    console.log(tableData.value)
+                    const startIndex = (pageNum.value - 1) * pageSize.value
+                    const endIndex = pageNum.value * pageSize.value
                     if (serialNumber4search.value) {
                         tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumber4search.value));
                         console.log('查询后结果：')
                         console.log(tableData.value)
                     }
                     if (deviceName4search.value) {
-                        tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceName4search.value));
+                        tableData.value = tableData.value.filter(device => {
+                            return device.deviceName && device.deviceName.includes(deviceName4search.value);
+                        })
                         console.log('查询后结果：')
                         console.log(tableData.value)
                     }
@@ -231,6 +237,13 @@ export default {
                         console.log('查询后结果：');
                         console.log(tableData.value);
                     }
+                    if (sort.value) {
+                        tableData.value = tableData.value.sort((a, b) => a.warrantyTime - b.warrantyTime)
+                    } else {
+                        tableData.value = tableData.value.sort((a, b) => b.warrantyTime - a.warrantyTime)
+                    }
+                    total.value = tableData.value.length;
+                    tableData.value = tableData.value.slice(startIndex, endIndex)
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
@@ -426,6 +439,16 @@ export default {
             };
             chart.setOption(option);
         };
+        const sort = ref(false)
+        const changeSort = () => {
+            if (sort.value) {
+                sort.value = false
+            } else {
+                sort.value = true
+            }
+            console.log('改变了排序', sort.value)
+            fetchDevice()
+        }
 
         onMounted(() => {
             fetchDevice();
@@ -450,6 +473,8 @@ export default {
             EditDialogVisible,
             exportDialogVisible,
             statisticDialogVisible,
+            sort,
+            changeSort,
             exportAllDevices,
             clickExport,
             formatJson,

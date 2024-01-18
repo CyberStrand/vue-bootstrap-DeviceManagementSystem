@@ -20,6 +20,10 @@
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
                         </el-icon>打印</el-button>
+                    <!-- 排序 -->
+                    <el-button type="success" @click="changeSort"><el-icon>
+                            <PieChart />
+                        </el-icon>&nbsp;更改排序（订单ID）</el-button>
                 </div>
 
                 <!--数据表-->
@@ -227,7 +231,7 @@ export default {
         const fetchOrder = () => {
             console.log(pageSize.value)
             console.log(pageNum.value)
-            fetch(`http://localhost:8080/maintanenceOrders?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/maintanenceOrders?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders,
                 body: JSON.stringify({
@@ -238,9 +242,16 @@ export default {
                 .then(res => res.json())
                 .then(res => {
                     tableData.value = res.data.list;
-                    total.value = res.data.total;
-                    console.log(tableData.value)
+                    const startIndex = (pageNum.value - 1) * pageSize.value
+                    const endIndex = pageNum.value * pageSize.value
                     tableData.value = tableData.value.filter(order => order.orderStatus === 'accepted');
+                    if (sort.value) {
+                        tableData.value = tableData.value.sort((a, b) => a.orderId - b.orderId)
+                    } else {
+                        tableData.value = tableData.value.sort((a, b) => b.orderId - a.orderId)
+                    }
+                    total.value = tableData.value.length;
+                    tableData.value = tableData.value.slice(startIndex, endIndex)
                 })
                 .catch(error => {
                     console.error('获取数据失败:', error);
@@ -410,6 +421,17 @@ export default {
             };
             chart.setOption(option);
         };
+        
+        const sort = ref(false)
+        const changeSort = () => {
+            if (sort.value) {
+                sort.value = false
+            } else {
+                sort.value = true
+            }
+            console.log('改变了排序', sort.value)
+            fetchOrder()
+        }
 
         return {
             dialogVisible,
@@ -426,6 +448,8 @@ export default {
             EditDialogVisible,
             exportDialogVisible,
             statisticDialogVisible,
+            sort,
+            changeSort,
             exportAllOrders,
             clickExport,
             formatJson,
