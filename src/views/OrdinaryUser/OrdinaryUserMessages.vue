@@ -98,9 +98,7 @@
         </el-dialog>
         <div style="text-align: left;">
         【已实现】删、改、导、印、统、序。<br>
-        【待实现】增：新增消息需要receiver_id,用户能发给谁呢？如果回复消息,要知道发送者的id，要在message表里加sender_id<br>
-        【待实现】查：单条件查询要修改为多条件联合查询，还要处理有时部分输入条件为空的情况<br>
-        【待修改】序：倒序查看时，如果修改了页码，页面会自动刷新，刷新会导致又变成正序，待修改
+        【待实现】增、查
         </div>
       </el-main>
     </el-container>
@@ -162,10 +160,6 @@ export default {
       pageNum.value = pagenum;
       getMessage();
     };//修改页码
-
-    //获取消息，这里需要注意，由于每次调整页码，都会调用这个函数
-    //如果这个时候已经筛选了一些条件，再调整页码，会导致查询结果又变成未筛选的状态，
-    // 因此这里要根据是否处于查询场景进行一些判断
     const getMessage = () => {
       console.log("执行了getMessage函数")
       fetch(`http://localhost:8080/ordinaryUser/message?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {

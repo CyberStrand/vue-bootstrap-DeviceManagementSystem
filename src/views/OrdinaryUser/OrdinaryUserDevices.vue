@@ -4,22 +4,23 @@
       <el-main>
         <!--选择栏-->
         <div class="search-bar">
-          <el-input class="search-input" v-model="serialNumber" placeholder="序列号"></el-input>
-          <el-input class="search-input" v-model="deviceName" placeholder="设备名称"></el-input>
-          <el-select class="search-input" v-model="status" placeholder="设备状态">
+          <el-input class="search-input" v-model="serialNumberForSearch" placeholder="序列号"></el-input>
+          <el-input class="search-input" v-model="deviceNameForSearch" placeholder="设备名称"></el-input>
+          <el-select class="search-input" v-model="statusForSearch" placeholder="设备状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
-          <el-button type="primary" @click="query">查询</el-button>
+          <el-button type="primary" @click="fetchDevice">查询</el-button>
         </div>
-
         <div class="action-buttons">
-          <el-button type="primary" @click="openDialog">新增</el-button>
+          <el-button style="float:left" type="primary" @click="openDialog">新增</el-button>
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印当前页</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
-          <el-button type="danger">查看设备地址</el-button>
+          <el-button style="float:left" type="success" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;正序查看</el-button>
+          <el-button style="float:left" type="success" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:left" type="danger">查看设备地址</el-button>
         </div>
-
+        <br><hr>
         <!--数据表-->
         <div id = "1">
         <el-table :data="tableData"
@@ -60,7 +61,6 @@
               @current-change="handleCurrentChange"
           />
         </div>
-
         <!--添加设备对话框-->
         <el-dialog
             title="新增设备"
@@ -68,15 +68,18 @@
             width="30%"
             :before-close="handleClose"
         >
-          <el-form :model="formData" ref="formDataRef" label-width="80px">
+          <el-form :model="addData" ref="formDataRef" label-width="80px">
             <el-form-item label="序列号" prop="serialNumber">
-              <el-input v-model="formData.serialNumber"></el-input>
+              <el-input v-model="addData.serialNumber"></el-input>
             </el-form-item>
             <el-form-item label="设备名称" prop="deviceName">
-              <el-input v-model="formData.deviceName"></el-input>
+              <el-input v-model="addData.deviceName"></el-input>
+            </el-form-item>
+            <el-form-item label="设备类型" prop="deviceModel">
+              <el-input v-model="addData.deviceModel"></el-input>
             </el-form-item>
             <el-form-item label="运行状态" prop="status">
-              <el-select v-model="formData.status">
+              <el-select v-model="addData.status">
                 <el-option
                     v-for="item in options"
                     :key="item.value"
@@ -135,11 +138,9 @@
           &nbsp; <div id="chart" style="height: 300px;"></div>
         </el-dialog>
 
-
         <div style="text-align: left;">
-          【已实现】：删、改、导、印、统<br>
-          【待实现】：增、查、序<br>
-          【待修改】：更新设备状态后，设备购买时间莫名其妙会少一天
+          【已实现】：增、删、查、改、导、印、统、序<br>
+          【待修改】：查：只能查询分页内的结果<br>
         </div>
 
       </el-main>
@@ -152,7 +153,7 @@ import {ref, onMounted, toRaw} from 'vue';
 import print from "print-js";
 import {export_json_to_excel} from "@/vendor/Export2Excel";
 import * as echarts from "echarts";
-import {PieChart, Printer, Promotion} from "@element-plus/icons-vue";
+import {PieChart, Printer, Promotion, SortDown, SortUp} from "@element-plus/icons-vue";
 
 const apiHeaders = {
   'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ const apiHeaders = {
 };
 export default {
   name: 'OrdinaryUserDevices',
-  components: {Promotion, Printer, PieChart},
+  components: {SortDown, SortUp, Promotion, Printer, PieChart},
   setup() {
     const dialogVisible = ref(false);
     const tableData = ref([]);
@@ -174,6 +175,10 @@ export default {
     const exportDialogVisible = ref(false);
     const exportAll = ref(true);
     const statisticDialogVisible = ref(false);
+    const serialNumberForSearch = ref('');
+    const deviceNameForSearch = ref('');
+    const statusForSearch = ref(null);
+    const sortStatus = ref(false);
     const options = ref([
       { value: '0', label: '正常运行中' },
       { value: '1', label: '维修中' },
@@ -189,19 +194,17 @@ export default {
       status: null,
       deviceModel: '',
       purchaseDate: '',
-      warrantyTime: 365,
+      warrantyTime: null,
       productionCompanyId:null,
     });//编辑设备
     const addData = ref({
       serialNumber: '',
       deviceName: '',
-      locationId: null,
-      ownerId:null,
       status: null,
       deviceModel: '',
-      purchaseDate: '',
-      warrantyTime: 365,
-      productionCompanyId:null,
+      purchaseDate: new Date().toISOString(),
+      warrantyTime:365,
+      productionCompanyId:1,
     });//添加设备
     const formatDate = (dateString) => {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
@@ -217,39 +220,13 @@ export default {
     };//修改页码
     const fetchDevice = () => {
       console.log("开始获取数据")
-      fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
-        method: 'POST',
-        headers: apiHeaders,
-      })
-          .then(res => res.json())
-          .then(res => {
-            console.log(res.data.list);
-            tableData.value = res.data.list;
-            total.value = res.data.total;
-          })
-          .catch(error => {
-            console.error('获取数据失败:', error);
-          });
+      if (sortStatus.value === false){
+        SortUp();
+      }
+      else if(sortStatus.value ===true){
+        SortDown();
+      }
     };//获取设备信息,保存到tableData中（查）
-    const query = () => {
-      fetch(`http://localhost:8080/ordinaryUser/devicesSelect`, {
-        method: 'POST',
-        headers: apiHeaders,
-        body: JSON.stringify({
-          "status": status.value,
-          "pageNum": pageNum.value,
-          "pageSize": pageSize.value,
-        })
-      })
-          .then(res => res.json())
-          .then(res => {
-            tableData.value = res.data.list;
-            total.value = res.data.total;
-          })
-          .catch(error => {
-            console.error('获取数据失败:', error);
-          });
-    };//根据设备状态查询设备信息（查）
     const handleDelete = (serialNumber) => {
       fetch(`http://localhost:8080/ordinaryUser/devices?serialNumber=${serialNumber}`, {
         method: 'DELETE',
@@ -286,12 +263,12 @@ export default {
       done();
     };//关闭添加设备对话框
     const saveData = () => {
-      console.log(formData.value)
-      console.log(toRaw(formData.value))
-      fetch("http://localhost:8080/ordinaryUser/devicesAdd",{
+      console.log(addData.value)
+      console.log(toRaw(addData.value))
+      fetch("http://localhost:8080/ordinaryUser/deviceAdd",{
         method:'POST',
         headers:apiHeaders,
-        body: JSON.stringify(formData.value)
+        body: JSON.stringify(addData.value)
       })
           .then(response => response.json())
           .then(data => {
@@ -410,8 +387,6 @@ export default {
             console.error('获取统计数据失败:', error);
           });
     };
-
-// 添加一个映射函数
     const mapStatus = (status) => {
       const statusMap = {
         '0': '正常运行中',
@@ -420,7 +395,6 @@ export default {
       };
       return statusMap[status] || '';
     };
-
     const drawPieChart = (data) => {
       // 使用 ECharts 绘制饼状图
       const chart = echarts.init(document.getElementById('chart'));
@@ -458,6 +432,63 @@ export default {
 
       chart.setOption(option);
     };
+    const SortUp = () =>{
+      sortStatus.value = false;
+      console.log("执行了SortUp函数，用于正序排列")
+      fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res.data.list);
+            tableData.value = res.data.list;
+            total.value = res.data.total;
+            if(serialNumberForSearch.value){
+              tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumberForSearch.value));
+            }
+            if(deviceNameForSearch.value){
+              tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceNameForSearch.value));
+            }
+            if(statusForSearch.value){
+              const searchStatus = parseInt(statusForSearch.value, 10);
+              tableData.value = tableData.value.filter(device => device.status ===searchStatus);
+            }
+
+          })
+          .catch(error => {
+            console.error('获取数据失败:', error);
+          });
+
+    }
+    const SortDown = () =>{
+      sortStatus.value = true;
+      console.log("执行了SortDown函数，用于倒序排列")
+      fetch(`http://localhost:8080/ordinaryUser/devicesDesc?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            console.log(res.data.list);
+            tableData.value = res.data.list;
+            total.value = res.data.total;
+            if(serialNumberForSearch.value){
+              tableData.value = tableData.value.filter(device => device.serialNumber.includes(serialNumberForSearch.value));
+            }
+            if(deviceNameForSearch.value){
+              tableData.value = tableData.value.filter(device => device.deviceName.includes(deviceNameForSearch.value));
+            }
+            if(statusForSearch.value){
+              const searchStatus = parseInt(statusForSearch.value, 10);
+              tableData.value = tableData.value.filter(device => device.status ===searchStatus);
+            }
+
+          })
+          .catch(error => {
+            console.error('获取数据失败:', error);
+          });
+    }
 
     onMounted(() => {
       fetchDevice();
@@ -480,6 +511,8 @@ export default {
       exportDialogVisible,
       exportAll,
       statisticDialogVisible,
+      addData,
+      sortStatus,
       getStatusColor,
       getStatusLabel,
       updateDevice,
@@ -489,7 +522,6 @@ export default {
       handleSizeChange,
       handleCurrentChange,
       handleDelete,
-      query,
       handleClose,
       formatDate,
       saveData,
@@ -497,7 +529,11 @@ export default {
       clickExport,
       exportTodoList,
       statistics,
-
+      SortDown,
+      SortUp,
+      serialNumberForSearch,
+      deviceNameForSearch,
+      statusForSearch
     };
   },
 };
