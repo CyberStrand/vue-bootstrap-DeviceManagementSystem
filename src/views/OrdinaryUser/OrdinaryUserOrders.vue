@@ -13,10 +13,10 @@
           <el-button type="danger" @click="openDialog">报修</el-button>
         </div>
         <div>
+          <el-button style="float:left" type="warning" @click="findAllOrders"><el-icon><CirclePlus /></el-icon>&nbsp正序查询所有</el-button>
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
-          <el-button style="float:left" type="success" @click="SortUp"><el-icon><SortUp /></el-icon>&nbsp;正序查看</el-button>
           <el-button style="float:left" type="success" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
         </div>
         <!--数据表-->
@@ -44,7 +44,6 @@
               <el-button size="small" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
               <el-button size="small" type="primary" @click="handleFeedback(scope.row)">评价</el-button>
               <el-button size="small" type="danger" @click="handleDelete(scope.row.orderId)">删除</el-button>
-
             </template>
           </el-table-column>
         </el-table>
@@ -142,8 +141,7 @@
         </el-dialog>
 
         <div style="text-align: left;">
-          【已实现】：增、删、改、导、印、统、序、评价<br>
-          【待实现】：查
+          【已实现】：增、删、查、改、导、印、统、序、评价<br>
         </div>
 
       </el-main>
@@ -153,7 +151,7 @@
 
 <script>
 import {ref, onMounted, toRaw} from 'vue';
-import {PieChart, Printer, Promotion, SortDown, SortUp} from "@element-plus/icons-vue";
+import {CirclePlus, PieChart, Printer, Promotion, SortDown, SortUp} from "@element-plus/icons-vue";
 import print from "print-js";
 import {export_json_to_excel} from "@/vendor/Export2Excel";
 import * as echarts from "echarts";
@@ -165,24 +163,27 @@ const apiHeaders = {
 
 export default {
   name: 'OrdinaryUserOrder',
-  components: {SortDown, SortUp, PieChart, Promotion, Printer},
+  components: {CirclePlus, SortDown, SortUp, PieChart, Promotion, Printer},
   setup() {
     const dialogVisible = ref(false);
-    const orderId = ref(null);
     const tableData = ref([]);
     const total = ref(0);
     const pageNum = ref(1);
     const pageSize = ref(5);
+    const orderId = ref(null);
     const orderStatus = ref('');
     const ownerId = ref(24);
     const exportDialogVisible= ref(false);
     const feedbackDialogVisible=ref(false);
     const exportAll = ref(false);
     const statisticDialogVisible = ref(false);
+    const queryStatus = ref(false);
+    const sortDownStatus = ref(false);
     const orderStatusOptions = ref([
       {value: 'pending', label: '派单中'},
       {value: 'completed', label: '已完成'},
-      {value: 'evaluated', label: '已评价'}
+      {value: 'evaluated', label: '已评价'},
+      {value: 'accepted', label:'已接单'}
     ]);
     const urgencyLevelOptions = ref([
       {value:'1',label:'紧急程度1'},
@@ -233,6 +234,15 @@ export default {
       fetchDevice();
     };//修改页码
     const fetchDevice = () => {
+      if(queryStatus.value === true){ query()}
+      else if (queryStatus.value===false){
+        if(sortDownStatus.value===true){SortDown()}
+        else if(sortDownStatus.value===false){findAllOrders()}
+        }
+    };//获取订单信息
+    const findAllOrders = ()=>{
+      queryStatus.value=false;
+      sortDownStatus.value = false;
       fetch(`http://localhost:8080/ordinaryUser/order?pageSize=${pageSize.value}&pageNum=${pageNum.value}`, {
         method: 'POST',
         headers: apiHeaders,
@@ -245,24 +255,39 @@ export default {
           .catch(error => {
             console.error('获取数据失败:', error);
           });
-    };//获取设备信息（查）
+    }
     const query = () => {
+      console.log("执行了查询函数query")
+      queryStatus.value = true;
       console.log(orderId.value);
-      fetch(`http://localhost:8080/ordinaryUser/orderFind?orderId=${orderId.value}&orderStatus=${orderStatus.value}&pageSize=${pageSize.value}&pageNum=${pageNum.value}`, {
+      console.log("输出了orderId的值")
+      const params = {
+        pageSize: pageSize.value,
+        pageNum: pageNum.value,
+      };
+
+      if (orderId.value !== null) {
+        params.orderId = orderId.value;
+      }
+
+      if (orderStatus.value !== null) {
+        params.orderStatus = orderStatus.value;
+      }
+
+      fetch(`http://localhost:8080/ordinaryUser/orderFind`, {
         method: 'POST',
         headers: apiHeaders,
+        body: JSON.stringify(params),
       })
           .then(res => res.json())
           .then(res => {
             tableData.value = res.data.list;
             total.value = res.data.total;
-            orderStatus.value = null;
-            orderId.value = null;
           })
           .catch(error => {
             console.error('获取数据失败:', error);
           });
-    };//根据设备状态查询设备信息（查）
+    };
     const handleDelete = (orderId) => {
       fetch(`http://localhost:8080/ordinaryUser/order?orderId=${orderId}`, {
         method: 'DELETE',
@@ -339,6 +364,7 @@ export default {
         'pending': '派单中',
         'completed':'已完成',
         'evaluated': '已评价',
+        'accepted':'已结单',
       };
       return statusMap[status] || '';
     };
@@ -347,6 +373,7 @@ export default {
       if(status==='pending')return '#ff7b7b'
       else if(status==='completed')return '#5b952a'
       else if(status==='evaluated')return '#4d90fe'
+      else if(stauts==='accepted')return '#ffd766'
     };
     const printBox = () => {
       console.log("执行了printBox函数");
@@ -404,21 +431,6 @@ export default {
       console.log("执行了formatJson函数");
       return jsonData.map(v => filterVal.map(j => v[j]));
     };
-    const Sort = () =>{
-      console.log("执行了Sort函数");
-      fetch(`http://localhost:8080/ordinaryUser/sortdown?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
-        method: 'POST',
-        headers: apiHeaders,
-      })
-          .then(res => res.json())
-          .then(res => {
-            tableData.value = res.data.list;
-            total.value = res.data.total;
-          })
-          .catch(error => {
-            console.error('获取数据失败:', error);
-          });
-    };
     const statistics = () => {
       console.log("执行了Statistics函数");
       statisticDialogVisible.value = true;
@@ -444,6 +456,7 @@ export default {
         'pending': '派单中',
         'completed': '已完成',
         'evaluated':'已评价',
+        'accepted':'已结单'
       };
       return statusMap[status] || '';
     };
@@ -505,11 +518,23 @@ export default {
             console.error('Error during data submission:', error);
           });
     }
-    const SortUp=()=>{
-
-    }
     const SortDown=()=>{
-
+      sortDownStatus.value = true;
+      queryStatus.value = false;
+      orderId.value=null;
+      orderStatus.value = null;
+      fetch(`http://localhost:8080/ordinaryUser/orderDown?pageSize=${pageSize.value}&pageNum=${pageNum.value}`, {
+        method: 'POST',
+        headers: apiHeaders,
+      })
+          .then(res => res.json())
+          .then(res => {
+            tableData.value = res.data.list;
+            total.value = res.data.total;
+          })
+          .catch(error => {
+            console.error('获取数据失败:', error);
+          });
     }
 
     onMounted(() => {
@@ -536,7 +561,8 @@ export default {
       feedbackDialogVisible,
       feedbackData,
       orderId,
-      Sort,
+      queryStatus,
+      sortDownStatus,
       updateDevice,
       handleEdit,
       openDialog,
@@ -556,8 +582,8 @@ export default {
       exportOrderList,
       handleFeedback,
       addFeedback,
-      SortUp,
       SortDown,
+      findAllOrders,
     };
   },
 };

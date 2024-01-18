@@ -6,17 +6,19 @@
       <el-main>
         <!--选择栏-->
         <div class="search-bar">
-          <el-button style="float:left" type="warning" @click="fetchDevice"><el-icon><CirclePlus /></el-icon>&nbsp;查询所有</el-button>
+          <el-button style="float:left" type="warning" @click="fetchDevice"><el-icon><CirclePlus /></el-icon>&nbsp正序查询所有</el-button>
           <el-button style="float:left" type="success" @click="openDialog"><el-icon><CirclePlus /></el-icon>&nbsp;新增</el-button>
           <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
-          <el-button style="float:left" type="info" @click="Sort"><el-icon><SortUp /></el-icon>&nbsp;倒序查看</el-button>
-          <el-button style="float:right" type="primary" @click="fetchTodo"><el-icon><Search /></el-icon>&nbsp;查询</el-button>
+          <el-button style="float:left" type="info" @click="SortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
+          <el-button style="float:right" type="primary" @click="queryTodo"><el-icon><Search /></el-icon>&nbsp;查询</el-button>
           <el-select style="float:right" class="search-input" v-model="todoStatus" placeholder="状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
         </div>
+        <br>
+        <hr>
         <!--数据表-->
         <div id="1">
           <el-table :data="tableData"
@@ -103,7 +105,6 @@
         </el-dialog>
         <div style="text-align: left;">
           【已实现】：增、删、查、改、导、印、统、序<br>
-          【待修改】序：倒序查看时，如果修改了页码，页面会自动刷新，刷新会导致又变成正序，待修改
         </div>
       </el-main>
     </el-container>
@@ -144,6 +145,7 @@ export default {
     const ownerId = ref(24);
     const todoId = ref(null);
     const exportAll = ref(true);
+    const sortDownStatus = ref(false);
     const options = ref([
       { value: 'done', label: '已完成' },
       { value: 'undone', label: '未完成' },
@@ -167,47 +169,57 @@ export default {
       fetchTodo();
     };//修改页码
     const fetchTodo = () =>{
-      let todo_status = todoStatus.value
       console.log("执行了fetchTodo函数");
-      if (todo_status==null){
-        console.log("没有进行条件查询，查询所有函数")
-        fetch(`http://localhost:8080/maintenancePersonnel/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
-          method: 'POST',
-          headers: apiHeaders,
-        })
-            .then(res => res.json())
-            .then(res => {
-              tableData.value = res.data.list;
-              total.value = res.data.total;
-            })
-            .catch(error => {
-              console.error('获取数据失败:', error);
-            });
+      if( sortDownStatus.value===true){
+        console.log("当前处于倒序查看的状态中")
+        SortDown();
       }
-      else{
-        console.log("在条件查询")
-        console.log(todoStatus)
-        fetch(`http://localhost:8080/maintenancePersonnel/todoSelect`, {
-          method: 'POST',
-          headers: apiHeaders,
-          body: JSON.stringify({
-            "todoStatus": todoStatus.value,
-            "pageNum": pageNum.value,
-            "pageSize": pageSize.value,
+      else {
+        if (todoStatus.value==null){
+          console.log("没有进行条件查询，查询所有函数")
+          fetch(`http://localhost:8080/maintenancePersonnel/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
+            method: 'POST',
+            headers: apiHeaders,
           })
-        })
-            .then(res => res.json())
-            .then(res => {
-              tableData.value = res.data.list;
-              total.value = res.data.total;
+              .then(res => res.json())
+              .then(res => {
+                tableData.value = res.data.list;
+                total.value = res.data.total;
+              })
+              .catch(error => {
+                console.error('获取数据失败:', error);
+              });
+        }
+        else{
+          console.log("在条件查询")
+          console.log(todoStatus)
+          fetch(`http://localhost:8080/maintenancePersonnel/todoSelect`, {
+            method: 'POST',
+            headers: apiHeaders,
+            body: JSON.stringify({
+              "todoStatus": todoStatus.value,
+              "pageNum": pageNum.value,
+              "pageSize": pageSize.value,
             })
-            .catch(error => {
-              console.error('获取数据失败:', error);
-            });
+          })
+              .then(res => res.json())
+              .then(res => {
+                tableData.value = res.data.list;
+                total.value = res.data.total;
+              })
+              .catch(error => {
+                console.error('获取数据失败:', error);
+              });
+        }
       }
+    };
+    const queryTodo = () =>{
+      sortDownStatus.value = false;
+      fetchTodo();
     }
     const fetchDevice = () => {
       todoStatus.value = null;
+      sortDownStatus.value = false;
       console.log("执行了fetchDevice函数");
       fetch(`http://localhost:8080/maintenancePersonnel/todos?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
@@ -240,7 +252,7 @@ export default {
             console.error('删除失败', error.message);
           });
     };//删除设备（删）
-    const handleEdit =(row) =>{
+    const handleEdit = (row) => {
       console.log("执行了handleEdit函数");
       EditDialogVisible.value = true;
       todoId.value = row.todoId;
@@ -260,9 +272,9 @@ export default {
       console.log("执行力saveData函数")
       console.log(formData.value)
       console.log(toRaw(formData.value))
-      fetch("http://localhost:8080/maintenancePersonnel/todo",{
-        method:'POST',
-        headers:apiHeaders,
+      fetch("http://localhost:8080/maintenancePersonnel/todoModify", {
+        method: 'POST',
+        headers: apiHeaders,
         body: JSON.stringify(formData.value)
       })
           .then(response => response.json())
@@ -275,17 +287,18 @@ export default {
             console.error('Error during data submission:', error);
           });
     };//保存添加设备对话框中的数据
-    const updateDevice = () =>{
+    const updateDevice = () => {
+      EditDialogVisible.value = false;
       console.log("执行了updateDevice函数");
       formData.value.todoId = todoId.value;
       console.log(formData.value.todoBoolStatus);
-      if(formData.value.todoBoolStatus) formData.value.todoStatus = 'done'
+      if (formData.value.todoBoolStatus) formData.value.todoStatus = 'done'
       else formData.value.todoStatus = 'undone'
       console.log(formData.value)
 
-      fetch("http://localhost:8080/maintenancePersonnel/todo",{
-        method:'PUT',
-        headers:apiHeaders,
+      fetch("http://localhost:8080/maintenancePersonnel/todo", {
+        method: 'PUT',
+        headers: apiHeaders,
         body: JSON.stringify(formData.value)
       })
           .then(response => response.json())
@@ -308,8 +321,8 @@ export default {
     };
     const getStatusColor = (status) => {
       // console.log("执行了getStatusColor函数");
-      if(status==='undone')return '#ff7b7b'
-      else if(status==='done')return '#5b952a'
+      if (status === 'undone') return '#ff7b7b'
+      else if (status === 'done') return '#5b952a'
     };
     const printBox = () => {
       console.log("执行了printBox函数");
@@ -323,12 +336,12 @@ export default {
         });
       }, 500);
     };//打印当页的数据
-    const clickExport = () =>{
+    const clickExport = () => {
       exportDialogVisible.value = true;
     };//弹出导出的对话框
-    const exportTodoList = ()=>{
+    const exportTodoList = () => {
       if (exportAll.value === true) exportAllTodo();
-      else if (exportAll.value===false) exportTodo();
+      else if (exportAll.value === false) exportTodo();
     } //选择导出什么数据
     const exportTodo = () => {
       console.log("执行了exportTodo函数");
@@ -367,8 +380,10 @@ export default {
       console.log("执行了formatJson函数");
       return jsonData.map(v => filterVal.map(j => v[j]));
     };
-    const Sort = () =>{
-      console.log("执行了Sort函数");
+    const SortDown = () => {
+      todoStatus.value = null;
+      sortDownStatus.value = true;
+      console.log("执行了SortDown函数");
       fetch(`http://localhost:8080/maintenancePersonnel/sortdown?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
@@ -382,7 +397,6 @@ export default {
             console.error('获取数据失败:', error);
           });
     };
-
     const statistics = () => {
       console.log("执行了Statistics函数");
       statisticDialogVisible.value = true;
@@ -398,7 +412,7 @@ export default {
             console.log('Raw response:', res);
 
             // 添加映射关系将标签转化为文字
-            const data = res.data.map(item => ({ value: item.count, name: mapStatus(item.todo_status) }));
+            const data = res.data.map(item => ({value: item.count, name: mapStatus(item.todo_status)}));
 
             // 绘制饼状图
             drawPieChart(data);
@@ -407,8 +421,6 @@ export default {
             console.error('获取统计数据失败:', error);
           });
     };
-
-// 添加一个映射函数
     const mapStatus = (status) => {
       const statusMap = {
         'done': '已完成',
@@ -416,7 +428,6 @@ export default {
       };
       return statusMap[status] || '';
     };
-
     const drawPieChart = (data) => {
       // 使用 ECharts 绘制饼状图
       const chart = echarts.init(document.getElementById('chart'));
@@ -459,7 +470,6 @@ export default {
       console.log("执行了onMounted函数");
       fetchDevice();
     });
-
     return {
       dialogVisible,
       tableData,
@@ -476,6 +486,7 @@ export default {
       exportDialogVisible,
       statisticDialogVisible,
       exportAll,
+      sortDownStatus,
       getStatusColor,
       getStatusLabel,
       updateDevice,
@@ -489,13 +500,14 @@ export default {
       handleClose,
       saveData,
       printBox,
-      Sort,
+      SortDown,
       exportTodo,
       formatJson,
       statistics,
       exportAllTodo,
       clickExport,
       exportTodoList,
+      queryTodo,
     };
   },
 };
@@ -522,7 +534,7 @@ export default {
   text-align: center;
 }
 
-h2{
+h2 {
   color: rgb(64, 158, 255);
 }
 </style>

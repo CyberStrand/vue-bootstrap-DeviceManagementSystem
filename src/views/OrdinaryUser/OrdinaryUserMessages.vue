@@ -4,12 +4,6 @@
       <el-main>
         <!--选择栏-->
         <div style="padding: 10px 0">
-          消息发送时间：
-            <el-date-picker
-                v-model="sendTime"
-                type="date"
-                placeholder="选择查询日期"
-            />
           消息内容：<el-input style="width:100px" placeholder="查找信息内容" :style="inputStyle" v-model="messageContent"></el-input>
           阅读状态：
           <el-select placeholder="选择信息状态" :style="inputStyle"  style="width:150px" v-model="readStatus">
@@ -18,7 +12,8 @@
           <el-button type="primary" @click="query">查询</el-button>
           <br>
           <hr>
-          <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印当前页</el-button>
+          <el-button style="float:left" type="warning" @click="findAllMessages"><el-icon><CirclePlus /></el-icon>&nbsp正序查询所有</el-button>
+          <el-button style="float:left" type="success" @click="printBox"><el-icon><Printer /></el-icon>&nbsp;打印</el-button>
           <el-button style="float:left" type="success" @click="clickExport"><el-icon><Promotion /></el-icon>&nbsp;导出</el-button>
           <el-button style="float:left" type="success" @click="statistics"><el-icon><PieChart /></el-icon>&nbsp;统计</el-button>
           <el-button style="float:left" type="success" @click="sortDown"><el-icon><SortDown /></el-icon>&nbsp;倒序查看</el-button>
@@ -28,11 +23,11 @@
         <div id="1">
           <el-table
               :data="tableData"
-              :default-sort="{ prop: 'sendTime', order: tableOrder }"
+              :default-sort="{ prop: 'sendTime', order: 'descending' }"
               @sort-change="sort"
               style="width: 100%"
           >
-          <el-table-column fixed prop="sendTime" label="发送时间" width="115" sortable>
+          <el-table-column fixed prop="sendTime" label="发送时间" width="115" >
             <template v-slot="scope">
               {{ formatDate(scope.row.sendTime) }}
            </template>
@@ -112,8 +107,7 @@
           </el-form>
         </el-dialog>
         <div style="text-align: left;">
-        【已实现】增、删、改、导、印、统、序。<br>
-        【待实现】查
+        【已实现】增、删、改、查、导、印、统、序。<br>
         </div>
       </el-main>
     </el-container>
@@ -145,6 +139,8 @@ export default {
     const exportAll = ref (true);
     const dialogVisible = ref(false);
     const addDialogVisible = ref(false);
+    const queryStatus = ref(false);
+    const sortDownStatus = ref(false);
     const tableData = ref([]);
     const total = ref(0);
     const pageNum = ref(1);
@@ -182,6 +178,27 @@ export default {
     };//修改页码
     const getMessage = () => {
       console.log("执行了getMessage函数")
+      console.log(queryStatus.value)
+      console.log(sortDownStatus.value)
+      if(queryStatus.value===true){
+        console.log("选择执行query函数")
+        query()}
+      else if(queryStatus.value===false){
+        if(sortDownStatus.value===true){
+          console.log("选择执行sortDown函数")
+          sortDown()}
+        else if(sortDownStatus.value===false){
+          console.log("选择执行findAllMessages函数")
+          findAllMessages()}
+      }
+
+    };//获取所有消息消息（查）
+    const findAllMessages = ()=>{
+      queryStatus.value=false;
+      sortDownStatus.value = false;
+      messageContent.value = null;
+      readStatus.value = null;
+      console.log("执行了findAllMessage函数,用于正序查看所有数据")
       fetch(`http://localhost:8080/ordinaryUser/message?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
@@ -195,16 +212,26 @@ export default {
           .catch(error => {
             console.error('获取数据失败:', error);
           });
-    };//获取所有消息消息（查）
+
+    }
     const query = () => {
-      fetch(`http://localhost:8080/ordinaryUser/messageSelect`, {
+      console.log("执行了查询函数query")
+      queryStatus.value = true;
+      const params = {
+        pageSize:pageSize.value,
+        pageNum:pageNum.value,
+      };
+      if (readStatus.value !== null) {
+        params.readStatus = readStatus.value;
+      }
+      if (messageContent.value !== null) {
+        params.messageContent = messageContent.value;
+      }
+      console.log(params);
+      fetch(`http://localhost:8080/ordinaryUser/messageFind?pageSize=${pageSize.value}&pageNum=${pageNum.value}`, {
         method: 'POST',
         headers: apiHeaders,
-        body: JSON.stringify({
-          "readStatus": readStatus.value,
-          "pageNum": pageNum.value,
-          "pageSize": pageSize.value,
-        })
+        body: JSON.stringify(params)
       })
           .then(res => res.json())
           .then(res => {
@@ -214,7 +241,7 @@ export default {
           .catch(error => {
             console.error('获取数据失败:', error);
           });
-    };//根据消息状态(已读/未读)查询消息（查）
+    };
     const handleDelete = (messageId) => {
       console.log(messageId);
       fetch(`http://localhost:8080/ordinaryUser/message?messageId=${messageId}`, {
@@ -416,17 +443,10 @@ export default {
       console.log("执行了handleClose函数");
       done();
     };//关闭添加设备对话框
-    const sort = ({ prop, order }) => {
-      console.log("执行了倒序查看函数sort")
-      console.log("tableOrder原来为：");
-      console.log(tableOrder);
-      tableOrder.value = order;
-      console.log("tableOrder此时为：");
-      console.log(tableOrder);
-      getMessage();
-    };//只能修改当前页面的数据顺序
-
     const sortDown = () =>{
+      console.log("执行了sortDown函数")
+      sortDownStatus.value=true;
+      queryStatus.value =false;
       fetch(`http://localhost:8080/ordinaryUser/messageSort?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',
         headers: apiHeaders,
@@ -489,6 +509,7 @@ export default {
           .then(response => {
             if (response.ok) {
               console.log('添加成功');
+              findAllMessages();
             } else {
               console.error('添加失败');
             }
@@ -497,8 +518,8 @@ export default {
             console.error('发生错误:', error);
           });
     };
-
     onMounted(() => {
+      console.log("执行了onMounted函数");
       getMessage();
     });
 
@@ -524,6 +545,8 @@ export default {
       readStatusBool,
       addDialogVisible,
       addData,
+      queryStatus,
+      sortDownStatus,
       sortDown,
       handleClose,
       getStatusColor,
@@ -536,7 +559,6 @@ export default {
       handleDelete,
       query,
       formatDate,
-      sort,
       printBox,
       clickExport,
       exportMessageList,
@@ -549,6 +571,7 @@ export default {
       getStatusModelValue,
       addMessage,
       sendMessage,
+      findAllMessages,
     };
   },
 };
