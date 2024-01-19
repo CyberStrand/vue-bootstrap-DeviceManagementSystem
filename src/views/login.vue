@@ -1,5 +1,5 @@
 <template>
-    <main class="form-signin w-25 m-auto">
+    <main class="form-signin w-25 m-auto mt-5">
         <form @submit.prevent="submitForm">
             <img src="../assets/img_avatar1.png" style="width:60px" class="rounded-pill"/>
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
@@ -53,15 +53,24 @@ export default {
                 }
             }
         ).then((response)=>{
-          console.log("登录成功")
-        localStorage.setItem("token",response.data.data);
+        console.log("登录成功")
+        localStorage.setItem("token",response.data.data)
         console.log(response.data.data)
+
+        // 从 localStorage 中获取 token,解析 token，获取用户信息
+        let token = localStorage.getItem('token');
+        let payload = JSON.parse(atob(token.split('.')[1]));
+        localStorage.setItem("userType",payload.userType)
+        localStorage.setItem("userId",payload.userId)
+        console.log(localStorage.getItem('userType'))
+        console.log(localStorage.getItem('userId'))
+
         })
         // 检查是否获取到了有效的 token
         if (localStorage.getItem('token')) {
           console.log(localStorage.getItem('token'))
             // 如果获取到了有效的 token，导航到 "home" 页面
-            this.$router.push({ name: 'home' })
+            this.$router.push({ name: 'dashboard' })
             }
         }
     }

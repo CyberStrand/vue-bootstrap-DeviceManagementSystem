@@ -1,32 +1,162 @@
 <template>
-  <div class="d-flex flex-column flex-shrink-0 text-white bg-dark" style="width: 220px;position: fixed; height: 100vh; overflow-y: auto;">
-    <ul class="nav nav-pills flex-column mb-auto fw-bold">
-      <br>
-      <li v-for="(string,index) in stringList" :key="index" class="nav-item m-1">
-          <router-link class="nav-link text-white" :to="{name:string}">
-            <a>{{ string }}</a>
-            <hr>
-          </router-link>
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px; position: fixed; top: 0; left: 0; height:100vh;">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" fill="currentColor" class="bi bi-box-fill pe-none me-2" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15.528 2.973a.75.75 0 0 1 .472.696v8.662a.75.75 0 0 1-.472.696l-7.25 2.9a.75.75 0 0 1-.557 0l-7.25-2.9A.75.75 0 0 1 0 12.331V3.669a.75.75 0 0 1 .471-.696L7.443.184l.004-.001.274-.11a.75.75 0 0 1 .558 0l.274.11.004.001zm-1.374.527L8 5.962 1.846 3.5 1 3.839v.4l6.5 2.6v7.922l.5.2.5-.2V6.84l6.5-2.6v-.4l-.846-.339Z"/>
+      </svg>
+      <span class="fs-4">设备管理系统</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li>
+        <router-link :to="{name:'dashboard'}" class="nav-link text-white" :class="{ 'active': isActive('/dashboard') }">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-speedometer2 pe-none me-2" viewBox="0 0 16 16">
+            <path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 9.31a.91.91 0 1 0 1.302 1.258l3.434-4.297a.39.39 0 0 0-.029-.518z"/>
+            <path fill-rule="evenodd" d="M0 10a8 8 0 1 1 15.547 2.661c-.442 1.253-1.845 1.602-2.932 1.25C11.309 13.488 9.475 13 8 13c-1.474 0-3.31.488-4.615.911-1.087.352-2.49.003-2.932-1.25A8 8 0 0 1 0 10m8-7a7 7 0 0 0-6.603 9.329c.203.575.923.876 1.68.63C4.397 12.533 6.358 12 8 12s3.604.532 4.923.96c.757.245 1.477-.056 1.68-.631A7 7 0 0 0 8 3"/>
+          </svg>
+          Dashboard
+        </router-link>
+      </li>
+      <li>
+        <router-link :to="Deviceroute()" class="nav-link text-white" :class="{ 'active': isActive(Deviceroute()) }">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hdd-rack pe-none me-2" viewBox="0 0 16 16">
+            <path d="M4.5 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1M3 4.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m2 7a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m-2.5.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+            <path d="M2 2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h1v2H2a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2h-1V7h1a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm13 2v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1m0 7v1a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1m-3-4v2H4V7z"/>
+          </svg>
+          Device
+        </router-link>
+      </li>
+      <li>
+        <router-link :to="Personroute()" class="nav-link text-white" :class="{ 'active': isActive(Personroute()) }">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-gear pe-none me-2" viewBox="0 0 16 16">
+            <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4m9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
+          </svg>
+          Personnel
+        </router-link>
+      </li>
+      <li>
+        <router-link :to="Orderroute()" class="nav-link text-white" :class="{ 'active': isActive(Orderroute()) }">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-check pe-none me-2" viewBox="0 0 16 16">
+            <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z"/>
+            <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+          </svg>
+          Order
+        </router-link>
       </li>
     </ul>
+    <hr>
+      <div class="d-flex align-items-center text-white text-decoration-none" aria-expanded="false">
+        <a class="navbar-brand me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+          <img src="../assets/img_avatar1.png" style="width:40px" class="rounded-pill"/>
+        </a>
+        <strong>{{ name }}</strong>
+      </div>
   </div>
+
+
+  <!--offcanvas-->
+  <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">个人资料</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="list-group list-group-flush ">
+          <li class="list-group-item">
+            <img src="../assets/img_avatar1.png" style="width:60px" class="rounded-pill"/>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>Role</span>
+            <span>{{ role }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>UserId</span>
+            <span>{{ name }}</span>
+          </li>
+          <li class="list-group-item" v-if="offline">
+            <router-link to="/login" class="btn btn-outline-success">Log in</router-link>
+          </li>
+          <li class="list-group-item" v-if="offline">
+            <router-link to="/login" class="btn btn-outline-success">Sign up</router-link>
+          </li>
+          <li class="list-group-item" v-else>
+            <router-link to="/login" class="btn btn-outline-success" @click=expire()>Log out</router-link>
+          </li>
+        </ul>
+      </div>
+    </div>
 </template>
 
 <script>
+import Offcanvas from './Offcanvas.vue';
 export default {
-  props:{
-    stringList: Array,
+  components: {
+    Offcanvas
   },
+  computed: {
+    role(){
+      return localStorage.getItem('userType');
+    },
+    name() {
+      return localStorage.getItem('userId');
+    },
+    offline(){
+      return !localStorage.getItem('token');
+    }
+  },
+  methods: {
+    isActive(path) {
+      return this.$route.path === path;
+    },
+    expire(){
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userType');
+    },
+    Deviceroute(){
+      switch(this.role){
+        case 'company_manager':
+          return '/companymanager_device'
+        case 'ordinary':
+          return '/OrdinaryUserDevices'
+        case 'maintenance_personnel':
+          return '/OrdinaryUserDevices'
+        case 'admin':
+          return '/admin/device'
+        default:
+          return '/login'
+      }
+    },
+    Personroute(){
+      switch(this.role){
+        case 'company_manager':
+          return '/companymanager_staff'
+        case 'ordinary':
+          return '/OrdinaryUserPerson'
+        case 'admin':
+          return '/admin/personnel'
+        default:
+          return '/login'
+      }
+    },
+    Orderroute(){
+      switch(this.role){
+        case 'company_manager':
+          return '/companymanager_order'
+        case 'admin':
+          return '/admin/order'
+        default:
+          return '/login'
+      }
+    }
+  },
+
 }
 </script>
 
-<style>
-nav{
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
+<style scoped>
+.nav-pills .nav-link.active {
+  color: #fff !important; /* 设置文字颜色为白色 */
+  background-color: var(--bs-success) !important; /* 设置背景颜色为success */
 }
 </style>

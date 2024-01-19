@@ -1,17 +1,17 @@
 <template>
-<div v-if="isLoginPage">
+<div v-if="isLoginPage||isHomePage">
   <router-view></router-view>
 </div>
 <div v-else>
-  <div class="d-print-none">
+  <!-- <div class="d-print-none">
   <Navbar></Navbar>
-  </div>
+  </div> -->
   <div class="container m-0">
     <div class="row">
-      <div class="col-3 ps-0 pe-1 d-print-none">
+      <div class="col-3 d-print-none">
         <Sidebar :stringList="this.stringList"></Sidebar>
       </div>
-      <div class="col-9 pe-0 pt-3">
+      <div class="col-9">
         <router-view @send="getlist"></router-view>
       </div>
     </div>
@@ -27,19 +27,21 @@ export default {
   components:{
     Navbar,Sidebar
   },
-  data(){
-    return{
-      stringList:JSON.parse(localStorage.getItem("stringList"))||[],
-      isLoginPage: true,
-    }
-  },
   watch: {
     '$route': function(to, from) {
-      this.isLoginPage = to.path === '/login'||to.path === '/signup';
+      if(!localStorage.getItem("token")&&to.path!=='/login'&&to.path!=='/signup'){
+        this.$router.push({name:'login'})
+      }
     }
   },
-  created() {
-    this.isLoginPage = this.$route.path === '/login'||this.$route.path === '/signup';
+  computed:
+  {
+    isHomePage(){
+      return this.$route.path === '/home';
+    },
+    isLoginPage(){
+      return this.$route.path === '/login'||this.$route.path === '/signup';
+    }
   },
   methods:{
     getlist(list){
@@ -57,9 +59,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 57px;
+  /* margin-top: 57px; */
 }
-
+/* 
 nav{
   font-weight: bold;
   color: #2c3e50;
@@ -67,5 +69,5 @@ nav{
 
 nav a.router-link-exact-active {
   color: #42b983;
-}
+} */
 </style>

@@ -87,7 +87,7 @@ export default {
             console.log(response)
             if (response.data.message == 'success') {
                 // 如果获取到了有效的 token，导航到 "home" 页面
-                this.$router.push({ name: 'login' })
+                this.$router.push({ name: 'dashboard' })
             }
         })
         },

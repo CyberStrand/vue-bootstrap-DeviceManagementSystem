@@ -33,13 +33,13 @@ import feedback from "../views/Admin/Feedback.vue";
 import AdminFeedback from "../views/Admin/AdminFeedback.vue";
 import maintainerToDo from "@/views/order/maintainerToDo.vue";
 
-
+import dashboard from "@/views/dashboard.vue";
 
 
 const routes = [
   {
     path: '/',
-    redirect: "/login"
+    redirect: "/home"
   },
   {
     path: '/admin',
@@ -133,7 +133,7 @@ const routes = [
   },
   {
     path: '/companymanager_device',
-    name: '公司管理员:设备管理',
+    name: 'companymanager_device',
     component: companymanager_deviceVue
   },
   {
@@ -197,6 +197,11 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: signup
+  },
+  {
+    path:'/dashboard',
+    name:'dashboard',
+    component:dashboard
   }
 
 ]
