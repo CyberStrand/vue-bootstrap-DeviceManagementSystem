@@ -1,4 +1,6 @@
 <template>
+    <BarChart :chartData="chartData" :chartOptions="chartOptions"></BarChart>
+    <br>
     <form class="row g-6">
     <div class="col">
         <label for="queryInput" class="visually-hidden">查询</label>
@@ -76,6 +78,7 @@
 <script>
 import API from '@/plugins/axiosInstance'
 import AddModal from '@/components/AddModal.vue'
+import BarChart from '@/components/BarChart.vue'
 
 export default {
     data(){
@@ -112,6 +115,31 @@ export default {
             let start = (this.currentPage - 1) * this.pageSize;
             let end = this.currentPage * this.pageSize;
             return this.filteredOrders.slice(start, end);
+        },
+
+        //定义图表数据
+        chartData(){
+            return {
+                labels: ['不紧急', '较不紧急', '中等紧急', '较紧急', '非常紧急'],
+                datasets: [
+                    {
+                        label: '订单数量',
+                        backgroundColor: '#198754',
+                        borderColor: '#198754',
+                        data: [this.CountStatus(1), this.CountStatus(2), this.CountStatus(3), this.CountStatus(4), this.CountStatus(5)]
+                    }
+                ]
+            }
+        },
+        //定义图表选项
+        chartOptions(){
+            return {
+                title: {
+                    display: true,
+                    text: '订单数量统计'
+                },
+                responsive: true,
+            }
         }
     },
     created(){
@@ -129,6 +157,15 @@ export default {
         formatDate(date) {
                 // You can format the date as needed here
                 return new Date(date).toLocaleDateString();
+        },
+        CountStatus(status){
+            let count=0
+            for(let i=0;i<this.filteredOrders.length;i++){
+                if(this.filteredOrders[i].urgencyLevel===status){
+                    count++
+                }
+            }
+            return count
         },
 
         async getOrders() {
@@ -190,7 +227,7 @@ export default {
         },
     },
     components:{
-        AddModal
+        AddModal,BarChart
     }
 }
 </script>
