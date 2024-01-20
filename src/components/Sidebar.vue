@@ -165,7 +165,7 @@
         aria-controls="offcanvasWithBothOptions">
         <img src="../assets/img_avatar1.png" style="width:40px" class="rounded-pill" />
       </a>
-      <strong>{{ name }}</strong>
+      <strong>{{ user.username }}</strong>
     </div>
   </div>
 
@@ -187,8 +187,16 @@
           <span>{{ role }}</span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>Email</span>
+          <span>{{ user.email }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
           <span>UserId</span>
-          <span>{{ name }}</span>
+          <span>{{ user.username }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>UserId</span>
+          <span>{{ user.userId }}</span>
         </li>
         <li class="list-group-item" v-if="offline">
           <router-link to="/login" class="btn btn-outline-success">Log in</router-link>
@@ -207,6 +215,7 @@
 <script>
 import Offcanvas from './Offcanvas.vue';
 import { ref } from 'vue';
+import API from '@/plugins/axiosInstance';
 export default {
   data() {
     // 人员可见性
@@ -233,7 +242,10 @@ export default {
     const feedbackSys_visible = ref(true)
     const orderBarName = ref('订单管理')
     const feedbackBarName = ref('反馈管理')
+    const user = ref(Object)
+
     return {
+      user,
       personnel_visible,
       order_visible,
       log_visible,
@@ -429,6 +441,18 @@ export default {
     }
   },
   mounted() {
+    API.get("/user", {
+        params: {
+            pageNum: -1
+        },
+        headers: {
+            'Authorization': "Bearer " + localStorage.getItem("token")
+        }
+    }).then((response) => {
+        this.user = response.data.data;
+    }).catch((error) => {
+        console.log(error);
+    })
     switch (this.role) {
       case 'admin':
         this.personnel_visible = ref(true)

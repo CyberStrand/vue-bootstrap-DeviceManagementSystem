@@ -28,6 +28,7 @@
                     <th>保修时间(天)</th>
                     <th>位置ID</th>
                     <th> </th>
+                    <th> </th>
                 </tr>
             </thead>
             <tbody>
@@ -42,6 +43,48 @@
                     <td>{{ device.warrantyTime }}</td>
                     <td>{{ device.locationId }}</td>
                     <td><button class="btn btn-danger py-2 " @click.prevent="Delete(device.serialNumber)">Delete</button></td>
+                    <td><PutModal button="Update" title="修改设备信息" @submit="UpdateDevices" @default="SetDefult(device)">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">序列号:</label>
+                                    <input class="form-control" v-model="this.serialNumber_update">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">设备名:</label>
+                                    <input class="form-control" v-model="this.deviceName_update">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">设备型号:</label>
+                                    <input class="form-control" v-model="this.deviceModel_update">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">购买日期:</label>
+                                    <input class="form-control" v-model.number="this.purchaseDate_update" type="date">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">保修时间</label>
+                                    <input class="form-control" v-model="this.warrantyTime_update" type="number">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">保修时间</label>
+                                    <input class="form-control" v-model="this.warrantyTime_update" type="number">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">设备状态</label>
+                                    <input class="form-control" v-model="this.status_update">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">拥有人id</label>
+                                    <input class="form-control" v-model="this.ownerId_update">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">地区id</label>
+                                    <input class="form-control" v-model="this.locationId_update">
+                                </div>
+                            </div>
+                        </form>
+                    </PutModal></td>
                 </tr>
             </tbody>
         </table>
@@ -71,6 +114,7 @@
                             <label class="form-label">购买日期:</label>
                             <input class="form-control" v-model="this.purchaseDate" type="date">
                         </div>
+                        
                     </div>
                 </form>
                 </AddModal>
@@ -94,6 +138,7 @@
 import API from '@/plugins/axiosInstance'
 import AddModal from '@/components/AddModal.vue'
 import BarChart from '@/components/BarChart.vue'
+import PutModal from '@/components/PutModal.vue'
 
 export default {
     data(){
@@ -111,6 +156,16 @@ export default {
             //用于查询
             serialNumber_Find:"",
             deviceName_Find:"",
+            //用于修改
+            serialNumber_update:"",
+            deviceName_update:"",
+            deviceModel_update:"",
+            purchaseDate_update:null,
+            warrantyTime_update:Int32Array,
+            status_update:Int32Array,
+            ownerId_update:"",
+            locationId_update:"",
+            
         }
     },
     computed: {
@@ -201,7 +256,34 @@ export default {
             console.log(error);
         })
         },
-
+        async UpdateDevices(){
+            await API.put("/company/devices",
+            //传入的参数:serialNumber,deviceName,deviceModel,purchaseDate,warrantyTime,status,ownerId,locationId
+            JSON.stringify({
+                "serialNumber":this.serialNumber_update,
+                "deviceName":this.deviceName_update,
+                "deviceModel":this.deviceModel_update,
+                "purchaseDate":this.purchaseDate_update,
+                "warrantyTime":this.warrantyTime_update,
+                "status":this.status_update,
+                "ownerId":this.ownerId_update,
+                "locationId":this.locationId_update,}),
+            {
+                headers:{
+                    'Content-Type': 'application/json',
+                    'Authorization': "Bearer "+localStorage.getItem("token")
+                }
+            }).then((response)=>{
+                console.log(response)
+                if(response.data.message==='success'){
+                    alert("修改成功")
+                    this.Change=!this.Change
+                }
+                else{
+                    alert("修改失败")
+                }
+            })
+        },
         async AddDevice(){
             await API.post("/company/devices",
             //传入的参数:serialNumber,deviceName,deviceModel,purchaseDate,warrantyTime
@@ -263,9 +345,20 @@ export default {
         PagePrint(){
             window.print()
         },
-    },
+        SetDefult(device){
+            this.serialNumber_update=device.serialNumber
+            this.deviceName_update=device.deviceName
+            this.deviceModel_update=device.deviceModel
+            this.purchaseDate_update=device.purchaseDate
+            this.warrantyTime_update=device.warrantyTime
+            this.status_update=device.status
+            this.ownerId_update=device.ownerId
+            this.locationId_update=device.locationId
+        },
+
+        },
     components:{
-        AddModal,BarChart
+        AddModal,BarChart,PutModal
     }
 }
 </script>
