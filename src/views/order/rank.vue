@@ -194,18 +194,24 @@ export default {
         const exportDialogVisible = ref(false);
         const exportAllPersonnels = () => {
             console.log("执行了exportAllPersonnel函数");
-            fetch(`http://localhost:8080/admin/users?pageNum=-1&pageSize=${pageSize.value}`, {
+            fetch(`http://localhost:8080/rank?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders,
+                body: JSON.stringify({
+                    "pageNum": pageNum.value,
+                    "pageSize": pageSize.value,
+                })
             })
                 .then(res => res.json())
                 .then(res => {
-                    const personnels = res.data.list;
-                    console.log(personnels);
+                    const personnels = ref(null)
+                    personnels.value = res.data.list;
+                    personnels.value = personnels.value.filter(user => user.userType === 'maintenance_personnel')
+                    console.log(personnels.value);
                     const tHeader = ['用户ID', '用户名', '电话', '电子邮件',
                         '评分', '公司ID', '用户类型'];
                     const filterVal = ['userId', 'username', 'phoneNumber', 'email', 'score', 'companyId', 'userType'];
-                    const data = formatJson(filterVal, personnels);
+                    const data = formatJson(filterVal, personnels.value);
                     export_json_to_excel(tHeader, data, '所有人员');
                 });
         };

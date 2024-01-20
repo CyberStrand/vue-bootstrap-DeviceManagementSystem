@@ -89,7 +89,6 @@ export default {
     };
   },
   created() {
-    // 和风天气插件调用
     window.WIDGET = {
       "CONFIG": {
         "modules": "01234",

@@ -4,18 +4,9 @@
             <el-main>
                 <!--选择栏-->
                 <div style="padding: 10px 0">
-                    <!-- 订单号：<el-input style="width:100px" placeholder="请输入订单号" :style="inputStyle" v-model="orderId"></el-input>
-                    订单状态：
-                    <el-select style="width:100px" placeholder="请选择订单状态" :style="inputStyle" v-model="orderStatus">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label"
-                            :value="item.value"></el-option>
-                    </el-select>
-                    <el-button type="primary" @click="fetchOrder">查询</el-button> -->
-                    <!-- 导出 -->
-                    <el-button type="success" @click="clickExport"><el-icon>
+                    <el-button type="success" @click="exportAllOrders"><el-icon>
                             <Promotion />
                         </el-icon>&nbsp;导出</el-button>
-
                     <!-- 打印 -->
                     <el-button v-print="'#printArea'" type="success"> <el-icon>
                             <Printer />
@@ -57,85 +48,6 @@
                         layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
                         @current-change="handleCurrentChange" />
                 </div>
-                <!--新增对话框-->
-                <el-dialog title="报修" v-model="dialogVisible" width="30%" :before-close="handleClose">
-                    <el-form :model="formData" ref="formDataRef" label-width="80px">
-                        <el-form-item label="紧急程度" prop="urgencyLevel">
-                            <el-input v-model="formData.urgencyLevel"></el-input>
-                        </el-form-item>
-                        <el-form-item label="用户ID" prop="userId">
-                            <el-input v-model="formData.userId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="维修人员ID" prop="maintenancePersonnelId">
-                            <el-input v-model="formData.maintenancePersonnelId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="公司ID" prop="companyId">
-                            <el-input v-model="formData.companyId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="设备序列号" prop="deviceSerialNumber">
-                            <el-input v-model="formData.deviceSerialNumber"></el-input>
-                        </el-form-item>
-                        <el-form-item label="订单详情" prop="orderDetail">
-                            <el-input v-model="formData.orderDetail"></el-input>
-                        </el-form-item>
-                        <!-- <el-form-item label="地址ID" prop="locationId">
-                            <el-input v-model="formData.locationId"></el-input>
-                        </el-form-item> -->
-                        <el-form-item label="订单状态" prop="orderStatus">
-                            <el-select v-model="formData.orderStatus">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label"
-                                    :value="item.value"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" @click="saveData">保存</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-dialog>
-                <!--编辑设备对话框-->
-                <el-dialog title="修改信息" v-model="EditDialogVisible" width="30%" :before-close="handleClose"
-                    @close="resetFormData">
-                    <el-form :model="formData" ref="formDataRef" label-width="80px">
-                        <el-form-item label="紧急程度" prop="urgencyLevel">
-                            <el-input v-model="formData.urgencyLevel"></el-input>
-                        </el-form-item>
-                        <el-form-item label="用户ID" prop="userId">
-                            <el-input v-model="formData.userId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="维修人员ID" prop="maintenancePersonnelId">
-                            <el-input v-model="formData.maintenancePersonnelId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="公司ID" prop="companyId">
-                            <el-input v-model="formData.companyId"></el-input>
-                        </el-form-item>
-                        <el-form-item label="设备序列号" prop="deviceSerialNumber">
-                            <el-input v-model="formData.deviceSerialNumber"></el-input>
-                        </el-form-item>
-                        <el-form-item label="订单详情" prop="orderDetail">
-                            <el-input v-model="formData.orderDetail"></el-input>
-                        </el-form-item>
-                        <!-- <el-form-item label="地址ID" prop="locationId">
-                            <el-input v-model="formData.locationId"></el-input>
-                        </el-form-item> -->
-                        <el-form-item label="订单状态" prop="orderStatus">
-                            <el-select v-model="formData.orderStatus">
-                                <el-option v-for="item in options" :key="item.value" :label="item.label"
-                                    :value="item.value"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" @click="updateOrder">修改</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-dialog>
-
-                <!-- 导出设备 -->
-                <el-dialog title="导出订单" v-model="exportDialogVisible" width="30%" :before-close="handleClose">
-                    <el-button type="primary" @click="exportAllOrders"> &nbsp;导出</el-button>
-                </el-dialog>
-                <el-dialog title="统计订单" v-model="statisticDialogVisible" width="50%" :before-close="handleClose">
-                    &nbsp; <div id="chart" style="height: 300px;"></div>
-                </el-dialog>
             </el-main>
         </el-container>
     </el-container>
@@ -194,7 +106,6 @@ export default {
             { value: 'evaluated', label: '已评价' },
         ]);
         const inputStyle = ref({ 'font-size': '11px' });
-        const EditDialogVisible = ref(false);
         const formData = ref({
             orderId: null,//自动创建
             userId: 24,
@@ -207,15 +118,6 @@ export default {
             orderDetail: '',
             // locationId: null,//初始未分配为空
         });
-        const getOrderStatusLabel = (status) => {
-            const statusMap = {
-                'accepted': '已接单',
-                'pending': '待接单',
-                'completed': '已结束、待评价',
-                'evaluated': '已评价',
-            };
-            return statusMap[status] || '';
-        };
         const formatDate = (dateString) => {
             const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
             return new Date(dateString).toLocaleDateString(undefined, options);
@@ -286,51 +188,26 @@ export default {
                     console.error('Error accepting order:', error);
                 });
         };
-        const openDialog = () => {
-            dialogVisible.value = true;
-        };//打开添加设备对话框
-        const handleClose = (done) => {
-            done();
-        };//关闭添加设备对话框
-        const updateOrder = () => {
-            formData.value.orderId = orderId.value
-            console.log(formData.value)
-            console.log(toRaw(formData.value))
-            fetch("http://localhost:8080/admin/order", {
-                method: 'PUT',
-                headers: apiHeaders,
-                body: JSON.stringify(formData.value)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Response from server:', data);
-                    dialogVisible.value = false;// 关闭对话框
-                    fetchOrder();//自动刷新
-                })
-                .catch(error => {
-                    console.error('Error during data submission:', error);
-                });
-        };
-
-        const clickExport = () => {
-            exportDialogVisible.value = true;
-        };
-        const exportDialogVisible = ref(false);
         const exportAllOrders = () => {
             console.log("执行了exportAllOrders函数");
             fetch(`http://localhost:8080/maintanenceOrders?pageNum=-1&pageSize=${pageSize.value}`, {
                 method: 'POST',
                 headers: apiHeaders,
+                body: JSON.stringify({
+                    "pageNum": pageNum.value,
+                    "pageSize": pageSize.value,
+                })
             })
                 .then(res => res.json())
                 .then(res => {
-                    const orders = res.data.list;
-                    console.log(orders);
+                    const orders = ref(null)
+                    orders.value = res.data.list;
+                    orders.value = orders.value.filter(order => order.orderStatus === 'accepted');
                     const tHeader = ['订单ID', '订单状态', '紧急程度', '设备序列号',
                         '订单创建时间', '订单详情', '公司ID', '用户ID', '维修人员ID'];
                     const filterVal = ['orderId', 'orderStatus', 'urgencyLevel', 'deviceId',
                         'createdAt', 'orderDetail', 'companyId', 'userId', 'maintenancePersonnelId'];
-                    const data = formatJson(filterVal, orders);
+                    const data = formatJson(filterVal, orders.value);
                     export_json_to_excel(tHeader, data, '所有订单');
                 });
         };
@@ -343,85 +220,6 @@ export default {
             fetchOrder();
         });
 
-
-        const statisticDialogVisible = ref(false);
-        const statistics = () => {
-            console.log("执行了Statistics函数");
-            statisticDialogVisible.value = true;
-            fetchStatistics();
-        };
-        const fetchStatistics = () => {
-            fetch(`http://localhost:8080/admin/orders?pageNum=-1&pageSize=${pageSize.value}`, {
-                method: 'POST',
-                headers: apiHeaders,
-            })
-                .then(res => res.json())
-                .then(res => {
-                    console.log('Raw response:', res.data.list);
-                    // 添加映射关系将标签转化为文字
-                    const statusSet = new Set(res.data.list.map(item => item.orderStatus));
-                    const data = Array.from(statusSet).map(status => ({
-                        value: res.data.list.filter(item => item.orderStatus === status).length,
-                        name: mapStatus(status),
-                    }));
-                    // 绘制饼状图
-                    console.log(data)
-                    drawPieChart(data);
-                })
-                .catch(error => {
-                    console.error('获取统计数据失败:', error);
-                });
-        };
-        const mapStatus = (status) => {
-            const statusMap = {
-                'accepted': '已接单',
-                'pending': '待接单',
-                'completed': '已结束、待评价',
-                'evaluated': '已评价',
-                null: '未知',
-            };
-            return statusMap[status] || '';
-        };
-
-        const drawPieChart = (data) => {
-            console.log(data)
-            // 使用 ECharts 绘制饼状图
-            const chart = echarts.init(document.getElementById('chart'));
-            const option = {
-                title: {
-                    text: '设备统计',
-                    subtext: '设备状态数量',
-                    left: 'center',
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: '{a} <br/>{b} : {c} ({d}%)',
-                },
-                legend: {
-                    orient: 'vertical',
-                    left: 'left',
-                    data: data.map(item => item.name), // 修改这里
-                },
-                series: [
-                    {
-                        name: '数量',
-                        type: 'pie',
-                        radius: '55%',
-                        center: ['50%', '60%'],
-                        data: data,
-                        emphasis: {
-                            itemStyle: {
-                                shadowBlur: 10,
-                                shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)',
-                            },
-                        },
-                    },
-                ],
-            };
-            chart.setOption(option);
-        };
-        
         const sort = ref(false)
         const changeSort = () => {
             if (sort.value) {
@@ -434,7 +232,6 @@ export default {
         }
 
         return {
-            dialogVisible,
             tableData,
             total,
             pageNum,
@@ -445,23 +242,15 @@ export default {
             formData,
             orderStatus,
             orderId,
-            EditDialogVisible,
-            exportDialogVisible,
-            statisticDialogVisible,
             sort,
             changeSort,
             exportAllOrders,
-            clickExport,
             formatJson,
-            updateOrder,
             handleEdit,
-            openDialog,
             fetchOrder,
             handleSizeChange,
             handleCurrentChange,
-            handleClose,
             formatDate,
-            statistics,
         };
     },
 };
