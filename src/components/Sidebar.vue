@@ -169,6 +169,8 @@
 
     </ul>
     <hr>
+    <div id="he-plugin-simple"></div>
+    <hr>
     <div class="d-flex align-items-center text-white text-decoration-none" aria-expanded="false">
       <a class="navbar-brand me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
         aria-controls="offcanvasWithBothOptions">
@@ -257,6 +259,39 @@ export default {
       feedbackBarName,
       feedbackSys_visible,
     }
+  },
+  created() {
+    window.WIDGET = {
+      "CONFIG": {
+        "modules": "01234",
+        "background": "5",
+        "tmpColor": "FFFFFF",
+        "tmpSize": "16",
+        "cityColor": "FFFFFF",
+        "citySize": "16",
+        "aqiColor": "FFFFFF",
+        "aqiSize": "16",
+        "weatherIconSize": "24",
+        "alertIconSize": "18",
+        "padding": "10px 10px 10px 10px",
+        "shadow": "0",
+        "language": "auto",
+        "fixed": "false",
+        "vertical": "top",
+        "horizontal": "left",
+        "key": "dbf7ce395e2c4aaf9c65a9c0cdd4a5c4"
+      }
+    };
+    (function (d) {
+      const c = d.createElement('link');
+      c.rel = 'stylesheet'
+      c.href = 'https://widget.qweather.net/simple/static/css/he-simple.css?v=1.5.0'
+      const s = d.createElement('script');
+      s.src = 'https://widget.qweather.net/simple/static/js/he-simple.js?v=1.5.0'
+      const sn = d.getElementsByTagName('script')[0];
+      sn.parentNode.insertBefore(c, sn)
+      sn.parentNode.insertBefore(s, sn)
+    })(document)
   },
   components: {
     Offcanvas
