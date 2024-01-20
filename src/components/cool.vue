@@ -59,19 +59,17 @@ export default {
         });
         pl.setLoca(loca);
 
-        var dat = new Loca.Dat();
-        dat.addLight(loca.ambLight, loca, '环境光');
-        dat.addLight(loca.dirLight, loca, '平行光');
-        dat.addLight(loca.pointLight, loca, '点光');
-        dat.addLayer(pl, '楼块');
+        console.log('OK')
 
         map.on('complete', function () {
             loca.animate.start();
             // document.querySelector('.start-btn').addEventListener('click', function () {
-            setTimeout(animate, 2000);
+            setTimeout(this.animate, 2000);
         });
-      
-        function animate(){
+    },
+    methods:{
+      animate(){
+            console.log('OK12132')
             var speed = 1;
             // 镜头动画
             map.setZoom(11.8, true);
@@ -189,7 +187,7 @@ export default {
               });
           });
       }
-    },
+    }
 }
 </script>
 
@@ -200,13 +198,6 @@ html,body,#map {
             height: 100%;
             margin: 0;
             padding: 0;
-        }
-
-        .demo-title {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            z-index: 1;
         }
 
         h1 {
