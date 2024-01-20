@@ -1,16 +1,16 @@
 <template>
 <div class="container">
-  <div class="row row-cols-1 row-cols-md-2 g-4">
-    <div class="col">
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col d-flex">
       <div class="card border-success border-2">
         <div class="card-body ">
           <h5 class="card-title">设备状态一览图</h5>
-          <BarChart :chartData="chartData_device" :chartOptions="chartOptions_device"></BarChart>
+          <BarChart :chartData="chartData_device" :chartOptions="chartOptions_device" ></BarChart>
         </div>
       </div>
     </div>
 
-    <div class="col ">
+    <div class="col d-flex">
       <div class="card border-success border-2">
         <div class="card-body">
           <h5 class="card-title">员工绩效一览图</h5>
@@ -19,23 +19,22 @@
       </div>
     </div>
 
-    <div class="col">
-      <div class="card">
+    <div class="col d-flex">
+      <div class="card border-success border-2">
         <div class="card-body">
           <h5 class="card-title">订单情况一览图</h5>
-          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+          <PolarChart :chartData="chartData_order" :chartOptions="chartOptions_order"></PolarChart>  
         </div>
       </div>
     </div>
 
-    <div class="col">
-      <div class="card">
+    <!-- <div class="col d-flex">
+      <div class="card border-success border-2">
         <div class="card-body">
-          <h5 class="card-title">月流量一览图</h5>
-          <DynamicChart></DynamicChart>
+          <Cool></Cool>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 </template>
@@ -43,12 +42,14 @@
 <script>
 import BarChart from './BarChart.vue';
 import PieChart from './PieChart.vue';
-import DynamicChart from './DynamicChart.vue';
+//import Cool from './cool.vue';
+import PolarChart from './PolarChart.vue';
 import API from '@/plugins/axiosInstance'
 
 export default {
   components: {
-    BarChart,PieChart,DynamicChart
+    BarChart,PieChart,PolarChart
+    //,Cool
   },
   data() {
     return {
@@ -109,7 +110,31 @@ export default {
                 },
                 responsive: true,
             }
+        },
+        //定义图表数据
+        chartData_order(){
+            return {
+                labels: ['不紧急', '较不紧急', '中等紧急', '较紧急', '非常紧急'],
+                datasets: [
+                    {
+                        label: '订单数量',
+                        backgroundColor: ['rgba(232,237,185,0.4)','rgba(180,189,160,0.4)','rgba(160,191,82,0.4)','rgba(70, 140, 55, 0.4)','rgba(0, 125, 98, 0.4)'],
+                        data: [this.CountOrderStatus(1), this.CountOrderStatus(2), this.CountOrderStatus(3), this.CountOrderStatus(4), this.CountOrderStatus(5)]
+                    }
+                ]
+            }
+        },
+        //定义图表选项
+        chartOptions_order(){
+            return {
+                title: {
+                    display: true,
+                    text: '订单数量统计'
+                },
+                responsive: true,
+            }
         }
+
     },
     methods: {
       async getDevices() {
@@ -170,6 +195,15 @@ export default {
             let count=0
             for(let i=0;i<this.users.length;i++){
                 if(this.users[i].score===status){
+                    count++
+                }
+            }
+            return count
+        },
+        CountOrderStatus(status){
+            let count=0
+            for(let i=0;i<this.orders.length;i++){
+                if(this.orders[i].urgencyLevel===status){
                     count++
                 }
             }
