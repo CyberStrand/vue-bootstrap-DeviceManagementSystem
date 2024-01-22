@@ -232,6 +232,7 @@ export default {
     };
     const findAllDevices = () =>{
       sortStatus.value = false;
+      queryStatus.value = false;
       console.log("执行了findAllDevices，用于正序查找所有数据")
       fetch(`http://localhost:8080/ordinaryUser/devices?pageNum=${pageNum.value}&pageSize=${pageSize.value}`, {
         method: 'POST',

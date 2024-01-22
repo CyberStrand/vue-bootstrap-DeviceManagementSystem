@@ -522,7 +522,7 @@ export default {
       sortDownStatus.value = true;
       queryStatus.value = false;
       orderId.value=null;
-      orderStatus.value = null;
+     // orderStatus.value = null;
       fetch(`http://localhost:8080/ordinaryUser/orderDown?pageSize=${pageSize.value}&pageNum=${pageNum.value}`, {
         method: 'POST',
         headers: apiHeaders,
