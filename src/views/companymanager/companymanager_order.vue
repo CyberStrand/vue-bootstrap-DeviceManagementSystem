@@ -1,4 +1,5 @@
 <template>
+    <h1>刘梓言</h1>
     <BarChart :chartData="chartData" :chartOptions="chartOptions"></BarChart>
     <br>
     <form class="row g-6">
@@ -27,6 +28,7 @@
                 <th>发起时间</th>
                 <th>订单位置</th>
                 <th>订单详情</th>
+                <th> </th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +43,7 @@
                 <td>{{ formatDate(order.createdAt) }}</td>
                 <td>{{ order.locationId }}</td>
                 <td>{{ order.orderDetail }}</td>
+                <td><button class="btn btn-danger py-2" @click.prevent="Delete(order.orderId)">Delete</button></td>
             </tr>
         </tbody>
     </table>
@@ -219,6 +222,27 @@ export default {
                     alert("导出成功")
             }).catch((error)=>{
                 alert("导出失败")
+                console.log(error)
+            })
+        },
+        async Delete(number){
+            await API.request({
+                method: 'delete',
+                url: "/company/orders",
+                data: {"orderId": number},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': "Bearer "+localStorage.getItem("token")
+                }
+            }).then((response)=>{
+                if(response.data.message==='success'){
+                    alert("删除成功")
+                    this.Change=!this.Change
+                }
+                else{
+                    alert("删除失败")
+                }
+            }).catch((error)=>{
                 console.log(error)
             })
         },

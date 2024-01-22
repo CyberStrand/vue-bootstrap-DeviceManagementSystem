@@ -1,4 +1,5 @@
 <template>
+    <h1>田子奇</h1>
     <el-container style="min-height: 100vh">
         <el-container>
             <el-main>
@@ -212,7 +213,7 @@ export default {
                         '评分', '公司ID', '用户类型'];
                     const filterVal = ['userId', 'username', 'phoneNumber', 'email', 'score', 'companyId', 'userType'];
                     const data = formatJson(filterVal, personnels.value);
-                    export_json_to_excel(tHeader, data, '所有人员');
+                    export_json_to_excel(tHeader, data, '排行榜');
                 });
         };
         const formatJson = (filterVal, jsonData) => {

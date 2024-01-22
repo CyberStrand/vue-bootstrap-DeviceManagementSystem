@@ -1,16 +1,16 @@
 <template>
 <div class="container">
-  <div class="row row-cols-1 row-cols-md-2 g-4">
-    <div class="col">
-      <div class="card border-success border-2">
+  <div class="row g-4">
+    <div class="col-12 col-md-6 col-lg-4 d-flex d-flex">
+      <div class="card border-success border-2" >
         <div class="card-body ">
           <h5 class="card-title">设备状态一览图</h5>
-          <BarChart :chartData="chartData_device" :chartOptions="chartOptions_device"></BarChart>
+          <BarChart :chartData="chartData_device" :chartOptions="chartOptions_device" ></BarChart>
         </div>
       </div>
     </div>
 
-    <div class="col ">
+    <div class="col-12 col-md-6 col-lg-4 d-flex d-flex">
       <div class="card border-success border-2">
         <div class="card-body">
           <h5 class="card-title">员工绩效一览图</h5>
@@ -19,23 +19,48 @@
       </div>
     </div>
 
-    <div class="col">
-      <div class="card">
+    <div class="col-12 col-md-6 col-lg-4 d-flex">
+      <div class="card border-success border-2">
         <div class="card-body">
-          <h5 class="card-title">订单情况一览图</h5>
-          <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+          <h5 class="card-title">设备保修期一览图</h5>
+          <PieChart :chartData="chartData_r" :chartOptions="chartOptions_order"></PieChart>
         </div>
       </div>
     </div>
 
-    <div class="col">
-      <div class="card">
+    <div class="col-12 col-md-6 col-lg-4 d-flex">
+      <div class="card border-success border-2">
         <div class="card-body">
-          <h5 class="card-title">月流量一览图</h5>
-          <DynamicChart></DynamicChart>
+          <h5 class="card-title">订单情况一览图</h5>
+          <PolarChart :chartData="chartData_order" :chartOptions="chartOptions_order"></PolarChart>  
         </div>
       </div>
     </div>
+
+    <div class="col-12 col-md-6 col-lg-4 d-flex">
+      <div class="card border-success border-2">
+        <div class="card-body">
+          <h5 class="card-title">软件流量一览图</h5>
+          <linechart :chartData="chartData_v" :chartOptions="chartOptions_order"></linechart>  
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-4 d-flex">
+      <div class="card border-success border-2 col-12">
+        <div class="card-body">
+          <h5 class="card-title">驾驶舱</h5>
+          <button class="btn btn-success mb-3">learn more</button>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="col d-flex">
+      <div class="card border-success border-2">
+        <div class="card-body">
+          <Cool></Cool>
+        </div>
+      </div>
+    </div> -->
   </div>
 </div>
 </template>
@@ -43,12 +68,15 @@
 <script>
 import BarChart from './BarChart.vue';
 import PieChart from './PieChart.vue';
-import DynamicChart from './DynamicChart.vue';
+//import Cool from './cool.vue';
+import PolarChart from './PolarChart.vue';
 import API from '@/plugins/axiosInstance'
+import linechart from './linechart.vue';
 
 export default {
   components: {
-    BarChart,PieChart,DynamicChart
+    BarChart,PieChart,PolarChart,linechart
+    //,Cool
   },
   data() {
     return {
@@ -109,7 +137,56 @@ export default {
                 },
                 responsive: true,
             }
-        }
+        },
+        //定义图表数据
+        chartData_order(){
+            return {
+                labels: ['不紧急', '较不紧急', '中等紧急', '较紧急', '非常紧急'],
+                datasets: [
+                    {
+                        label: '订单数量',
+                        backgroundColor: ['rgba(232,237,185,0.4)','rgba(180,189,160,0.4)','rgba(160,191,82,0.4)','rgba(70, 140, 55, 0.4)','rgba(0, 125, 98, 0.4)'],
+                        data: [this.CountOrderStatus(1), this.CountOrderStatus(2), this.CountOrderStatus(3), this.CountOrderStatus(4), this.CountOrderStatus(5)]
+                    }
+                ]
+            }
+        },
+        //定义图表选项
+        chartOptions_order(){
+            return {
+                title: {
+                    display: true,
+                    text: '订单数量统计'
+                },
+                responsive: true,
+            }
+        },
+        //定义图表数据
+        chartData_r(){
+            return {
+                labels: ['1年', '2年', '3年', '4年', '5年'],
+                datasets: [
+                    {
+                        label: '到期年份',
+                        backgroundColor: ['rgba(232,237,185,0.4)','rgba(180,189,160,0.4)','rgba(160,191,82,0.4)','rgba(70, 140, 55, 0.4)','rgba(0, 125, 98, 0.4)'],
+                        data: [1,5,3,8,2]
+                    }
+                ]
+            }
+        },
+        //定义图表数据
+        chartData_v(){
+            return {
+                labels: ['第一季度', '第二季度', '第三季度', '第四季度'],
+                datasets: [
+                    {
+                        label: '到期年份',
+                        backgroundColor: 'rgba(0, 125, 98)',
+                        data: [1,2,6,4]
+                    }
+                ]
+            }
+        },
     },
     methods: {
       async getDevices() {
@@ -170,6 +247,15 @@ export default {
             let count=0
             for(let i=0;i<this.users.length;i++){
                 if(this.users[i].score===status){
+                    count++
+                }
+            }
+            return count
+        },
+        CountOrderStatus(status){
+            let count=0
+            for(let i=0;i<this.orders.length;i++){
+                if(this.orders[i].urgencyLevel===status){
                     count++
                 }
             }

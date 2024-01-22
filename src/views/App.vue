@@ -9,7 +9,7 @@
   <div class="container m-0">
     <div class="row">
       <div class="col-3 d-print-none">
-        <Sidebar :stringList="this.stringList"></Sidebar>
+        <Sidebar></Sidebar>
       </div>
       <div class="col-9">
         <router-view @send="getlist"></router-view>

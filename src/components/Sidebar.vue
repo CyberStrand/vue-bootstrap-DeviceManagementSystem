@@ -11,9 +11,8 @@
     </a>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto">
-      <li>
-        <router-link :to="{ name: 'dashboard' }" class="nav-link text-white"
-          :class="{ 'active': isActive('/dashboard') }">
+      <li v-show="dashboard_visible">
+        <router-link :to="Dashboardroute()" class="nav-link text-white" :class="{ 'active': isActive(Dashboardroute()) }">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
             class="bi bi-speedometer2 pe-none me-2" viewBox="0 0 16 16">
             <path
@@ -91,11 +90,10 @@
       <li v-show="todo_visible">
         <router-link :to="Todoroute()" class="nav-link text-white" :class="{ 'active': isActive(Todoroute()) }">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-cart-check pe-none me-2" viewBox="0 0 16 16">
+            class="bi bi-check2-circle pe-none me-2" viewBox="0 0 16 16">
             <path
-              d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z" />
-            <path
-              d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+              d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0" />
+            <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z" />
           </svg>
           待办管理
         </router-link>
@@ -144,24 +142,21 @@
       <li v-show="rank_visible">
         <router-link :to="Rankroute()" class="nav-link text-white" :class="{ 'active': isActive(Rankroute()) }">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-cart-check pe-none me-2" viewBox="0 0 16 16">
+            class="bi bi-star-half pe-none me-2" viewBox="0 0 16 16">
             <path
-              d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z" />
-            <path
-              d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+              d="M5.354 5.119 7.538.792A.52.52 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.54.54 0 0 1 16 6.32a.55.55 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.5.5 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.6.6 0 0 1 .085-.302.51.51 0 0 1 .37-.245zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.56.56 0 0 1 .162-.505l2.907-2.77-4.052-.576a.53.53 0 0 1-.393-.288L8.001 2.223 8 2.226z" />
           </svg>
           维修人员评分排行榜
         </router-link>
       </li>
 
       <li v-show="feedbackSys_visible">
-        <router-link :to="feedbackSysRoute()" class="nav-link text-white" :class="{ 'active': isActive(feedbackSysRoute()) }">
+        <router-link :to="feedbackSysRoute()" class="nav-link text-white"
+          :class="{ 'active': isActive(feedbackSysRoute()) }">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-cart-check pe-none me-2" viewBox="0 0 16 16">
+            class="bi bi-chat-square-text-fill pe-none me-2" viewBox="0 0 16 16">
             <path
-              d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z" />
-            <path
-              d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+              d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.5a1 1 0 0 0-.8.4l-1.9 2.533a1 1 0 0 1-1.6 0L5.3 12.4a1 1 0 0 0-.8-.4H2a2 2 0 0 1-2-2zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z" />
           </svg>
           系统反馈
         </router-link>
@@ -176,7 +171,7 @@
         aria-controls="offcanvasWithBothOptions">
         <img src="../assets/img_avatar1.png" style="width:40px" class="rounded-pill" />
       </a>
-      <strong>{{ name }}</strong>
+      <strong>{{ user.username }}</strong>
     </div>
   </div>
 
@@ -198,8 +193,16 @@
           <span>{{ role }}</span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>Email</span>
+          <span>{{ user.email }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
           <span>UserId</span>
-          <span>{{ name }}</span>
+          <span>{{ user.username }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>UserId</span>
+          <span>{{ user.userId }}</span>
         </li>
         <li class="list-group-item" v-if="offline">
           <router-link to="/login" class="btn btn-outline-success">Log in</router-link>
@@ -218,6 +221,7 @@
 <script>
 import Offcanvas from './Offcanvas.vue';
 import { ref } from 'vue';
+import API from '@/plugins/axiosInstance';
 export default {
   data() {
     // 人员可见性
@@ -242,9 +246,14 @@ export default {
     const message_visible = ref(false)
     // 提出系统反馈 | 默认除平台管理员所有人可见
     const feedbackSys_visible = ref(true)
+    // dashboard 可见性
+    const dashboard_visible = ref(false)
     const orderBarName = ref('订单管理')
     const feedbackBarName = ref('反馈管理')
+    const user = ref(Object)
+
     return {
+      user,
       personnel_visible,
       order_visible,
       log_visible,
@@ -258,6 +267,7 @@ export default {
       orderBarName,
       feedbackBarName,
       feedbackSys_visible,
+      dashboard_visible,
     }
   },
   created() {
@@ -361,6 +371,14 @@ export default {
         default:
           return '/login'
       }
+    }, 
+    Dashboardroute() {
+      switch (this.role) {
+        case 'company_manager':
+          return '/dashboard'
+        default:
+          return '/login'
+      }
     },
     Logroute() {
       switch (this.role) {
@@ -440,6 +458,18 @@ export default {
     }
   },
   mounted() {
+    API.get("/user", {
+      params: {
+        pageNum: -1
+      },
+      headers: {
+        'Authorization': "Bearer " + localStorage.getItem("token")
+      }
+    }).then((response) => {
+      this.user = response.data.data;
+    }).catch((error) => {
+      console.log(error);
+    })
     switch (this.role) {
       case 'admin':
         this.personnel_visible = ref(true)
@@ -463,6 +493,7 @@ export default {
         this.order_visible = ref(true)
         this.feedback_visible = ref(true)
         this.todo_visible = ref(true)
+        this.dashboard_visible = ref(true)
         break
       case 'ordinary':
         this.device_visible = ref(true)
@@ -486,5 +517,4 @@ export default {
   /* 设置文字颜色为白色 */
   background-color: var(--bs-success) !important;
   /* 设置背景颜色为success */
-}
-</style>
+}</style>
