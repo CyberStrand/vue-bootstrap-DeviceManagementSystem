@@ -1,4 +1,5 @@
 <template>
+    <h1>刘梓言</h1>
     <BarChart :chartData="chartData" :chartOptions="chartOptions"></BarChart>
     <br>
     <form class="row g-6">

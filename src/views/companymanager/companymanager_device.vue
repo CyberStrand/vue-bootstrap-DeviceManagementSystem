@@ -1,4 +1,5 @@
 <template>
+    <h1>田子奇</h1>
     <div>
     <BarChart :chartData="chartData" :chartOptions="chartOptions"></BarChart>
     <br/>
