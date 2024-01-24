@@ -39,8 +39,8 @@
                     <td>{{ user.userType }}</td>
                     <td>{{ user.score }}</td>
                     <td>{{ companyId}}</td>
-                    <td><button class="btn btn-danger py-2 " @click.prevent="Delete(user.userId)">Delete</button></td>
-                    <td><PutModal button="Update" title="修改人员信息" @submit="UpdateUser" @default="SetDefult(user)">
+                    <td><button class="btn btn-danger py-2" @click.prevent="Delete(user.userId)">删除</button></td>
+                    <td><PutModal button="更新" title="修改人员信息" @submit="UpdateUser" @default="SetDefult(user)">
                         <form>
                             <div class="row">
                                 <div class="col-md-6">

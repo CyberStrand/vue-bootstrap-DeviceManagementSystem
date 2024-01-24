@@ -43,8 +43,8 @@
                     <td>{{ formatDate(device.purchaseDate) }}</td>
                     <td>{{ device.warrantyTime }}</td>
                     <td>{{ device.locationId }}</td>
-                    <td><button class="btn btn-danger py-2 " @click.prevent="Delete(device.serialNumber)">Delete</button></td>
-                    <td><PutModal button="Update" title="修改设备信息" @submit="UpdateDevices" @default="SetDefult(device)">
+                    <td style="width=50px"><button class="btn btn-danger py-2 " @click.prevent="Delete(device.serialNumber)">删除</button></td>
+                    <td><PutModal button="修改" title="修改设备信息" @submit="UpdateDevices" @default="SetDefult(device)">
                         <form>
                             <div class="row">
                                 <div class="col-md-6">

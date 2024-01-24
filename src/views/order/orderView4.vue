@@ -1,5 +1,5 @@
 <template>
-    <h1>田子奇</h1>
+    <h1>刘梓言</h1>
     <el-container style="min-height: 100vh">
         <el-container>
             <el-main>
@@ -20,10 +20,6 @@
                     <el-button type="success" @click="changeSort"><el-icon>
                             <PieChart />
                         </el-icon>&nbsp;更改排序（订单ID）</el-button>
-                    <!-- 统计 -->
-                    <el-button type="success" @click="statistics"><el-icon>
-                            <PieChart />
-                        </el-icon>&nbsp;统计</el-button>
                 </div>
 
                 <!--数据表-->
