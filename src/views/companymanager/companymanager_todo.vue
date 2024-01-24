@@ -31,8 +31,8 @@
                     <td>{{ todo.userId }}</td>
                     <td>{{ todo.todoContent }}</td>
                     <td>{{ todo.todoStatus }}</td>
-                    <td><button class="btn btn-danger py-2 " @click.prevent="Delete(todo.todoId)">Delete</button></td>
-                    <td><PutModal button="Update" title="修改人员信息" @submit="Updatetodo" @default="SetDefult(todo)">
+                    <td><button class="btn btn-danger py-2 " @click.prevent="Delete(todo.todoId)">删除</button></td>
+                    <td><PutModal button="更新" title="修改人员信息" @submit="Updatetodo" @default="SetDefult(todo)">
                         <form>
                             <div class="row">
                                 <div class="col-md-6">

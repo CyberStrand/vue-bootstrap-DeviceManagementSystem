@@ -1,6 +1,6 @@
 <template>
     <h1>徐洋</h1>
-    <el-container style="min-height: 100vh">
+    <el-container>
         <el-container>
             <el-main>
                 订单号：<el-input style="width:100px" placeholder="请输入订单号" :style="inputStyle" v-model="orderId"></el-input>
@@ -33,7 +33,7 @@
                 </div>
 
                 <!--数据表-->
-                <el-table id="printArea" :data="tableData" style="width: 100%">
+                <el-table id="printArea" :data="tableData" style="width: 2000px">
                     <el-table-column fixed prop="orderId" label="订单号" width="80" />
                     <el-table-column prop="orderStatus" label="订单状态" width="100">
                         <template v-slot="scope">
@@ -52,9 +52,13 @@
                     <el-table-column prop="companyId" label="公司ID" width="100" />
                     <el-table-column prop="userId" label="用户ID" width="100" />
                     <el-table-column prop="maintenancePersonnelId" label="维修人员ID" width="100" />
-                    <el-table-column fixed="right" label="操作">
+                    <el-table-column fixed="right" label="编辑" width="100">
                         <template v-slot="scope">
                             <el-button size="mini" type="primary" @click="handleEdit(scope.row.orderId)">编辑</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column fixed="right" label="删除" width="100">
+                        <template v-slot="scope">
                             <el-button size="mini" type="danger" @click="handleDelete(scope.row.orderId)">删除</el-button>
                         </template>
                     </el-table-column>

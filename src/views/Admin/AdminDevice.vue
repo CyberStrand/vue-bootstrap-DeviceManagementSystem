@@ -35,9 +35,8 @@
 
 
                 <!--数据表-->
-                <el-table id="printArea" :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }"
-                    style="width: 100%">
-                    <el-table-column fixed prop="serialNumber" label="序列号" width="80" />
+                <el-table id="printArea" :data="tableData" :default-sort="{ prop: 'purchaseDate', order: 'descending' }">
+                    <el-table-column prop="serialNumber" label="序列号" width="80" />
                     <el-table-column prop="deviceName" label="设备名称" width="100" />
                     <el-table-column prop="productionCompanyId" label="生产公司" width="100" />
                     <el-table-column prop="status" label="设备状态" width="100">
@@ -46,19 +45,22 @@
                             }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="deviceModel" label="设备类型" width="100" />
-                    <el-table-column prop="purchaseDate" label="购买时间" width="100">
+                    <el-table-column prop="deviceModel" label="设备类型" width="80" />
+                    <el-table-column prop="purchaseDate" label="购买时间" width="80">
                         <template v-slot="scope">
                             {{ formatDate(scope.row.purchaseDate) }}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="warrantyTime" label="保修期" width="100" />
-                    <el-table-column prop="locationId" label="设备地址" width="100" />
-                    <el-table-column fixed="right" label="操作">
+                    <el-table-column prop="warrantyTime" label="保修期" width="80" />
+                    <el-table-column prop="locationId" label="设备地址" width="80" />
+                    <el-table-column label=" 编辑 " width="100">
                         <template v-slot="scope">
                             <el-button size="mini" type="primary" @click="handleEdit(scope.row.serialNumber)">编辑</el-button>
-                            <el-button size="mini" type="danger"
-                                @click="handleDelete(scope.row.serialNumber)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label=" 删除 " width="100">
+                        <template v-slot="scope">
+                            <el-button size="mini" type="danger" @click="handleDelete(scope.row.serialNumber)">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>

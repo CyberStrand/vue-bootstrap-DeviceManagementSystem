@@ -70,7 +70,7 @@ export default {
         if (localStorage.getItem('token')) {
           console.log(localStorage.getItem('token'))
             // 如果获取到了有效的 token，导航到 "home" 页面
-            this.$router.push({ name: 'dashboard' })
+            this.$router.push({ name: '平台管理员：设备管理' })
             }
         }
     }
