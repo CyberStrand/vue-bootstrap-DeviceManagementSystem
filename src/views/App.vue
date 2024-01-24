@@ -1,5 +1,5 @@
 <template>
-<div v-if="isLoginPage||isHomePage">
+<div v-if="isLoginPage||isHomePage||isPanelPage">
   <router-view></router-view>
 </div>
 <div v-else>
@@ -41,6 +41,9 @@ export default {
     },
     isLoginPage(){
       return this.$route.path === '/login'||this.$route.path === '/signup';
+    },
+    isPanelPage(){
+      return this.$route.path === '/panel';
     }
   },
   methods:{
