@@ -374,7 +374,7 @@ export default {
       if(status==='pending')return '#ff7b7b'
       else if(status==='completed')return '#5b952a'
       else if(status==='evaluated')return '#4d90fe'
-      else if(stauts==='accepted')return '#ffd766'
+      else if(status==='accepted')return '#ffd766'
     };
     const printBox = () => {
       console.log("执行了printBox函数");
