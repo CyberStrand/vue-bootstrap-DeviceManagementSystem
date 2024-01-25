@@ -1,11 +1,11 @@
 <template>
     <div class="container">
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-      <div class="row g-4">
 
+        <br/>
+        <br/>
+        <br/>
+        <br/><div class="weather"><div id="he-plugin-simple"></div></div>
+      <div class="row g-4">
         <div class="col-12 col-md-6 col-lg-4 d-flex d-flex">
           <div class="card ">
             <div class="card-body">
@@ -55,15 +55,6 @@
                 </div>
             </div>
         </div>
-    
-    
-        <!-- <div class="col d-flex">
-          <div class="card border-success border-2">
-            <div class="card-body">
-              <Cool></Cool>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
     </template>
@@ -92,6 +83,37 @@
         this.getDevices();
         this.getOrders();
         this.getusers();
+        window.WIDGET = {
+          "CONFIG": {
+            "modules": "01234",
+            "background": "5",
+            "tmpColor": "FFFFFF",
+            "tmpSize": "16",
+            "cityColor": "FFFFFF",
+            "citySize": "16",
+            "aqiColor": "FFFFFF",
+            "aqiSize": "16",
+            "weatherIconSize": "24",
+            "alertIconSize": "18",
+            "padding": "10px 10px 10px 10px",
+            "shadow": "0",
+            "language": "auto",
+            "fixed": "false",
+            "vertical": "top",
+            "horizontal": "left",
+            "key": "dbf7ce395e2c4aaf9c65a9c0cdd4a5c4"
+          }
+        };
+        (function (d) {
+          const c = d.createElement('link');
+          c.rel = 'stylesheet'
+          c.href = 'https://widget.qweather.net/simple/static/css/he-simple.css?v=1.5.0'
+          const s = d.createElement('script');
+          s.src = 'https://widget.qweather.net/simple/static/js/he-simple.js?v=1.5.0'
+          const sn = d.getElementsByTagName('script')[0];
+          sn.parentNode.insertBefore(c, sn)
+          sn.parentNode.insertBefore(s, sn)
+        })(document)
       },
       computed:{
           //定义图表数据
@@ -274,4 +296,12 @@
      .card {
         background-color: transparent;
         }
+     .weather {
+       width: 300px;
+       height: 100px;
+       position: absolute;
+       top: 20px; /* 置顶 */
+       right: 520px; /* 居右 */
+     }
+
     </style>

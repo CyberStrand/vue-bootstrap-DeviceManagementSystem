@@ -2,25 +2,25 @@
     <main class="form-signin w-25 m-auto mt-5">
         <form @submit.prevent="submitForm">
             <img src="../assets/img_avatar1.png" style="width:60px" class="rounded-pill"/>
-            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            <h1 class="h3 mb-3 fw-normal">请登录</h1>
 
             <div class="form-floating">
             <input type="username" class="form-control" v-model="username" placeholder="Username">
-            <label for="floatingInput">Username</label>
+            <label for="floatingInput">账户</label>
             </div>
             <div class="form-floating">
             <input type="password" class="form-control" v-model="password" placeholder="Password">
-            <label for="floatingPassword">Password</label>
+            <label for="floatingPassword">密码</label>
             </div>
 
             <div class="form-check text-start my-3">
             <input class="form-check-input" type="checkbox" value="remember-me" v-model="remember">
             <label class="form-check-label" for="flexCheckDefault">
-                Remember me
+                记住密码
             </label>
             </div>
-            <button class="btn btn-success w-100 py-2 my-2" type="submit">Sign in</button>
-            <router-link class="btn btn-secondary w-100 py-2" :to="{name:'signup'}">Register</router-link>
+            <button class="btn btn-success w-100 py-2 my-2" type="submit">登录</button>
+            <router-link class="btn btn-secondary w-100 py-2" :to="{name:'signup'}">注册</router-link>
             <p class="mt-5 mb-3 text-body-secondary">© 2017–2023</p>
         </form>
     </main>

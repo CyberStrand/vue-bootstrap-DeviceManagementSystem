@@ -3,9 +3,7 @@
   <router-view></router-view>
 </div>
 <div v-else>
-  <!-- <div class="d-print-none">
-  <Navbar></Navbar>
-  </div> -->
+
   <div class="container m-0">
     <div class="row">
       <div class="col-3 d-print-none">
