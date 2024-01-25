@@ -2,70 +2,101 @@
     <div class="container">
         <br/>
         <br/>
-        <br/>
-        <br/>
-      <div class="row g-4">
 
-        <div class="col-12 col-md-6 col-lg-4 d-flex d-flex">
-          <div class="card ">
-            <div class="card-body">
-              <h5 class="card-title text-white">员工绩效一览图</h5>
-              <PieChart :chartData="chartData_user" :chartOptions="chartOptions_user"></PieChart>
-            </div>
-          </div>
-        </div>
-    
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="card">
-            <div class="card-body">
-            </div>
-          </div>
-        </div>
-    
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="card ">
-            <div class="card-body">
-              <h5 class="card-title text-white">设备保修期一览图</h5>
-              <PieChart :chartData="chartData_r" :chartOptions="chartOptions_order"></PieChart>
-            </div>
-          </div>
-        </div>
+      <div class="row">
+        <div class="col-4 d-flex">
+            <div class="row">
+                <div class="col-6 d-flex">
+                    <div class="card ">
+                        <div class="card-body">
+                        <h5 class="card-title text-white">员工绩效一览图</h5>
+                        <PieChart :chartData="chartData_user" :chartOptions="chartOptions_user"></PieChart>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="col-12 col-md-6 col-lg-4 d-flex d-flex">
-          <div class="card" >
-            <div class="card-body ">
-              <h5 class="card-title text-white">设备状态一览图</h5>
-              <BarChart :chartData="chartData_device" :chartOptions="chartOptions_device" ></BarChart>
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="card">
-            <div class="card-body"> 
-            </div>
-          </div>
-        </div>
-        
-        <div class="col-12 col-md-6 col-lg-4 d-flex">
-            <div class="card">
-                <div class="card-body">
-                <h5 class="card-title text-white">软件流量一览图</h5>
-                <linechart :chartData="chartData_v" :chartOptions="chartOptions_order"></linechart>  
+                <div class="col-6 d-flex">
+                    <div class="card ">
+                        <div class="card-body">
+                        <h5 class="card-title text-white">设备保修期一览图</h5>
+                        <PieChart :chartData="chartData_r" :chartOptions="chartOptions_order"></PieChart>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex">
+                    <div class="card" >
+                        <div class="card-body ">
+                        <h5 class="card-title text-white">设备状态一览图</h5>
+                        <BarChart :chartData="chartData_device" :chartOptions="chartOptions_device" ></BarChart>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex">
+                    <div class="card">
+                        <div class="card-body">
+                        <h5 class="card-title text-white">软件流量一览图</h5>
+                        <linechart :chartData="chartData_v" :chartOptions="chartOptions_order"></linechart>  
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    
-    
-        <!-- <div class="col d-flex">
-          <div class="card border-success border-2">
-            <div class="card-body">
-              <Cool></Cool>
+
+        <div class="col-4 d-flex">
+            <div class="row">
+            <div class="col-6 d-flex">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-white">总体情况(单位元)</h5>
+                        <h1 class="card-title text-warning"> 102154</h1>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div> -->
-      </div>
-    </div>
+            <div class="col-6 d-flex">
+                <div class="card ">
+                    <div class="card-body">
+                        <h5 class="card-title text-white">今日净增长</h5>
+                        <PieChart :chartData="chartData_inc" :chartOptions="chartOptions_order"></PieChart>
+                    </div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+
+        <div class="col-4 d-flex">
+            <div class="row">
+            <div class="col-12 d-flex">
+                <div class="card ">
+                    <div class="card-body">
+                        <h5 class="card-title text-white">订单情况一览图</h5>
+                        <PolarChart :chartData="chartData_order" :chartOptions="chartOptions_order"></PolarChart>  
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-flex">
+                    <div class="card">
+                        <div class="card-body">
+                        <h5 class="card-title text-white">季度订单对比图</h5>
+                        <linechart :chartData="chartData_z" :chartOptions="chartOptions_order"></linechart>  
+                        </div>
+                    </div>
+                </div>
+            
+            </div>    
+            
+            <!-- <div class="col d-flex">
+            <div class="card border-success border-2">
+                <div class="card-body">
+                <Cool></Cool>
+                </div>
+            </div>
+            </div> -->
+            </div>
+        </div>
+        </div>
     </template>
     
     <script>
@@ -104,6 +135,18 @@
                       backgroundColor: '#BCD4E7',
                       borderColor: '#BCD4E7',
                       data: [this.CountDeviceStatus(0),this.CountDeviceStatus(1), this.CountDeviceStatus(2), this.CountDeviceStatus(3), this.CountDeviceStatus(4), this.CountDeviceStatus(5)]
+                  }
+              ]
+          }
+          },
+        //定义图表数据
+        chartData_inc(){
+          return {
+              datasets: [
+                  {
+                      label: ['销量占比'],
+                      backgroundColor: ['#BCD4E7','#ffffff'],
+                      data: [12,5]
                   }
               ]
           }
@@ -184,10 +227,36 @@
                     labels: ['第一季度', '第二季度', '第三季度', '第四季度'],
                     datasets: [
                         {
-                            label: '到期年份',
+                            label: '2023流量',
                             backgroundColor: '#BCD4E7',
-                            borderColor: '#ffffff',
+                            borderColor: '#BCD4E7',
                             data: [1,2,6,4]
+                        },
+                        {
+                            label: '2024流量',
+                            backgroundColor: '#06436F',
+                            borderColor: '#06436F',
+                            data: [2,3,5,7]
+                        }
+                    ]
+                }
+            },
+            //定义图表数据
+            chartData_z(){
+                return {
+                    labels: ['1月', '2月', '3月', '4月'],
+                    datasets: [
+                        {
+                            label: '上个季度订单量',
+                            backgroundColor: '#BCD4E7',
+                            borderColor: '#BCD4E7',
+                            data: [3,2,2,4]
+                        },
+                        {
+                            label: '当前季度订单量',
+                            backgroundColor: '#06436F',
+                            borderColor: '#06436F',
+                            data: [2,3,8,7]
                         }
                     ]
                 }
