@@ -162,8 +162,7 @@
         </router-link>
       </li>
 
-    </ul>
-    <br>
+
     <hr>
     菜单管理：选择可见项<hr>
     <div v-show="ordinary_visible">
@@ -207,7 +206,7 @@
       </div>
       <div>维修人员评分排行榜<el-switch v-model="rank_visible" /></div>
     </div>
-
+    </ul>
     <hr>
     <div id="he-plugin-simple"></div>
     <hr>
