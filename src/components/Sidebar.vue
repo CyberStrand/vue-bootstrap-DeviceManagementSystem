@@ -163,6 +163,51 @@
       </li>
 
     </ul>
+    <br>
+    <hr>
+    菜单管理：选择可见项<hr>
+    <div v-show="ordinary_visible">
+    <div>设备管理<el-switch v-model="device_visible" />
+      订单管理<el-switch v-model="order_visible" /></div>
+    <div>
+      待办管理<el-switch v-model="todo_visible" />
+      评价反馈<el-switch v-model="feedback_visible" /></div>
+    <div>系统反馈<el-switch v-model="feedbackSys_visible" />
+        我的消息<el-switch v-model="message_visible"/>
+      </div>
+    <div>维修人员评分排行榜<el-switch v-model="rank_visible" /></div>
+      </div>
+    <div v-show="admin_visible">
+      <div>设备管理<el-switch v-model="device_visible" />
+        人员管理<el-switch v-model="personnel_visible" /></div>
+      <div>
+        订单管理<el-switch v-model="order_visible" />
+        公司管理<el-switch v-model="company_visible" /></div>
+      <div>日志管理<el-switch v-model="log_visible" />
+        待办管理<el-switch v-model="todo_visible"/>
+      </div>
+      <div >反馈管理<el-switch v-model="feedback_visible"/></div>
+      <div>维修人员评分排行榜<el-switch v-model="rank_visible" /></div>
+     </div>
+    <div v-show="maintenance_personnel_visible">
+      <div>可接订单<el-switch v-model="order_visible" />
+        待办管理<el-switch v-model="todo_visible" /></div>
+      <div>已接订单<el-switch v-model="accepted_order_visible" />
+        系统反馈<el-switch v-model="feedbackSys_visible"/>
+      </div>
+      <div>维修人员评分排行榜<el-switch v-model="rank_visible" /></div>
+    </div>
+    <div v-show="company_manager_visible">
+      <div>设备管理<el-switch v-model="device_visible" />
+        人员管理<el-switch v-model="personnel_visible" /></div>
+      <div>订单管理<el-switch v-model="order_visible" />
+        待办管理<el-switch v-model="todo_visible" /></div>
+      <div>反馈管理<el-switch v-model="feedback_visible" />
+        系统反馈<el-switch v-model="feedbackSys_visible"/>
+      </div>
+      <div>维修人员评分排行榜<el-switch v-model="rank_visible" /></div>
+    </div>
+
     <hr>
     <div id="he-plugin-simple"></div>
     <hr>
@@ -173,10 +218,7 @@
       </a>
       <strong>{{ user.username }}</strong>
     </div>
-  </div>
 
-
-  <!--offcanvas-->
   <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
     aria-labelledby="offcanvasWithBothOptionsLabel">
     <div class="offcanvas-header">
@@ -216,6 +258,7 @@
       </ul>
     </div>
   </div>
+    </div>
 </template>
 
 <script>
@@ -224,6 +267,8 @@ import { ref } from 'vue';
 import API from '@/plugins/axiosInstance';
 export default {
   data() {
+    const ordinary_visible = ref(false)
+    const admin_visible =ref(false)
     // 人员可见性
     const personnel_visible = ref(false)
     // 订单可见性
@@ -248,6 +293,8 @@ export default {
     const feedbackSys_visible = ref(true)
     // dashboard 可见性
     const dashboard_visible = ref(false)
+    const company_manager_visible = ref(false)
+    const maintenance_personnel_visible =ref(false)
     const orderBarName = ref('订单管理')
     const feedbackBarName = ref('反馈管理')
     const user = ref(Object)
@@ -268,6 +315,10 @@ export default {
       feedbackBarName,
       feedbackSys_visible,
       dashboard_visible,
+      ordinary_visible,
+      admin_visible,
+      maintenance_personnel_visible,
+      company_manager_visible,
     }
   },
   created() {
@@ -472,6 +523,7 @@ export default {
     })
     switch (this.role) {
       case 'admin':
+        this.admin_visible = ref(true)
         this.personnel_visible = ref(true)
         this.device_visible = ref(true)
         this.company_visible = ref(true)
@@ -482,12 +534,14 @@ export default {
         this.feedbackSys_visible = ref(false)
         break
       case 'maintenance_personnel':
+        this.maintenance_personnel_visible = ref(true)
         this.todo_visible = ref(true)
         this.order_visible = ref(true)
         this.accepted_order_visible = ref(true)
         this.orderBarName = ref('可接订单')
         break
       case 'company_manager':
+        this.company_manager_visible = ref(true)
         this.device_visible = ref(true)
         this.personnel_visible = ref(true)
         this.order_visible = ref(true)
@@ -496,6 +550,7 @@ export default {
         this.dashboard_visible = ref(true)
         break
       case 'ordinary':
+        this.ordinary_visible = ref(true)
         this.device_visible = ref(true)
         this.message_visible = ref(true)
         this.order_visible = ref(true)

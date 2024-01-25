@@ -54,13 +54,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="col d-flex">
-      <div class="card border-success border-2">
-        <div class="card-body">
-          <Cool></Cool>
-        </div>
-      </div>
-    </div> -->
   </div>
 </div>
 </template>
