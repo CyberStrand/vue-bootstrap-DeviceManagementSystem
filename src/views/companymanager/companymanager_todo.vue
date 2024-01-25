@@ -31,8 +31,8 @@
                     <td>{{ todo.userId }}</td>
                     <td>{{ todo.todoContent }}</td>
                     <td>{{ todo.todoStatus }}</td>
-                    <td><button class="btn btn-danger py-2 " @click.prevent="Delete(todo.todoId)">Delete</button></td>
-                    <td><PutModal button="Update" title="修改人员信息" @submit="Updatetodo" @default="SetDefult(todo)">
+                    <td><button class="btn btn-danger py-2 " @click.prevent="Delete(todo.todoId)">删除</button></td>
+                    <td><PutModal button="更新" title="修改人员信息" @submit="Updatetodo" @default="SetDefult(todo)">
                         <form>
                             <div class="row">
                                 <div class="col-md-6">
@@ -113,7 +113,7 @@ export default {
         filteredtodos(){
             if(this.todoId_Find||this.todoStatus_Find){
                 return this.todos.filter((todo)=>{
-                    return String(todo.todoId).includes(String(this.todoId_Find))&&String(todo.todoStatus).include(String(this.todoStatus_Find))
+                    return String(todo.todoId).includes(String(this.todoId_Find))&&String(todo.todoStatus).includes(String(this.todoStatus_Find))
                 })
             }
             else{

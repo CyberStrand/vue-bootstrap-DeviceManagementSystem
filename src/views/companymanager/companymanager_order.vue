@@ -43,7 +43,7 @@
                 <td>{{ formatDate(order.createdAt) }}</td>
                 <td>{{ order.locationId }}</td>
                 <td>{{ order.orderDetail }}</td>
-                <td><button class="btn btn-danger py-2" @click.prevent="Delete(order.orderId)">Delete</button></td>
+                <td><button class="btn btn-danger py-2" @click.prevent="Delete(order.orderId)">删除</button></td>
             </tr>
         </tbody>
     </table>

@@ -34,6 +34,7 @@ import AdminFeedback from "../views/Admin/AdminFeedback.vue";
 import maintainerToDo from "@/views/order/maintainerToDo.vue";
 
 import dashboard from "@/views/dashboard.vue";
+import panel from "@/views/panel.vue"; 
 
 
 const routes = [
@@ -202,8 +203,12 @@ const routes = [
     path:'/dashboard',
     name:'dashboard',
     component:dashboard
+  },
+  {
+    path:'/panel',
+    name:'panel',
+    component:panel
   }
-
 ]
 
 const router = createRouter({

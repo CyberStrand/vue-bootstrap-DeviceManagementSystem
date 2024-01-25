@@ -16,10 +16,6 @@
           <el-button v-print="'#printArea'" type="success"> <el-icon>
               <Printer />
             </el-icon>打印</el-button>
-          <!-- 统计 -->
-          <el-button type="success" @click="statistics"><el-icon>
-              <PieChart />
-            </el-icon>&nbsp;统计</el-button>
           <!-- 排序 -->
           <el-button type="success" @click="changeSort"><el-icon>
               <PieChart />

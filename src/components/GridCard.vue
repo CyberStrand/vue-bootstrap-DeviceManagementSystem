@@ -50,7 +50,7 @@
       <div class="card border-success border-2 col-12">
         <div class="card-body">
           <h5 class="card-title">驾驶舱</h5>
-          <button class="btn btn-success mb-3">learn more</button>
+          <router-link :to="{name:'panel'}" class="btn btn-success mb-3">learn more</router-link>
         </div>
       </div>
     </div>
